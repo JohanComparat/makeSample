@@ -1,0 +1,80 @@
+README to create SPIDERS clustering catalogs
+
+last update septembre 2017
+
+Authors
+-------
+johan comparat
+
+environment needed
+------------------
+
+
+$MAKE_SAMPLE_DIR = /home/comparat/software/linux/makesample/bin
+$SDSS_DATA_DIR = /data36s/comparat/SDSS/
+
+ls $SDSS_DATA_DIR/dr14/spiders
+analysis  spectroscopy  target
+
+data36s/comparat/SDSS//dr14/spiders/analysis:
+catCluster-SPIDERS_RASS_CLUS-v1.0.fits  eboss_spiders_analysis.sha1sum  VAC_spiders_XMMSL_DR14.fits
+catCluster-SPIDERS_RASS_CLUS-v2.0.fits  VAC_spiders_2RXS_DR14.fits
+
+/data36s/comparat/SDSS//dr14/spiders/spectroscopy:
+SPIDERS_RASS_sources_with_DR12_spectra.fits.gz  SPIDERS_XMMSL_sources_with_DR12_spectra.fits.gz
+
+/data36s/comparat/SDSS//dr14/spiders/target:
+eboss_spiders_target.sha1sum                             spiderstargetClusters-SPIDERS_RASS_CLUS-v1.1.fits
+SPIDERS_RASS_AGN_targets_for_EBOSS_TDSS_SPIDERS.fits.gz  spiderstargetClusters-SPIDERS_XCLASS_CLUS-v1.1.fits
+SPIDERS_RASS_AGN_targets_for_SEQUELS.fits.gz             spiderstargetSequelsAGN-SPIDERS_RASS_AGN-v1.1.fits
+spiderstargetAGN-SPIDERS_RASS_AGN-v2.1.fits              spiderstargetSequelsClus-SPIDERS_RASS_CLUS-v1.0.fits
+spiderstargetAGN-SPIDERS_XMMSL_AGN-v3.1.fits             SPIDERS_XMMSL_AGN_targets_for_EBOSS_TDSS_SPIDERS.fits.gz
+
+
+ls $SDSS_DATA_DIR/LSS/QSO/v1.9f4/
+
+eboss_v1.9f4-QSO-N-eboss_v1.9f4-full.dat.fits    
+eboss_v1.9f4-QSO-N-eboss_v1.9f4.ran.fits         
+eboss_v1.9f4-QSO-S-eboss_v1.9f4-full.dat.fits  
+eboss_v1.9f4-QSO-S-eboss_v1.9f4.ran.fits
+mask-QSO-N-eboss_v1.9f4.bin             
+mask-QSO-N-eboss_v1.9f4.fits
+mask-QSO-S-eboss_v1.9f4.bin
+mask-QSO-S-eboss_v1.9f4.fits
+
+ls $SDSS_DATA_DIR/LSS/LRG/v1.8/
+cmass-eboss-lrg_v1.8-all.fits                       
+cmass-eboss_v1.8_IRt-lrg-N-eboss_v1.8_IRt.dat.fits  
+cmass-eboss_v1.8_IRt-lrg-S-eboss_v1.8_IRt.dat.fits
+eboss_v1.8_IRt-lrg-N-eboss_v1.8_IRt-full.dat.fits
+eboss_v1.8_IRt-lrg-S-eboss_v1.8_IRt-full.dat.fits
+
+
+# mask file to loop over to assign TSR (mangle mask)
+mask-lrg-S-eboss_v1.8_IRt.bin
+
+query 
+
+
+Make sure it is updated by running:
+svn up
+
+Outputs are written here :
+
+https://data.sdss.org/sas/ebosswork/eboss/target/elg/legacysurvey/decals/dr3/catalogs/VAC/
+or here
+$DECALS_DATA_DIR/catalogs/VAC
+
+# Add mask information i.e. creates input photometric and random files for the make sample procedure.
+python add_mask_booleans.py
+
+# First merge spectroscopic catalgos with photometric catalogs
+python make_merged_catalog.py
+# It creates a merged catalog : $DECALS_DATA_DIR/catalogs/VAC/elg_240_sgc.v2.merged.chunk'+Nchunk+'.fits'
+# 
+python make_clustering_catalog_part1.py
+python make_clustering_catalog_part2.py
+python plot-clustering-catalogs.py
+
+Outputs are written in :
+$DECALS_DATA_DIR/catalogs/VAC
