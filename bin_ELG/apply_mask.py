@@ -47,19 +47,19 @@ def mask_catalog(in_file, out_file, ra_name, dec_name):
 	hdu2.writeto(out_file)
 
 
-in_file  = join(os.environ['OBS_REPO'], 'targets/ELG/elg_190_ngc_DR5_2.fits')
-out_file  = join(os.environ['OBS_REPO'], 'targets/ELG/elg_190_ngc_DR5_2.mask.fits')
+in_file  = join(os.environ['OBS_REPO'], 'SDSS', 'targets/ELG/elg_190_ngc_DR5_2.fits')
+out_file  = join(os.environ['OBS_REPO'], 'SDSS', 'targets/ELG/elg_190_ngc_DR5_2.mask.fits')
 mask_catalog(in_file, out_file, 'ra', 'dec')
 
-in_file  = join(os.environ['OBS_REPO'], 'targets/ELG/elg_190_ngc_DR5.fits')
-out_file  = join(os.environ['OBS_REPO'], 'targets/ELG/elg_190_ngc_DR5.mask.fits')
+in_file  = join(os.environ['OBS_REPO'], 'SDSS', 'targets/ELG/elg_190_ngc_DR5.fits')
+out_file  = join(os.environ['OBS_REPO'], 'SDSS', 'targets/ELG/elg_190_ngc_DR5.mask.fits')
 mask_catalog(in_file, out_file, 'ra', 'dec')
 
-in_file  = join(os.environ['OBS_REPO'], 'targets/ELG/random_190_ngc_DR5_2.fits')
-out_file  = join(os.environ['OBS_REPO'], 'targets/ELG/random_190_ngc_DR5_2.mask.fits')
+in_file  = join(os.environ['OBS_REPO'], 'SDSS', 'targets/ELG/random_190_ngc_DR5_2.fits')
+out_file  = join(os.environ['OBS_REPO'], 'SDSS', 'targets/ELG/random_190_ngc_DR5_2.mask.fits')
 mask_catalog(in_file, out_file, 'ra', 'dec')
 
-in_file  = join(os.environ['OBS_REPO'], 'targets/ELG/random_190_ngc_DR5.fits')
-out_file  = join(os.environ['OBS_REPO'], 'targets/ELG/random_190_ngc_DR5.mask.fits')
+in_file  = join(os.environ['OBS_REPO'], 'SDSS', 'targets/ELG/random_190_ngc_DR5.fits')
+out_file  = join(os.environ['OBS_REPO'], 'SDSS', 'targets/ELG/random_190_ngc_DR5.mask.fits')
 mask_catalog(in_file, out_file, 'ra', 'dec')
 
