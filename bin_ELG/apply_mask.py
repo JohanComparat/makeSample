@@ -20,6 +20,7 @@ def mask_catalog(in_file, out_file, ra_name, dec_name):
 	dict_mask['mask_Tycho20Vmag10']   = join(maskdir, 'tycho2mask-0Vmag10.pol')
 	dict_mask['mask_Tycho210Vmag11']  = join(maskdir, 'tycho2mask-10Vmag11.pol')
 	dict_mask['mask_Tycho211Vmag115'] = join(maskdir, 'tycho2mask-11Vmag115.pol')
+	dict_mask['eboss25'] = join(os.environ['OBS_REPO'],'SDSS', 'targets','ELG', 'eboss25.ply')
 	
 	def createBooleanColumn(name, ra, dec, dict_mask=dict_mask):
 		#print dict_mask[name]
