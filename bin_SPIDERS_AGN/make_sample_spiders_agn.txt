@@ -5,6 +5,8 @@ for finding the counterparts to
  - the 2RXS sources, we adopted an area of 30,434.6 sqdeg.
  - the XMMSL2 sources, we adopted an area of 25,565 sqdeg.
 
+MISSING MASK : WISE MASK !! 
+ 
 Data
 ====
 
@@ -73,6 +75,8 @@ Finding the right depth cut
 And writes the catalogs in ascii
 
 python ks-test-depth-value.py
+
+first of all angular KS test 
 
 KS-test in ra and dec between 
  - data 0<z<0.2 and flux > 2e-13
