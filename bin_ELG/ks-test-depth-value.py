@@ -28,11 +28,11 @@ ra_rds    = hduR[1].data[ra_name_rds]
 dec_rds    = hduR[1].data[dec_name_rds]
 
 areaD = (ra_data>135.)&(ra_data<170.)&(dec_data>21.5)&(dec_data<33)
-starsD = (hduD[1].data['mask_Tycho20Vmag10']==False)& (hduD[1].data['mask_Tycho210Vmag11']==False)& (hduD[1].data['mask_bright_object_rykoff']==False) & (hduD[1].data['mask_Tycho211Vmag115']==False)& (dat['mask_Tycho2115Vmag120']==False) 
+starsD = (hduD[1].data['mask_Tycho20Vmag10']==False)& (hduD[1].data['mask_Tycho210Vmag11']==False)& (hduD[1].data['mask_bright_object_rykoff']==False) & (hduD[1].data['mask_Tycho211Vmag115']==False)& (hduD[1].data['mask_Tycho2115Vmag120']==False) 
 sel_data = (areaD) & (starsD) 
 
 areaR = (ra_rds>135.)&(ra_rds<170.)&(dec_rds>21.5)&(dec_rds<33)
-starsR = (hduR[1].data['mask_Tycho20Vmag10']==False) & (hduR[1].data['mask_Tycho210Vmag11']==False) & (hduR[1].data['mask_bright_object_rykoff']==False) & (hduR[1].data['mask_Tycho211Vmag115']==False)& (dat['mask_Tycho2115Vmag120']==False)
+starsR = (hduR[1].data['mask_Tycho20Vmag10']==False) & (hduR[1].data['mask_Tycho210Vmag11']==False) & (hduR[1].data['mask_bright_object_rykoff']==False) & (hduR[1].data['mask_Tycho211Vmag115']==False)& (hduR[1].data['mask_Tycho2115Vmag120']==False)
 
 sel_rds = (areaR)&(starsR)
 
@@ -104,11 +104,11 @@ ra_rds    = hduR[1].data[ra_name_rds]
 dec_rds    = hduR[1].data[dec_name_rds]
 
 areaD = (ra_data>135.)&(ra_data<170.)&(dec_data>21.5)&(dec_data<33)
-starsD = (hduD[1].data['mask_Tycho20Vmag10']==False)& (hduD[1].data['mask_Tycho210Vmag11']==False)& (hduD[1].data['mask_bright_object_rykoff']==False) & (hduD[1].data['mask_Tycho211Vmag115']==False)& (dat['mask_Tycho2115Vmag120']==False) 
+starsD = (hduD[1].data['mask_Tycho20Vmag10']==False)& (hduD[1].data['mask_Tycho210Vmag11']==False)& (hduD[1].data['mask_bright_object_rykoff']==False) & (hduD[1].data['mask_Tycho211Vmag115']==False)& (hduD[1].data['mask_Tycho2115Vmag120']==False) 
 sel_data = (areaD) & (starsD) 
 
 areaR = (ra_rds>135.)&(ra_rds<170.)&(dec_rds>21.5)&(dec_rds<33)
-starsR = (hduR[1].data['mask_Tycho20Vmag10']==False) & (hduR[1].data['mask_Tycho210Vmag11']==False) & (hduR[1].data['mask_bright_object_rykoff']==False) & (hduR[1].data['mask_Tycho211Vmag115']==False)& (dat['mask_Tycho2115Vmag120']==False)
+starsR = (hduR[1].data['mask_Tycho20Vmag10']==False) & (hduR[1].data['mask_Tycho210Vmag11']==False) & (hduR[1].data['mask_bright_object_rykoff']==False) & (hduR[1].data['mask_Tycho211Vmag115']==False)& (hduR[1].data['mask_Tycho2115Vmag120']==False)
 
 sel_rds = (areaR)&(starsR)
 

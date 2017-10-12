@@ -18,7 +18,7 @@ def write_ascii_cat(data_file, out_file):
 	dec_data    = hduD[1].data[dec_name_data]
 	z_data = np.zeros_like(ra_data)
 	areaD = (ra_data>135.)&(ra_data<170.)&(dec_data>21.5)&(dec_data<33)
-	starsD = (hduD[1].data['mask_Tycho20Vmag10']==False)& (hduD[1].data['mask_Tycho210Vmag11']==False)& (hduD[1].data['mask_bright_object_rykoff']==False) & (hduD[1].data['mask_Tycho211Vmag115']==False)& (dat['mask_Tycho2115Vmag120']==False) 
+	starsD = (hduD[1].data['mask_Tycho20Vmag10']==False)& (hduD[1].data['mask_Tycho210Vmag11']==False)& (hduD[1].data['mask_bright_object_rykoff']==False) & (hduD[1].data['mask_Tycho211Vmag115']==False)& (hduD[1].data['mask_Tycho2115Vmag120']==False) 
 	sel_data = (areaD) & (starsD) 
 	np.savetxt(out_file, np.transpose([ra_data[sel_data], dec_data[sel_data],np.ones_like(dec_data[sel_data])*0.86,  np.ones_like(dec_data[sel_data]) ]))
 
