@@ -5,7 +5,7 @@ for finding the counterparts to
  - the 2RXS sources, we adopted an area of 30,434.6 sqdeg.
  - the XMMSL2 sources, we adopted an area of 25,565 sqdeg.
 
-MISSING MASK : WISE MASK !! 
+MISSING MASK : WISE MASK and ROSAT FIELD MASK !!
  
 Data
 ====
