@@ -1,6 +1,16 @@
 svn copy https://svn.sdss.org/data/sdss/stellarpopmodels/trunk https://svn.sdss.org/data/sdss/stellarpopmodels/tags/v1_0_2 -m "Adding new models and broad band filter curves for SDSS, CFHT and DECAM"
 
+python3 plot_Host_AGN_SMF_with_Bo16_model.py 0.001 0.2 25.
+python3 plot_Host_AGN_SMF_with_Bo16_model.py 0.001 0.3 25.
+python3 plot_Host_AGN_SMF_with_Bo16_model.py 0.001 0.4 25.
 
+python3 plot_Host_AGN_SMF_with_Bo16_model.py 0.001 0.2 50.
+python3 plot_Host_AGN_SMF_with_Bo16_model.py 0.001 0.3 50.
+python3 plot_Host_AGN_SMF_with_Bo16_model.py 0.001 0.4 50.
+
+python3 plot_Host_AGN_SMF_with_Bo16_model.py 0.001 0.2 75.
+python3 plot_Host_AGN_SMF_with_Bo16_model.py 0.001 0.3 75.
+python3 plot_Host_AGN_SMF_with_Bo16_model.py 0.001 0.4 75.
 
 clustering_agn_RL_0.005_LX_440.data
 clustering_agn_RL_0.005_LX_440.random

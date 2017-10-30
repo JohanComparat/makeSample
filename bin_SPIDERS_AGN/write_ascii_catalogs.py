@@ -11,9 +11,21 @@ import astropy.units as u
 import astropy.cosmology as cc
 cosmo = cc.Planck13
 
-data_file  = join(os.environ['OBS_REPO'], 'SDSS/dr14/spiders/target/2RXS_AllWISE_catalog_paper_2017May26_withSpectro_with2RXS_mask_DR14area.fits')
+data_file  = join(os.environ['OBS_REPO'], 'SDSS/dr14/spiders/target/2RXS_AllWISE_catalog_paper_2017May26_withSpectro_with2RXS_mask_DR14area_SPM.fits')
 rds_n_file  = join(os.environ['OBS_REPO'], 'SDSS/dr14/spiders/randoms/randoms_dr14_NGC_with2RXS_mask_DR14area.fits')
 rds_s_file  = join(os.environ['OBS_REPO'], 'SDSS/dr14/spiders/randoms/randoms_dr14_SGC_with2RXS_mask_DR14area.fits')
+#nR_NGC = 5135183. # random points
+#nR_SGC = 3292159. # random points
+#area = 2391. # unweighted
+#rho_random = (nR_NGC+nR_SGC)/area # 4122.96 / deg2
+#area_N = nR_NGC / rho_random
+#area_S = nR_SGC / rho_random
+#nR_NGC_written = 32015.
+#nR_SGC_written = 21620.
+#frac_NGC = 100.*nR_NGC_written/nR_NGC
+#frac_SGC = 100.*nR_SGC_written/nR_SGC
+#area_obs_N = frac_NGC * area_N # 908.3275011266899 deg2
+#area_obs_S = frac_SGC * area_S # 613.4012361192889 deg2
 
 rds_file = rds_n_file
 
