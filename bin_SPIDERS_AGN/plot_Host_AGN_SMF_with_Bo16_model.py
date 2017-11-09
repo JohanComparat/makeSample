@@ -179,10 +179,7 @@ n_gal = len(f['/sky_position/redshift_S'].value[is_gal])
 
 n_agn = len(f['/sky_position/redshift_S'].value[is_agn])
 
-sel = (is_agn)&(f['/sky_position/redshift_S'].value>z_min)&(f['/sky_position/redshift_S'].value<z_max)&(n.log10(f['/moster_2013_data/stellar_mass'].value)+f['/agn_properties/log_lambda_sar'].value>lxmin)
-
-n.savetxt(out_name, n.transpose([f['/sky_position/RA'].value[sel], f['/sky_position/DEC'].value[sel], f['/sky_position/redshift_S'].value[sel], n.ones_like(f['/sky_position/redshift_S'].value[sel])]) )
-print(zmax, lxmin, len(f['/sky_position/RA'].value[sel]))
+sel = (is_agn)&(f['/sky_position/redshift_S'].value>z_min)&(f['/sky_position/redshift_S'].value<z_max)&(n.log10(f['/moster_2013_data/stellar_mass'].value)+f['/agn_properties/log_lambda_sar'].value>LX_min)
 
 area = 6.7529257176359*2. * 2* 8.269819492449505
 volume_sim = volume * area *n.pi / 129600. 
