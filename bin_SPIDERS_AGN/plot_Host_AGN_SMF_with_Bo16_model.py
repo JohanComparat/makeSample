@@ -231,7 +231,7 @@ print("LX limit=",lxlim)
 
 p.fill_between(many_MS, y1=ttt_low, y2=ttt_up, label='LX>'+str(n.round(lxlim,2)), alpha=0.5, color='magenta')
 
-p.fill_between(xb, y1=y_sim-y_sim_err, y2=y_sim+y_sim_err, label='mock', alpha=0.5, color='green', alpha=0.5)
+p.fill_between(xb, y1=y_sim-y_sim_err, y2=y_sim+y_sim_err, label='mock', alpha=0.5, color='green')
 
 p.errorbar(xb, y, xerr=dlog10M/2., yerr=y_err, label=r'spiders $\sigma_M<$'+str(n.round(max_mass_err,3)), fmt=None, color='k')
 #p.plot(bb[:-1]+0.1, y*100./percentage_allowed, 'k+', label='spiders 100%')
