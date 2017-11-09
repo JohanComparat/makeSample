@@ -1,6 +1,7 @@
 import numpy as n
 import glob
 
+import h5py    # HDF5 support
 
 import matplotlib
 matplotlib.use('Agg')
@@ -11,10 +12,12 @@ import time
 import sys
 import astropy.io.fits as fits
 import astropy.cosmology as co
+import astropy.units as u
 cosmo = co.Planck15
+
 import XrayLuminosity
 xr = XrayLuminosity.XrayLuminosity()
-import astropy.units as u
+
 from scipy.stats import scoreatpercentile
 from scipy.interpolate import interp1d
 out_dir = os.path.join(os.environ['HOME'], "wwwDir", "eRoMok", "AGN", "HG_SMF")
@@ -25,8 +28,6 @@ z_min = float(sys.argv[1]) # 1.
 z_max = float(sys.argv[2]) #1.5
 #LX_min = 4e42
 percentage_allowed = float(sys.argv[3]) # 20.
-
-
 tiling_efficiency = 0.95
 
 #nR_NGC = 5135183. # random points
@@ -162,6 +163,38 @@ all_z = n.arange(0, 6, 0.1)
 
 many_MS = n.arange(9.,12.5,0.05)
 
+##################################################3
+##################################################3
+##################################################3
+# SIMUATION COUNTERPART
+##################################################3
+##################################################3
+
+f = h5py.File('/data17s/darksim/MD/MD_1.0Gpc/h5_lc/lc_remaped_position_L3_.hdf5', 'r')
+
+is_gal = (f['/sky_position/selection'].value)
+is_agn = (f['/sky_position/selection'].value)&(f['/agn_properties/agn_activity'].value==1)
+
+n_gal = len(f['/sky_position/redshift_S'].value[is_gal])
+
+n_agn = len(f['/sky_position/redshift_S'].value[is_agn])
+
+sel = (is_agn)&(f['/sky_position/redshift_S'].value>z_min)&(f['/sky_position/redshift_S'].value<z_max)&(n.log10(f['/moster_2013_data/stellar_mass'].value)+f['/agn_properties/log_lambda_sar'].value>lxmin)
+
+n.savetxt(out_name, n.transpose([f['/sky_position/RA'].value[sel], f['/sky_position/DEC'].value[sel], f['/sky_position/redshift_S'].value[sel], n.ones_like(f['/sky_position/redshift_S'].value[sel])]) )
+print(zmax, lxmin, len(f['/sky_position/RA'].value[sel]))
+
+area = 6.7529257176359*2. * 2* 8.269819492449505
+volume_sim = volume * area *n.pi / 129600. 
+
+logM = n.log10(f['/moster_2013_data/stellar_mass'].value[sel])
+
+
+NN_sim = n.histogram(logM, bins = mbins)[0]
+y_sim = NN_sim / volume_sim / dlog10M
+y_sim_err = NN_sim**(-0.5) * y_sim 
+
+
 p.figure(1, (6,6))
 p.axes([0.17, 0.17, 0.78, 0.78])
 p.plot(data['DR14_Z'], LX, 'ko', label='all')
@@ -197,6 +230,8 @@ lxlim = n.log10(LX_min)
 print("LX limit=",lxlim)
 
 p.fill_between(many_MS, y1=ttt_low, y2=ttt_up, label='LX>'+str(n.round(lxlim,2)), alpha=0.5, color='magenta')
+
+p.fill_between(xb, y1=y_sim-y_sim_err, y2=y_sim+y_sim_err, label='mock', alpha=0.5, color='green', alpha=0.5)
 
 p.errorbar(xb, y, xerr=dlog10M/2., yerr=y_err, label=r'spiders $\sigma_M<$'+str(n.round(max_mass_err,3)), fmt=None, color='k')
 #p.plot(bb[:-1]+0.1, y*100./percentage_allowed, 'k+', label='spiders 100%')
