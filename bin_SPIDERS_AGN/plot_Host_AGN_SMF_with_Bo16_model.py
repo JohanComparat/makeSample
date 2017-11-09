@@ -179,7 +179,7 @@ n_gal = len(f['/sky_position/redshift_S'].value[is_gal])
 
 n_agn = len(f['/sky_position/redshift_S'].value[is_agn])
 
-sel = (is_agn)&(f['/sky_position/redshift_S'].value>z_min)&(f['/sky_position/redshift_S'].value<z_max)&(n.log10(f['/moster_2013_data/stellar_mass'].value)+f['/agn_properties/log_lambda_sar'].value>LX_min)
+sel = (is_agn)&(f['/sky_position/redshift_S'].value>z_min)&(f['/sky_position/redshift_S'].value<z_max)&(n.log10(f['/moster_2013_data/stellar_mass'].value)+f['/agn_properties/log_lambda_sar'].value>n.log10(LX_min))
 
 area = 6.7529257176359*2. * 2* 8.269819492449505
 volume_sim = volume * area *n.pi / 129600. 
@@ -191,6 +191,9 @@ NN_sim = n.histogram(logM, bins = mbins)[0]
 y_sim = NN_sim / volume_sim / dlog10M
 y_sim_err = NN_sim**(-0.5) * y_sim 
 
+f.close()
+
+# REDSHIFT vs LX plot
 
 p.figure(1, (6,6))
 p.axes([0.17, 0.17, 0.78, 0.78])
@@ -210,7 +213,7 @@ p.savefig(os.path.join(out_dir, "SPIDERS_AGN_redshift_LX_"+str(z_min)+"_"+str(z_
 p.clf()
 
 
-
+# HGMF plot
 p.figure(1, (6,6))
 p.axes([0.17, 0.17, 0.78, 0.78])
 
