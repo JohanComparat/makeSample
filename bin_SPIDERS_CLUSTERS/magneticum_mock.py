@@ -154,7 +154,7 @@ snap_Nr, snap_z, snap_r0, snap_r1 = n.loadtxt(os.path.join(lc_dir, "wmap.geometr
 # choose a snapshot for the clusters
 id_snap = 0
 id_s = str(int(snap_Nr[id_snap])).zfill(3)
-print('opens cluster file')
+print('opens cluster file', os.path.join(lc_dir, "wmap."+id_s+".cluster.fits"))
 hdC = fits.open(os.path.join(lc_dir, "wmap."+id_s+".cluster.fits"))
 #cl_ihal, , cl_r, cl_z_true, cl_z_obs, cl_Mvir, cl_Rvir, cl_M500, cl_R500, cl_Mstar500, cl_Mgas500, cl_T500, cl_Lx500, cl_Ysz500, cl_M200, cl_R200 = 
 cl_l       = hdC[1].data['l']
@@ -209,7 +209,7 @@ for id_clus in range(len(cl_numbers)):
 	cl_z_p_N_rvir = dC_2_z( cosmo.comoving_distance(cl_z_true[cl_num]).value + N_Rvir*cl_Rvir[cl_num]/1000.)
 	cl_z_m_N_rvir = dC_2_z( cosmo.comoving_distance(cl_z_true[cl_num]).value - N_Rvir*cl_Rvir[cl_num]/1000.)
 	# get the galaxies in the cluster and outside in the same snapshot slice
-	print('opens galaxy file in the same snapshot as the cluster')
+	print('opens galaxy file in the same snapshot as the cluster', os.path.join(lc_dir, "wmap."+id_s+".galaxies.fits"))
 	#isub, l, b, rr, vmax, z_true, z_obs, Mstar, sfr, u, V,  g,  r,  i,  z,  Y,  J , H  ,K  ,L  ,M, Age ,Z = n.loadtxt(os.path.join(lc_dir, "wmap."+id_s+".galaxies.fits"), unpack=True, skiprows=1)
 	hd = fits.open(os.path.join(lc_dir, "wmap."+id_s+".galaxies.fits"))
 	gal_in_N_Rvir_proj = (abs(cl_l[cl_num] - hd[1].data['l'])<cl_Rvir_deg * N_Rvir ) & (abs(cl_b[cl_num] - hd[1].data['b'])<cl_Rvir_deg * N_Rvir )
