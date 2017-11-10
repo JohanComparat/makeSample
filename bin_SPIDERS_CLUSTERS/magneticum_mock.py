@@ -116,7 +116,7 @@ p.plot(n.log10(x_data), n.log10(y_data), color='g',  label = 'ECDFS Finoguenov 2
 def get_hist(prop, ALL, INCLUS, CONTAMINATION):
 	nnInclus, bb = n.histogram(prop[INCLUS], bins=50)
 	nnContamination = n.histogram(prop[CONTAMINATION], bins=bb)[0]
-	return bb, nnAll, nnInclus, nnContamination
+	return bb, nnInclus, nnContamination
 
 
 def get_hist_1(prop, CONTAMINATION, bins):
@@ -128,7 +128,7 @@ def get_hist_1(prop, CONTAMINATION, bins):
 
 def get_all_hist(lc_dir, id_snap, cl_l, cl_b, cl_num, cl_Rvir_deg, N_Rvir, bb_Mstar, bb_Age, bb_Z, bb_sfr, bb_g, bb_r, bb_i):
 	id_s = str(int(snap_Nr[id_snap])).zfill(3)
-	hdu = fits.open(os.path.join(lc_dir, "wmap."+id_s+".galaxies.dat"))
+	hdu = fits.open(os.path.join(lc_dir, "wmap."+id_s+".galaxies.fits"))
 	#isub, l, b, rr, vmax, z_true, z_obs, Mstar, sfr, u, V,  g,  r,  i,  z,  Y,  J , H  ,K  ,L  ,M, Age ,Z = 
 	gal_in_N_Rvir_proj = (abs(cl_l[cl_num] - hdu[1].data['l'])<cl_Rvir_deg * N_Rvir ) & (abs(cl_b[cl_num] - hdu[1].data['b'])<cl_Rvir_deg * N_Rvir )
 	NN_contamination_Mstar =  get_hist_1(n.log10(hdu[1].data['Mstar']),  gal_in_N_Rvir_proj, bb_Mstar)
@@ -155,12 +155,12 @@ snap_Nr, snap_z, snap_r0, snap_r1 = n.loadtxt(os.path.join(lc_dir, "wmap.geometr
 id_snap = 0
 id_s = str(int(snap_Nr[id_snap])).zfill(3)
 print('opens cluster file')
-hdC = fits.open(os.path.join(lc_dir, "wmap."+id_s+".cluster.dat"))
+hdC = fits.open(os.path.join(lc_dir, "wmap."+id_s+".cluster.fits"))
 #cl_ihal, , cl_r, cl_z_true, cl_z_obs, cl_Mvir, cl_Rvir, cl_M500, cl_R500, cl_Mstar500, cl_Mgas500, cl_T500, cl_Lx500, cl_Ysz500, cl_M200, cl_R200 = 
-cl_l       = hdC[1].data['cl_l']
-cl_b       = hdC[1].data['cl_b']
-cl_z_true  = hdC[1].data['cl_z_true']
-cl_Rvir    = hdC[1].data['cl_Rvir']
+cl_l       = hdC[1].data['l']
+cl_b       = hdC[1].data['b']
+cl_z_true  = hdC[1].data['z_true']
+cl_Rvir    = hdC[1].data['Rvir']
 
 print(time.time()-t0, 'done')
 #lmax = 5.
@@ -206,26 +206,16 @@ for id_clus in range(len(cl_numbers)):
 	# looks for objects in a cubic box around N rvir of the cluster
 	print("cluster properties", cl_z_true[cl_num], cl_Rvir[cl_num])
 	cl_Rvir_deg = cosmo.arcsec_per_kpc_comoving(snap_z[id_snap]).value*cl_Rvir[cl_num]/3600.
-
 	cl_z_p_N_rvir = dC_2_z( cosmo.comoving_distance(cl_z_true[cl_num]).value + N_Rvir*cl_Rvir[cl_num]/1000.)
-
 	cl_z_m_N_rvir = dC_2_z( cosmo.comoving_distance(cl_z_true[cl_num]).value - N_Rvir*cl_Rvir[cl_num]/1000.)
-
 	# get the galaxies in the cluster and outside in the same snapshot slice
 	print('opens galaxy file in the same snapshot as the cluster')
-	#isub, l, b, rr, vmax, z_true, z_obs, Mstar, sfr, u, V,  g,  r,  i,  z,  Y,  J , H  ,K  ,L  ,M, Age ,Z = n.loadtxt(os.path.join(lc_dir, "wmap."+id_s+".galaxies.dat"), unpack=True, skiprows=1)
-	hd = fits.open(os.path.join(lc_dir, "wmap."+id_s+".galaxies.dat"))
-	
-	print(time.time()-t0, 'done')
-
+	#isub, l, b, rr, vmax, z_true, z_obs, Mstar, sfr, u, V,  g,  r,  i,  z,  Y,  J , H  ,K  ,L  ,M, Age ,Z = n.loadtxt(os.path.join(lc_dir, "wmap."+id_s+".galaxies.fits"), unpack=True, skiprows=1)
+	hd = fits.open(os.path.join(lc_dir, "wmap."+id_s+".galaxies.fits"))
 	gal_in_N_Rvir_proj = (abs(cl_l[cl_num] - hd[1].data['l'])<cl_Rvir_deg * N_Rvir ) & (abs(cl_b[cl_num] - hd[1].data['b'])<cl_Rvir_deg * N_Rvir )
-
 	gal_in_N_Rvir_in_cluster = (gal_in_N_Rvir_proj) & (hd[1].data['z_true'] > cl_z_m_N_rvir) & (hd[1].data['z_true'] < cl_z_p_N_rvir)
-
 	gal_in_N_Rvir_contamination = (gal_in_N_Rvir_proj) & (gal_in_N_Rvir_in_cluster==False)
-
-	print("in N Rvir (all, in cluster, contamination):", len(z_true[gal_in_N_Rvir_proj]),len(z_true[gal_in_N_Rvir_in_cluster]), len(z_true[gal_in_N_Rvir_contamination]))
-
+	#print("in N Rvir (all, in cluster, contamination):", len(z_true[gal_in_N_Rvir_proj]),len(z_true[gal_in_N_Rvir_in_cluster]), len(z_true[gal_in_N_Rvir_contamination]))
 	bb_Mstar, NN_inclus_Mstar[id_clus], NN_contamination_Mstar[id_clus][id_snap]  =  get_hist(n.log10(hd[1].data['Mstar']), gal_in_N_Rvir_proj, gal_in_N_Rvir_in_cluster, gal_in_N_Rvir_contamination)
 	bb_Age,   NN_inclus_Age[id_clus],   NN_contamination_Age[id_clus][id_snap]    =  get_hist(hd[1].data['Age'], gal_in_N_Rvir_proj, gal_in_N_Rvir_in_cluster, gal_in_N_Rvir_contamination)
 	bb_Z,     NN_inclus_Z[id_clus],     NN_contamination_Z[id_clus][id_snap]      =  get_hist(hd[1].data['Z'], gal_in_N_Rvir_proj, gal_in_N_Rvir_in_cluster, gal_in_N_Rvir_contamination)
@@ -233,13 +223,10 @@ for id_clus in range(len(cl_numbers)):
 	bb_g,     NN_inclus_g[id_clus],     NN_contamination_g[id_clus][id_snap]      =  get_hist(hd[1].data['g'], gal_in_N_Rvir_proj, gal_in_N_Rvir_in_cluster, gal_in_N_Rvir_contamination)
 	bb_r,     NN_inclus_r[id_clus],     NN_contamination_r[id_clus][id_snap]      =  get_hist(hd[1].data['r'], gal_in_N_Rvir_proj, gal_in_N_Rvir_in_cluster, gal_in_N_Rvir_contamination)
 	bb_i,     NN_inclus_i[id_clus],     NN_contamination_i[id_clus][id_snap]      =  get_hist(hd[1].data['i'], gal_in_N_Rvir_proj, gal_in_N_Rvir_in_cluster, gal_in_N_Rvir_contamination)
-	print(time.time()-t0, 'histograms done')
-
-
-	for id_snap in n.arange(1,3,1): #len(snap_Nr)):
-		print('snap', id_snap)
+		#print(time.time()-t0, 'histograms done')
+	for id_snap in n.arange(1,len(snap_Nr),1):
 		NN_contamination_Mstar[id_clus][id_snap], NN_contamination_Age[id_clus][id_snap], NN_contamination_Z[id_clus][id_snap], NN_contamination_sfr[id_clus][id_snap], NN_contamination_g[id_clus][id_snap], NN_contamination_r[id_clus][id_snap], NN_contamination_i[id_clus][id_snap] = get_all_hist(lc_dir, id_snap, cl_l, cl_b, cl_num, cl_Rvir_deg, N_Rvir, bb_Mstar, bb_Age, bb_Z, bb_sfr, bb_g, bb_r, bb_i)
-		print(time.time()-t1)
+		print('snap', id_snap, time.time()-t1)
 
 
 DATA = n.array([NN_contamination_Mstar ,
@@ -257,7 +244,7 @@ NN_inclus_g    ,
 NN_inclus_r    ,
 NN_inclus_i    ])
 
-pickle.dump(DATA, open("results.pkl", "w"))
+pickle.dump(DATA, open(os.path.join(lc_dir, "results.pkl"), "w"))
 
 #def plot_hist(bb, N_in, N_cont, prop):
 	#x = (bb[1:]+bb[:-1])/2.
