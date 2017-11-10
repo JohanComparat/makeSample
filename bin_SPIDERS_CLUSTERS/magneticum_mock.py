@@ -152,7 +152,7 @@ plot_dir = os.path.join(os.environ['HOME'], 'wwwDir', 'eRoMok', 'magneticum')
 snap_Nr, snap_z, snap_r0, snap_r1 = n.loadtxt(os.path.join(lc_dir, "wmap.geometry.dat"), unpack=True, skiprows=3)
 
 # choose a snapshot for the clusters
-id_snap = 0
+id_snap = -1
 id_s = str(int(snap_Nr[id_snap])).zfill(3)
 print('opens cluster file', os.path.join(lc_dir, "wmap."+id_s+".cluster.fits"))
 hdC = fits.open(os.path.join(lc_dir, "wmap."+id_s+".cluster.fits"))
@@ -198,7 +198,7 @@ NN_inclus_i     = n.zeros((len(cl_numbers), 50))
 for id_clus in range(len(cl_numbers)):
 	t1 = time.time()
 	# snapshot id where the clusters are
-	id_snap = 0
+	id_snap = -1
 	id_s = str(int(snap_Nr[id_snap])).zfill(3)
 	# cluster id
 	cl_num = cl_numbers[id_clus]
@@ -224,7 +224,7 @@ for id_clus in range(len(cl_numbers)):
 	bb_r,     NN_inclus_r[id_clus],     NN_contamination_r[id_clus][id_snap]      =  get_hist(hd[1].data['r'], gal_in_N_Rvir_proj, gal_in_N_Rvir_in_cluster, gal_in_N_Rvir_contamination)
 	bb_i,     NN_inclus_i[id_clus],     NN_contamination_i[id_clus][id_snap]      =  get_hist(hd[1].data['i'], gal_in_N_Rvir_proj, gal_in_N_Rvir_in_cluster, gal_in_N_Rvir_contamination)
 		#print(time.time()-t0, 'histograms done')
-	for id_snap in n.arange(1,len(snap_Nr),1):
+	for id_snap in n.arange(1,len(snap_Nr),1)[::-1]:
 		NN_contamination_Mstar[id_clus][id_snap], NN_contamination_Age[id_clus][id_snap], NN_contamination_Z[id_clus][id_snap], NN_contamination_sfr[id_clus][id_snap], NN_contamination_g[id_clus][id_snap], NN_contamination_r[id_clus][id_snap], NN_contamination_i[id_clus][id_snap] = get_all_hist(lc_dir, id_snap, cl_l, cl_b, cl_num, cl_Rvir_deg, N_Rvir, bb_Mstar, bb_Age, bb_Z, bb_sfr, bb_g, bb_r, bb_i)
 		print('snap', id_snap, time.time()-t1)
 
