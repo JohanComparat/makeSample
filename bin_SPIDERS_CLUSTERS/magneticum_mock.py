@@ -72,11 +72,12 @@ Z:           Mean metalicity of the stellar component
 import os 
 import numpy as n
 
+import pickle 
 import astropy.io.fits as fits
 
-import matplotlib
-matplotlib.use('Agg')
-import matplotlib.pyplot as p
+#import matplotlib
+#matplotlib.use('Agg')
+#import matplotlib.pyplot as p
 
 from scipy.interpolate import interp1d
 
@@ -196,6 +197,10 @@ NN_inclus_i     = n.zeros((len(cl_numbers), 50))
 # choose a cluster id : 
 for id_clus in range(len(cl_numbers)):
 	t1 = time.time()
+	# snapshot id where the clusters are
+	id_snap = 0
+	id_s = str(int(snap_Nr[id_snap])).zfill(3)
+	# cluster id
 	cl_num = cl_numbers[id_clus]
 	print(id_clus, cl_num, t1)
 	# looks for objects in a cubic box around N rvir of the cluster
@@ -207,11 +212,9 @@ for id_clus in range(len(cl_numbers)):
 	cl_z_m_N_rvir = dC_2_z( cosmo.comoving_distance(cl_z_true[cl_num]).value - N_Rvir*cl_Rvir[cl_num]/1000.)
 
 	# get the galaxies in the cluster and outside in the same snapshot slice
-	id_snap = 0
-	id_s = str(int(snap_Nr[id_snap])).zfill(3)
 	print('opens galaxy file in the same snapshot as the cluster')
 	#isub, l, b, rr, vmax, z_true, z_obs, Mstar, sfr, u, V,  g,  r,  i,  z,  Y,  J , H  ,K  ,L  ,M, Age ,Z = n.loadtxt(os.path.join(lc_dir, "wmap."+id_s+".galaxies.dat"), unpack=True, skiprows=1)
-	hdu = fits.open(os.path.join(lc_dir, "wmap."+id_s+".galaxies.dat"))
+	hd = fits.open(os.path.join(lc_dir, "wmap."+id_s+".galaxies.dat"))
 	
 	print(time.time()-t0, 'done')
 
@@ -238,9 +241,8 @@ for id_clus in range(len(cl_numbers)):
 		NN_contamination_Mstar[id_clus][id_snap], NN_contamination_Age[id_clus][id_snap], NN_contamination_Z[id_clus][id_snap], NN_contamination_sfr[id_clus][id_snap], NN_contamination_g[id_clus][id_snap], NN_contamination_r[id_clus][id_snap], NN_contamination_i[id_clus][id_snap] = get_all_hist(lc_dir, id_snap, cl_l, cl_b, cl_num, cl_Rvir_deg, N_Rvir, bb_Mstar, bb_Age, bb_Z, bb_sfr, bb_g, bb_r, bb_i)
 		print(time.time()-t1)
 
-import pickle 
 
-DATA = [NN_contamination_Mstar ,
+DATA = n.array([NN_contamination_Mstar ,
 NN_contamination_Age   ,
 NN_contamination_Z     ,
 NN_contamination_sfr   ,
@@ -253,7 +255,7 @@ NN_inclus_Z    ,
 NN_inclus_sfr  ,
 NN_inclus_g    ,
 NN_inclus_r    ,
-NN_inclus_i    ]
+NN_inclus_i    ])
 
 pickle.dump(DATA, open("results.pkl", "w"))
 
