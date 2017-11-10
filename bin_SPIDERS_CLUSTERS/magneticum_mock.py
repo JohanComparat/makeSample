@@ -229,7 +229,7 @@ for id_clus in range(len(cl_numbers)):
 		print('snap', id_snap, time.time()-t1)
 
 
-DATA = n.array([NN_contamination_Mstar ,
+DATA = [NN_contamination_Mstar ,
 NN_contamination_Age   ,
 NN_contamination_Z     ,
 NN_contamination_sfr   ,
@@ -242,7 +242,7 @@ NN_inclus_Z    ,
 NN_inclus_sfr  ,
 NN_inclus_g    ,
 NN_inclus_r    ,
-NN_inclus_i    ])
+NN_inclus_i    ]
 
 pickle.dump(DATA, open(os.path.join(lc_dir, "results.pkl"), "w"))
 
