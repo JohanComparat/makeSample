@@ -126,7 +126,7 @@ def get_hist_1(prop, CONTAMINATION, bins):
 
 # get the galaxies in the cluster and outside in a different snapshot slice
 
-def get_all_hist(lc_dir, id_snap, cl_l, cl_b, cl_num, cl_Rvir_deg, N_Rvir, bb_Mstar, bb_Age, bb_Z, bb_sfr, bb_g, bb_r, bb_i):
+def get_all_hist(lc_dir, id_snap, cl_l, cl_b, cl_num, cl_Rvir_deg, N_Rvir, bb_Mstar, bb_Age, bb_Z, bb_sfr, bb_g, bb_r, bb_i, bb_ug, bb_gr, bb_ri, bb_iz):
 	id_s = str(int(snap_Nr[id_snap])).zfill(3)
 	hdu = fits.open(os.path.join(lc_dir, "wmap."+id_s+".galaxies.fits"))
 	#isub, l, b, rr, vmax, z_true, z_obs, Mstar, sfr, u, V,  g,  r,  i,  z,  Y,  J , H  ,K  ,L  ,M, Age ,Z = 
@@ -142,7 +142,7 @@ def get_all_hist(lc_dir, id_snap, cl_l, cl_b, cl_num, cl_Rvir_deg, N_Rvir, bb_Ms
 	NN_contamination_gr     =  get_hist_1(hdu[1].data['g']-hdu[1].data['r'], gal_in_N_Rvir_proj, bb_gr)
 	NN_contamination_ri     =  get_hist_1(hdu[1].data['r']-hdu[1].data['i'], gal_in_N_Rvir_proj, bb_ri)
 	NN_contamination_iz     =  get_hist_1(hdu[1].data['i']-hdu[1].data['z'], gal_in_N_Rvir_proj, bb_iz)
-	return NN_contamination_Mstar, NN_contamination_Age, NN_contamination_Z, NN_contamination_sfr, NN_contamination_g, NN_contamination_r, NN_contamination_i  
+	return NN_contamination_Mstar, NN_contamination_Age, NN_contamination_Z, NN_contamination_sfr, NN_contamination_g, NN_contamination_r, NN_contamination_i, NN_contamination_ug, NN_contamination_gr, NN_contamination_ri, NN_contamination_iz  
 
 #######################
 # MAGNETICUM SIM
@@ -241,7 +241,7 @@ for id_clus in range(len(cl_numbers)):
 
 	#print(time.time()-t0, 'histograms done')
 	for id_snap in n.arange(1,len(snap_Nr)-1,1):
-		NN_contamination_Mstar[id_clus][id_snap], NN_contamination_Age[id_clus][id_snap], NN_contamination_Z[id_clus][id_snap], NN_contamination_sfr[id_clus][id_snap], NN_contamination_g[id_clus][id_snap], NN_contamination_r[id_clus][id_snap], NN_contamination_i[id_clus][id_snap] = get_all_hist(lc_dir, id_snap, cl_l, cl_b, cl_num, cl_Rvir_deg, N_Rvir, bb_Mstar, bb_Age, bb_Z, bb_sfr, bb_g, bb_r, bb_i)
+		NN_contamination_Mstar[id_clus][id_snap], NN_contamination_Age[id_clus][id_snap], NN_contamination_Z[id_clus][id_snap], NN_contamination_sfr[id_clus][id_snap], NN_contamination_g[id_clus][id_snap], NN_contamination_r[id_clus][id_snap], NN_contamination_i[id_clus][id_snap], NN_contamination_ug[id_clus][id_snap], NN_contamination_gr[id_clus][id_snap], NN_contamination_ri[id_clus][id_snap], NN_contamination_iz[id_clus][id_snap] = get_all_hist(lc_dir, id_snap, cl_l, cl_b, cl_num, cl_Rvir_deg, N_Rvir, bb_Mstar, bb_Age, bb_Z, bb_sfr, bb_g, bb_r, bb_i, bb_ug, bb_gr, bb_ri, bb_iz)
 		print('snap', id_snap, time.time()-t1)
 
 
@@ -252,6 +252,10 @@ NN_contamination_sfr   ,
 NN_contamination_g     ,
 NN_contamination_r     ,
 NN_contamination_i     ,
+NN_contamination_ug     ,
+NN_contamination_gr     ,
+NN_contamination_ri     ,
+NN_contamination_iz     ,
 NN_inclus_Mstar,
 NN_inclus_Age  ,
 NN_inclus_Z    ,
@@ -264,7 +268,7 @@ NN_inclus_gr    ,
 NN_inclus_ri    ,
 NN_inclus_iz    ]
 
-fb = open(os.path.join(lc_dir, "results.pkl"), "wb")
+fb = open(os.path.join(lc_dir, "results_Nrvir_"+str(N_Rvir)+".pkl"), "wb")
 pickle.dump(DATA, fb)
 fb.close()
 
@@ -309,7 +313,7 @@ def plot_hist(bb, N_in, N_cont, prop):
 	p.ylabel('Number in 5 Rvir / deg2')
 	p.title(r'clusters with $1.8<rvir/Mpc<2.2$ at $z\sim0.25$')
 	p.legend(frameon=False)
-	p.savefig(os.path.join(plot_dir, 'hist_'+prop+'.png'))
+	p.savefig(os.path.join(plot_dir, 'hist_'+str(N_Rvir)+'_'+prop+'.png'))
 	p.clf()
 
 plot_hist(bb_ug, NN_inclus_ug_m, NN_contamination_ug_m, "U-G ABS MAG")
