@@ -75,9 +75,9 @@ import numpy as n
 import pickle 
 import astropy.io.fits as fits
 
-#import matplotlib
-#matplotlib.use('Agg')
-#import matplotlib.pyplot as p
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as p
 
 from scipy.interpolate import interp1d
 
@@ -138,6 +138,10 @@ def get_all_hist(lc_dir, id_snap, cl_l, cl_b, cl_num, cl_Rvir_deg, N_Rvir, bb_Ms
 	NN_contamination_g     =  get_hist_1(hdu[1].data['g'], gal_in_N_Rvir_proj, bb_g)
 	NN_contamination_r     =  get_hist_1(hdu[1].data['r'], gal_in_N_Rvir_proj, bb_r)
 	NN_contamination_i     =  get_hist_1(hdu[1].data['i'], gal_in_N_Rvir_proj, bb_i)
+	NN_contamination_ug     =  get_hist_1(hdu[1].data['u']-hdu[1].data['g'], gal_in_N_Rvir_proj, bb_ug)
+	NN_contamination_gr     =  get_hist_1(hdu[1].data['g']-hdu[1].data['r'], gal_in_N_Rvir_proj, bb_gr)
+	NN_contamination_ri     =  get_hist_1(hdu[1].data['r']-hdu[1].data['i'], gal_in_N_Rvir_proj, bb_ri)
+	NN_contamination_iz     =  get_hist_1(hdu[1].data['i']-hdu[1].data['z'], gal_in_N_Rvir_proj, bb_iz)
 	return NN_contamination_Mstar, NN_contamination_Age, NN_contamination_Z, NN_contamination_sfr, NN_contamination_g, NN_contamination_r, NN_contamination_i  
 
 #######################
@@ -184,6 +188,10 @@ NN_contamination_sfr   = n.zeros((len(cl_numbers), len(snap_z), 50))
 NN_contamination_g     = n.zeros((len(cl_numbers), len(snap_z), 50))
 NN_contamination_r     = n.zeros((len(cl_numbers), len(snap_z), 50))
 NN_contamination_i     = n.zeros((len(cl_numbers), len(snap_z), 50))
+NN_contamination_ug    = n.zeros((len(cl_numbers), len(snap_z), 50))
+NN_contamination_gr    = n.zeros((len(cl_numbers), len(snap_z), 50))
+NN_contamination_ri    = n.zeros((len(cl_numbers), len(snap_z), 50))
+NN_contamination_iz    = n.zeros((len(cl_numbers), len(snap_z), 50))
 
 NN_inclus_Mstar = n.zeros((len(cl_numbers), 50))
 NN_inclus_Age   = n.zeros((len(cl_numbers), 50))
@@ -192,7 +200,10 @@ NN_inclus_sfr   = n.zeros((len(cl_numbers), 50))
 NN_inclus_g     = n.zeros((len(cl_numbers), 50))
 NN_inclus_r     = n.zeros((len(cl_numbers), 50))
 NN_inclus_i     = n.zeros((len(cl_numbers), 50))
-
+NN_inclus_ug    = n.zeros((len(cl_numbers), 50))
+NN_inclus_gr    = n.zeros((len(cl_numbers), 50))
+NN_inclus_ri    = n.zeros((len(cl_numbers), 50))
+NN_inclus_iz    = n.zeros((len(cl_numbers), 50))
 
 # choose a cluster id : 
 for id_clus in range(len(cl_numbers)):
@@ -223,7 +234,12 @@ for id_clus in range(len(cl_numbers)):
 	bb_g,     NN_inclus_g[id_clus],     NN_contamination_g[id_clus][id_snap]      =  get_hist(hd[1].data['g'], gal_in_N_Rvir_proj, gal_in_N_Rvir_in_cluster, gal_in_N_Rvir_contamination)
 	bb_r,     NN_inclus_r[id_clus],     NN_contamination_r[id_clus][id_snap]      =  get_hist(hd[1].data['r'], gal_in_N_Rvir_proj, gal_in_N_Rvir_in_cluster, gal_in_N_Rvir_contamination)
 	bb_i,     NN_inclus_i[id_clus],     NN_contamination_i[id_clus][id_snap]      =  get_hist(hd[1].data['i'], gal_in_N_Rvir_proj, gal_in_N_Rvir_in_cluster, gal_in_N_Rvir_contamination)
-		#print(time.time()-t0, 'histograms done')
+	bb_ug,     NN_inclus_ug[id_clus],     NN_contamination_ug[id_clus][id_snap]      =  get_hist(hd[1].data['u']-hd[1].data['g'], gal_in_N_Rvir_proj, gal_in_N_Rvir_in_cluster, gal_in_N_Rvir_contamination)
+	bb_gr,     NN_inclus_gr[id_clus],     NN_contamination_gr[id_clus][id_snap]      =  get_hist(hd[1].data['g']-hd[1].data['r'], gal_in_N_Rvir_proj, gal_in_N_Rvir_in_cluster, gal_in_N_Rvir_contamination)
+	bb_ri,     NN_inclus_ri[id_clus],     NN_contamination_ri[id_clus][id_snap]      =  get_hist(hd[1].data['r']-hd[1].data['i'], gal_in_N_Rvir_proj, gal_in_N_Rvir_in_cluster, gal_in_N_Rvir_contamination)
+	bb_iz,     NN_inclus_iz[id_clus],     NN_contamination_iz[id_clus][id_snap]      =  get_hist(hd[1].data['i']-hd[1].data['z'], gal_in_N_Rvir_proj, gal_in_N_Rvir_in_cluster, gal_in_N_Rvir_contamination)
+
+	#print(time.time()-t0, 'histograms done')
 	for id_snap in n.arange(1,len(snap_Nr)-1,1):
 		NN_contamination_Mstar[id_clus][id_snap], NN_contamination_Age[id_clus][id_snap], NN_contamination_Z[id_clus][id_snap], NN_contamination_sfr[id_clus][id_snap], NN_contamination_g[id_clus][id_snap], NN_contamination_r[id_clus][id_snap], NN_contamination_i[id_clus][id_snap] = get_all_hist(lc_dir, id_snap, cl_l, cl_b, cl_num, cl_Rvir_deg, N_Rvir, bb_Mstar, bb_Age, bb_Z, bb_sfr, bb_g, bb_r, bb_i)
 		print('snap', id_snap, time.time()-t1)
@@ -242,23 +258,72 @@ NN_inclus_Z    ,
 NN_inclus_sfr  ,
 NN_inclus_g    ,
 NN_inclus_r    ,
-NN_inclus_i    ]
+NN_inclus_i    ,
+NN_inclus_ug    ,
+NN_inclus_gr    ,
+NN_inclus_ri    ,
+NN_inclus_iz    ]
 
-pickle.dump(DATA, open(os.path.join(lc_dir, "results.pkl"), "w"))
+fb = open(os.path.join(lc_dir, "results.pkl"), "wb")
+pickle.dump(DATA, fb)
+fb.close()
 
-#def plot_hist(bb, N_in, N_cont, prop):
-	#x = (bb[1:]+bb[:-1])/2.
-	#p.figure(0, (5,5))
-	#p.axes([0.18, 0.18, 0.75, 0.75])
-	#p.plot(x, N_in, label='members', ls='solid', lw=3)
-	#for ii, el in enumerate(N_cont):
-		#p.plot(x, el, label='z='+str(snap_z[ii]), ls='dashed')
+#fb = open(os.path.join(lc_dir, "results.pkl"), "r")
+#DATA2 = pickle.load(fb)
+#fb.close()
 
-	#p.xlabel(prop)
-	#p.ylabel('Number in 5 Rvir')
-	#p.savefig(os.path.savefig(plot_dir, 'hist_'+prop+'.png'))
-	#p.clf()
+NN_contamination_Mstar_m = n.mean(NN_contamination_Mstar, axis=0)
+NN_contamination_Age_m   =n.mean(NN_contamination_Age , axis=0)
+NN_contamination_Z_m     =n.mean(NN_contamination_Z   , axis=0)
+NN_contamination_sfr_m   =n.mean(NN_contamination_sfr , axis=0)
+NN_contamination_g_m     =n.mean(NN_contamination_g   , axis=0)
+NN_contamination_r_m     =n.mean(NN_contamination_r   , axis=0)
+NN_contamination_i_m     =n.mean(NN_contamination_i   , axis=0)
+NN_contamination_ug_m     =n.mean(NN_contamination_ug   , axis=0)
+NN_contamination_gr_m     =n.mean(NN_contamination_gr   , axis=0)
+NN_contamination_ri_m     =n.mean(NN_contamination_ri   , axis=0)
+NN_contamination_iz_m     =n.mean(NN_contamination_iz   , axis=0)
 
-#plot_hist(bb_g, NN_inclus_g, NN_contamination_g, "G ABS MAG")
-#plot_hist(bb_r, NN_inclus_r, NN_contamination_r, "R ABS MAG")
-#plot_hist(bb_i, NN_inclus_i, NN_contamination_i, "I ABS MAG")
+NN_inclus_Mstar_m = n.mean(NN_inclus_Mstar, axis=0)
+NN_inclus_Age_m   = n.mean(NN_inclus_Age  , axis=0)
+NN_inclus_Z_m     = n.mean(NN_inclus_Z    , axis=0)
+NN_inclus_sfr_m   = n.mean(NN_inclus_sfr  , axis=0)
+NN_inclus_g_m     = n.mean(NN_inclus_g    , axis=0)
+NN_inclus_r_m     = n.mean(NN_inclus_r    , axis=0)
+NN_inclus_i_m     = n.mean(NN_inclus_i    , axis=0)
+NN_inclus_ug_m     = n.mean(NN_inclus_ug    , axis=0)
+NN_inclus_gr_m     = n.mean(NN_inclus_gr    , axis=0)
+NN_inclus_ri_m     = n.mean(NN_inclus_ri    , axis=0)
+NN_inclus_iz_m     = n.mean(NN_inclus_iz    , axis=0)
+
+area = 129600./n.pi/8
+
+def plot_hist(bb, N_in, N_cont, prop):
+	x = (bb[1:]+bb[:-1])/2.
+	p.figure(2, (8,6))
+	p.axes([0.18, 0.18, 0.75, 0.75])
+	p.plot(x, N_in/area, label='members', ls='solid', lw=3)
+	plarr = n.array([ p.plot(x, el/area, label='z='+str(n.round(snap_z[ii],2)), ls='dashed', lw=0.5) for ii, el in zip(n.arange(len(N_cont))[::3],N_cont[::3]) ])
+	p.xlabel(prop)
+	p.yscale('log')
+	p.ylabel('Number in 5 Rvir / deg2')
+	p.title(r'clusters with $1.8<rvir/Mpc<2.2$ at $z\sim0.25$')
+	p.legend(frameon=False)
+	p.savefig(os.path.join(plot_dir, 'hist_'+prop+'.png'))
+	p.clf()
+
+plot_hist(bb_ug, NN_inclus_ug_m, NN_contamination_ug_m, "U-G ABS MAG")
+plot_hist(bb_gr, NN_inclus_gr_m, NN_contamination_gr_m, "G-R ABS MAG")
+plot_hist(bb_ri, NN_inclus_ri_m, NN_contamination_ri_m, "R-I ABS MAG")
+plot_hist(bb_iz, NN_inclus_iz_m, NN_contamination_iz_m, "I-Z ABS MAG")
+plot_hist(bb_g, NN_inclus_g_m, NN_contamination_g_m, "G ABS MAG")
+plot_hist(bb_r, NN_inclus_r_m, NN_contamination_r_m, "R ABS MAG")
+plot_hist(bb_i, NN_inclus_i_m, NN_contamination_i_m, "I ABS MAG")
+plot_hist(bb_Mstar, NN_inclus_Mstar_m , NN_contamination_Mstar_m, 'Stellar mass')
+plot_hist(bb_Age, NN_inclus_Age_m   , NN_contamination_Age_m  , 'Stellar Age')
+plot_hist(bb_Z, NN_inclus_Z_m     , NN_contamination_Z_m    , 'Stellar metallicity')
+plot_hist(bb_sfr, NN_inclus_sfr_m   , NN_contamination_sfr_m  , 'Star formation rate')
+
+
+
+
