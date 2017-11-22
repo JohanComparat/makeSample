@@ -13,7 +13,7 @@ import sys
 import astropy.io.fits as fits
 import astropy.cosmology as co
 import astropy.units as u
-cosmo = co.Planck15
+cosmo = co.Planck13
 
 import XrayLuminosity
 xr = XrayLuminosity.XrayLuminosity()
@@ -170,7 +170,7 @@ many_MS = n.arange(9.,12.5,0.05)
 ##################################################3
 ##################################################3
 
-f = h5py.File('/data17s/darksim/MD/MD_1.0Gpc/h5_lc/lc_remaped_position_L3_.hdf5', 'r')
+f = h5py.File('/data17s/darksim/MD/MD_1.0Gpc/h5_lc/lc_remaped_position_L15.hdf5', 'r')
 
 is_gal = (f['/sky_position/selection'].value)
 is_agn = (f['/sky_position/selection'].value)&(f['/agn_properties/agn_activity'].value==1)
