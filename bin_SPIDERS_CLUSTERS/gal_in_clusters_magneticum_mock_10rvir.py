@@ -116,7 +116,7 @@ plot_dir = os.path.join(top_dir, 'plots')
 snap_Nr, snap_z, snap_r0, snap_r1 = n.loadtxt(os.path.join(lc_dir, "wmap.geometry.dat"), unpack=True, skiprows=3)
 
 # choose a snapshot for the clusters
-for id_snap in range(len(snap_Nr)):
+for id_snap in range(1,len(snap_Nr),1):
 	id_s = str(int(snap_Nr[id_snap])).zfill(3)
 	print('opens cluster file', os.path.join(lc_dir, "wmap."+id_s+".cluster.fits"))
 	hdC = fits.open(os.path.join(lc_dir, "wmap."+id_s+".cluster.fits"))
