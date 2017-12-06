@@ -97,52 +97,11 @@ dC_2_z = interp1d(cosmo.comoving_distance(n.arange(0,1.3,0.0001)), n.arange(0,1.
 ######################
 # Observations
 ######################
-
-"""
-path_2_logNlogS_data = os.path.join(os.environ["DARKSIM_DIR"], 'observations', 'logNlogS', 'logNlogS_Finoguenov_cosmos_2007_clusters.data')
-x_data, y_data, y_min, y_max = n.loadtxt(path_2_logNlogS_data, unpack=True)
-p.fill_between(n.log10(x_data), y1 = n.log10(y_max), y2=n.log10(y_min), color='b' , rasterized = True, alpha=0.5)
-p.plot(n.log10(x_data), n.log10(y_data), color='b', label = 'COSMOS Finoguenov 2007' )
-
-path_2_logNlogS_data = os.path.join(os.environ["DARKSIM_DIR"], 'observations', 'logNlogS', 'logNlogS_Finoguenov_ecdfs_2015_clusters.data')
-x_data, y_data, y_min, y_max = n.loadtxt(path_2_logNlogS_data, unpack=True)
-p.fill_between(n.log10(x_data), y1 = n.log10(y_max), y2=n.log10(y_min) , rasterized = True, alpha=0.5, color='g' )
-p.plot(n.log10(x_data), n.log10(y_data), color='g',  label = 'ECDFS Finoguenov 2015' )
-"""
-
-
 # creates a histogram of each galaxy properties, three selections
 
-def get_hist(prop, ALL, INCLUS, CONTAMINATION):
+def get_hist(prop, ALL, INCLUS):
 	nnInclus, bb = n.histogram(prop[INCLUS], bins=50)
-	nnContamination = n.histogram(prop[CONTAMINATION], bins=bb)[0]
-	return bb, nnInclus, nnContamination
-
-
-def get_hist_1(prop, CONTAMINATION, bins):
-	nnContamination = n.histogram(prop[CONTAMINATION], bins=bins)[0]
-	return nnContamination
-
-
-# get the galaxies in the cluster and outside in a different snapshot slice
-
-def get_all_hist(lc_dir, id_snap, cl_l, cl_b, cl_num, cl_Rvir_deg, N_Rvir, bb_Mstar, bb_Age, bb_Z, bb_sfr, bb_g, bb_r, bb_i, bb_ug, bb_gr, bb_ri, bb_iz):
-	id_s = str(int(snap_Nr[id_snap])).zfill(3)
-	hdu = fits.open(os.path.join(lc_dir, "wmap."+id_s+".galaxies.fits"))
-	#isub, l, b, rr, vmax, z_true, z_obs, Mstar, sfr, u, V,  g,  r,  i,  z,  Y,  J , H  ,K  ,L  ,M, Age ,Z = 
-	gal_in_N_Rvir_proj = (abs(cl_l[cl_num] - hdu[1].data['l'])<cl_Rvir_deg * N_Rvir ) & (abs(cl_b[cl_num] - hdu[1].data['b'])<cl_Rvir_deg * N_Rvir )
-	NN_contamination_Mstar =  get_hist_1(n.log10(hdu[1].data['Mstar']),  gal_in_N_Rvir_proj, bb_Mstar)
-	NN_contamination_Age   =  get_hist_1(hdu[1].data['Age'], gal_in_N_Rvir_proj, bb_Age)
-	NN_contamination_Z     =  get_hist_1(hdu[1].data['Z'], gal_in_N_Rvir_proj, bb_Z)
-	NN_contamination_sfr   =  get_hist_1(n.log10(hdu[1].data['sfr']+0.001), gal_in_N_Rvir_proj, bb_sfr)
-	NN_contamination_g     =  get_hist_1(hdu[1].data['g'], gal_in_N_Rvir_proj, bb_g)
-	NN_contamination_r     =  get_hist_1(hdu[1].data['r'], gal_in_N_Rvir_proj, bb_r)
-	NN_contamination_i     =  get_hist_1(hdu[1].data['i'], gal_in_N_Rvir_proj, bb_i)
-	NN_contamination_ug     =  get_hist_1(hdu[1].data['u']-hdu[1].data['g'], gal_in_N_Rvir_proj, bb_ug)
-	NN_contamination_gr     =  get_hist_1(hdu[1].data['g']-hdu[1].data['r'], gal_in_N_Rvir_proj, bb_gr)
-	NN_contamination_ri     =  get_hist_1(hdu[1].data['r']-hdu[1].data['i'], gal_in_N_Rvir_proj, bb_ri)
-	NN_contamination_iz     =  get_hist_1(hdu[1].data['i']-hdu[1].data['z'], gal_in_N_Rvir_proj, bb_iz)
-	return NN_contamination_Mstar, NN_contamination_Age, NN_contamination_Z, NN_contamination_sfr, NN_contamination_g, NN_contamination_r, NN_contamination_i, NN_contamination_ug, NN_contamination_gr, NN_contamination_ri, NN_contamination_iz  
+	return bb, nnInclus
 
 #######################
 # MAGNETICUM SIM
@@ -181,19 +140,7 @@ cl_rvir_sel = (cl_Rvir > rvir_min)&(cl_Rvir < rvir_max)
 cl_numbers = n.arange(len(cl_Rvir))[cl_rvir_sel]
 print('N clusters', len(cl_numbers))
 
-
-NN_contamination_Mstar = n.zeros((len(cl_numbers), len(snap_z), 50))
-NN_contamination_Age   = n.zeros((len(cl_numbers), len(snap_z), 50))
-NN_contamination_Z     = n.zeros((len(cl_numbers), len(snap_z), 50))
-NN_contamination_sfr   = n.zeros((len(cl_numbers), len(snap_z), 50))
-NN_contamination_g     = n.zeros((len(cl_numbers), len(snap_z), 50))
-NN_contamination_r     = n.zeros((len(cl_numbers), len(snap_z), 50))
-NN_contamination_i     = n.zeros((len(cl_numbers), len(snap_z), 50))
-NN_contamination_ug    = n.zeros((len(cl_numbers), len(snap_z), 50))
-NN_contamination_gr    = n.zeros((len(cl_numbers), len(snap_z), 50))
-NN_contamination_ri    = n.zeros((len(cl_numbers), len(snap_z), 50))
-NN_contamination_iz    = n.zeros((len(cl_numbers), len(snap_z), 50))
-
+# get 
 NN_inclus_Mstar = n.zeros((len(cl_numbers), 50))
 NN_inclus_Age   = n.zeros((len(cl_numbers), 50))
 NN_inclus_Z     = n.zeros((len(cl_numbers), 50))
@@ -226,38 +173,20 @@ for id_clus in range(len(cl_numbers)):
 	hd = fits.open(os.path.join(lc_dir, "wmap."+id_s+".galaxies.fits"))
 	gal_in_N_Rvir_proj = (abs(cl_l[cl_num] - hd[1].data['l'])<cl_Rvir_deg * N_Rvir ) & (abs(cl_b[cl_num] - hd[1].data['b'])<cl_Rvir_deg * N_Rvir )
 	gal_in_N_Rvir_in_cluster = (gal_in_N_Rvir_proj) & (hd[1].data['z_true'] > cl_z_m_N_rvir) & (hd[1].data['z_true'] < cl_z_p_N_rvir)
-	gal_in_N_Rvir_contamination = (gal_in_N_Rvir_proj) & (gal_in_N_Rvir_in_cluster==False)
-	#print("in N Rvir (all, in cluster, contamination):", len(z_true[gal_in_N_Rvir_proj]),len(z_true[gal_in_N_Rvir_in_cluster]), len(z_true[gal_in_N_Rvir_contamination]))
-	bb_Mstar, NN_inclus_Mstar[id_clus], NN_contamination_Mstar[id_clus][id_snap]  =  get_hist(n.log10(hd[1].data['Mstar']), gal_in_N_Rvir_proj, gal_in_N_Rvir_in_cluster, gal_in_N_Rvir_contamination)
-	bb_Age,   NN_inclus_Age[id_clus],   NN_contamination_Age[id_clus][id_snap]    =  get_hist(hd[1].data['Age'], gal_in_N_Rvir_proj, gal_in_N_Rvir_in_cluster, gal_in_N_Rvir_contamination)
-	bb_Z,     NN_inclus_Z[id_clus],     NN_contamination_Z[id_clus][id_snap]      =  get_hist(hd[1].data['Z'], gal_in_N_Rvir_proj, gal_in_N_Rvir_in_cluster, gal_in_N_Rvir_contamination)
-	bb_sfr,   NN_inclus_sfr[id_clus],   NN_contamination_sfr[id_clus][id_snap]    =  get_hist(n.log10(hd[1].data['sfr']+0.001), gal_in_N_Rvir_proj, gal_in_N_Rvir_in_cluster, gal_in_N_Rvir_contamination)
-	bb_g,     NN_inclus_g[id_clus],     NN_contamination_g[id_clus][id_snap]      =  get_hist(hd[1].data['g'], gal_in_N_Rvir_proj, gal_in_N_Rvir_in_cluster, gal_in_N_Rvir_contamination)
-	bb_r,     NN_inclus_r[id_clus],     NN_contamination_r[id_clus][id_snap]      =  get_hist(hd[1].data['r'], gal_in_N_Rvir_proj, gal_in_N_Rvir_in_cluster, gal_in_N_Rvir_contamination)
-	bb_i,     NN_inclus_i[id_clus],     NN_contamination_i[id_clus][id_snap]      =  get_hist(hd[1].data['i'], gal_in_N_Rvir_proj, gal_in_N_Rvir_in_cluster, gal_in_N_Rvir_contamination)
-	bb_ug,     NN_inclus_ug[id_clus],     NN_contamination_ug[id_clus][id_snap]      =  get_hist(hd[1].data['u']-hd[1].data['g'], gal_in_N_Rvir_proj, gal_in_N_Rvir_in_cluster, gal_in_N_Rvir_contamination)
-	bb_gr,     NN_inclus_gr[id_clus],     NN_contamination_gr[id_clus][id_snap]      =  get_hist(hd[1].data['g']-hd[1].data['r'], gal_in_N_Rvir_proj, gal_in_N_Rvir_in_cluster, gal_in_N_Rvir_contamination)
-	bb_ri,     NN_inclus_ri[id_clus],     NN_contamination_ri[id_clus][id_snap]      =  get_hist(hd[1].data['r']-hd[1].data['i'], gal_in_N_Rvir_proj, gal_in_N_Rvir_in_cluster, gal_in_N_Rvir_contamination)
-	bb_iz,     NN_inclus_iz[id_clus],     NN_contamination_iz[id_clus][id_snap]      =  get_hist(hd[1].data['i']-hd[1].data['z'], gal_in_N_Rvir_proj, gal_in_N_Rvir_in_cluster, gal_in_N_Rvir_contamination)
-
-	#print(time.time()-t0, 'histograms done')
-	for id_snap in n.arange(1,len(snap_Nr)-1,1):
-		NN_contamination_Mstar[id_clus][id_snap], NN_contamination_Age[id_clus][id_snap], NN_contamination_Z[id_clus][id_snap], NN_contamination_sfr[id_clus][id_snap], NN_contamination_g[id_clus][id_snap], NN_contamination_r[id_clus][id_snap], NN_contamination_i[id_clus][id_snap], NN_contamination_ug[id_clus][id_snap], NN_contamination_gr[id_clus][id_snap], NN_contamination_ri[id_clus][id_snap], NN_contamination_iz[id_clus][id_snap] = get_all_hist(lc_dir, id_snap, cl_l, cl_b, cl_num, cl_Rvir_deg, N_Rvir, bb_Mstar, bb_Age, bb_Z, bb_sfr, bb_g, bb_r, bb_i, bb_ug, bb_gr, bb_ri, bb_iz)
-		print('snap', id_snap, time.time()-t1)
+	bb_Mstar, NN_inclus_Mstar[id_clus] =  get_hist(n.log10(hd[1].data['Mstar']), gal_in_N_Rvir_proj, gal_in_N_Rvir_in_cluster)
+	bb_Age,   NN_inclus_Age[id_clus]   =  get_hist(hd[1].data['Age'], gal_in_N_Rvir_proj, gal_in_N_Rvir_in_cluster)
+	bb_Z,     NN_inclus_Z[id_clus]     =  get_hist(hd[1].data['Z'], gal_in_N_Rvir_proj, gal_in_N_Rvir_in_cluster)
+	bb_sfr,   NN_inclus_sfr[id_clus]   =  get_hist(n.log10(hd[1].data['sfr']+0.001), gal_in_N_Rvir_proj, gal_in_N_Rvir_in_cluster)
+	bb_g,     NN_inclus_g[id_clus]     =  get_hist(hd[1].data['g'], gal_in_N_Rvir_proj, gal_in_N_Rvir_in_cluster)
+	bb_r,     NN_inclus_r[id_clus]     =  get_hist(hd[1].data['r'], gal_in_N_Rvir_proj, gal_in_N_Rvir_in_cluster)
+	bb_i,     NN_inclus_i[id_clus]     =  get_hist(hd[1].data['i'], gal_in_N_Rvir_proj, gal_in_N_Rvir_in_cluster)
+	bb_ug,     NN_inclus_ug[id_clus]   =  get_hist(hd[1].data['u']-hd[1].data['g'], gal_in_N_Rvir_proj, gal_in_N_Rvir_in_cluster)
+	bb_gr,     NN_inclus_gr[id_clus]   =  get_hist(hd[1].data['g']-hd[1].data['r'], gal_in_N_Rvir_proj, gal_in_N_Rvir_in_cluster)
+	bb_ri,     NN_inclus_ri[id_clus]   =  get_hist(hd[1].data['r']-hd[1].data['i'], gal_in_N_Rvir_proj, gal_in_N_Rvir_in_cluster)
+	bb_iz,     NN_inclus_iz[id_clus]   =  get_hist(hd[1].data['i']-hd[1].data['z'], gal_in_N_Rvir_proj, gal_in_N_Rvir_in_cluster)
 
 
-DATA = [NN_contamination_Mstar ,
-NN_contamination_Age   ,
-NN_contamination_Z     ,
-NN_contamination_sfr   ,
-NN_contamination_g     ,
-NN_contamination_r     ,
-NN_contamination_i     ,
-NN_contamination_ug     ,
-NN_contamination_gr     ,
-NN_contamination_ri     ,
-NN_contamination_iz     ,
-NN_inclus_Mstar,
+DATA = [NN_inclus_Mstar,
 NN_inclus_Age  ,
 NN_inclus_Z    ,
 NN_inclus_sfr  ,
@@ -277,18 +206,6 @@ fb.close()
 #DATA2 = pickle.load(fb)
 #fb.close()
 
-NN_contamination_Mstar_m = n.mean(NN_contamination_Mstar, axis=0)
-NN_contamination_Age_m   =n.mean(NN_contamination_Age , axis=0)
-NN_contamination_Z_m     =n.mean(NN_contamination_Z   , axis=0)
-NN_contamination_sfr_m   =n.mean(NN_contamination_sfr , axis=0)
-NN_contamination_g_m     =n.mean(NN_contamination_g   , axis=0)
-NN_contamination_r_m     =n.mean(NN_contamination_r   , axis=0)
-NN_contamination_i_m     =n.mean(NN_contamination_i   , axis=0)
-NN_contamination_ug_m     =n.mean(NN_contamination_ug   , axis=0)
-NN_contamination_gr_m     =n.mean(NN_contamination_gr   , axis=0)
-NN_contamination_ri_m     =n.mean(NN_contamination_ri   , axis=0)
-NN_contamination_iz_m     =n.mean(NN_contamination_iz   , axis=0)
-
 NN_inclus_Mstar_m = n.mean(NN_inclus_Mstar, axis=0)
 NN_inclus_Age_m   = n.mean(NN_inclus_Age  , axis=0)
 NN_inclus_Z_m     = n.mean(NN_inclus_Z    , axis=0)
@@ -303,31 +220,30 @@ NN_inclus_iz_m     = n.mean(NN_inclus_iz    , axis=0)
 
 area = 129600./n.pi/8
 
-def plot_hist(bb, N_in, N_cont, prop):
+def plot_hist(bb, N_in, prop):
 	x = (bb[1:]+bb[:-1])/2.
 	p.figure(2, (8,6))
 	p.axes([0.18, 0.18, 0.75, 0.75])
 	p.plot(x, N_in/area, label='members', ls='solid', lw=3)
-	plarr = n.array([ p.plot(x, el/area, label='z='+str(n.round(snap_z[ii],2)), ls='dashed', lw=0.5) for ii, el in zip(n.arange(len(N_cont))[::3],N_cont[::3]) ])
 	p.xlabel(prop)
 	p.yscale('log')
-	p.ylabel('Number in 5 Rvir / deg2')
+	p.ylabel('Number in 10 Rvir / deg2')
 	p.title(r'clusters with $1.8<rvir/Mpc<2.2$ at $z\sim0.25$')
 	p.legend(frameon=False)
 	p.savefig(os.path.join(plot_dir, 'hist_'+str(N_Rvir)+'_'+prop+'.png'))
 	p.clf()
 
-plot_hist(bb_ug, NN_inclus_ug_m, NN_contamination_ug_m, "U-G ABS MAG")
-plot_hist(bb_gr, NN_inclus_gr_m, NN_contamination_gr_m, "G-R ABS MAG")
-plot_hist(bb_ri, NN_inclus_ri_m, NN_contamination_ri_m, "R-I ABS MAG")
-plot_hist(bb_iz, NN_inclus_iz_m, NN_contamination_iz_m, "I-Z ABS MAG")
-plot_hist(bb_g, NN_inclus_g_m, NN_contamination_g_m, "G ABS MAG")
-plot_hist(bb_r, NN_inclus_r_m, NN_contamination_r_m, "R ABS MAG")
-plot_hist(bb_i, NN_inclus_i_m, NN_contamination_i_m, "I ABS MAG")
-plot_hist(bb_Mstar, NN_inclus_Mstar_m , NN_contamination_Mstar_m, 'Stellar mass')
-plot_hist(bb_Age, NN_inclus_Age_m   , NN_contamination_Age_m  , 'Stellar Age')
-plot_hist(bb_Z, NN_inclus_Z_m     , NN_contamination_Z_m    , 'Stellar metallicity')
-plot_hist(bb_sfr, NN_inclus_sfr_m   , NN_contamination_sfr_m  , 'Star formation rate')
+plot_hist(bb_ug, NN_inclus_ug_m, "U-G ABS MAG")
+plot_hist(bb_gr, NN_inclus_gr_m, "G-R ABS MAG")
+plot_hist(bb_ri, NN_inclus_ri_m, "R-I ABS MAG")
+plot_hist(bb_iz, NN_inclus_iz_m, "I-Z ABS MAG")
+plot_hist(bb_g, NN_inclus_g_m,   "G ABS MAG")
+plot_hist(bb_r, NN_inclus_r_m,   "R ABS MAG")
+plot_hist(bb_i, NN_inclus_i_m,   "I ABS MAG")
+plot_hist(bb_Mstar, NN_inclus_Mstar_m, 'Stellar mass')
+plot_hist(bb_Age, NN_inclus_Age_m   , 'Stellar Age')
+plot_hist(bb_Z, NN_inclus_Z_m     ,'Stellar metallicity')
+plot_hist(bb_sfr, NN_inclus_sfr_m   , 'Star formation rate')
 
 
 

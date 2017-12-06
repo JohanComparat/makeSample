@@ -4,15 +4,15 @@ run test2.py 0.001 0.2 25.
 run test2.py 0.001 0.3 25.
 run test2.py 0.001 0.4 25.
 
-python3 plot_Host_AGN_SMF_with_Bo16_model.py 0.001 0.2 25.
-python3 plot_Host_AGN_SMF_with_Bo16_model.py 0.001 0.3 25.
-python3 plot_Host_AGN_SMF_with_Bo16_model.py 0.001 0.4 25.
-python3 plot_Host_AGN_SMF_with_Bo16_model.py 0.001 0.2 50.
-python3 plot_Host_AGN_SMF_with_Bo16_model.py 0.001 0.3 50.
-python3 plot_Host_AGN_SMF_with_Bo16_model.py 0.001 0.4 50.
-python3 plot_Host_AGN_SMF_with_Bo16_model.py 0.001 0.2 75.
-python3 plot_Host_AGN_SMF_with_Bo16_model.py 0.001 0.3 75.
-python3 plot_Host_AGN_SMF_with_Bo16_model.py 0.001 0.4 75.
+run plot_Host_AGN_SMF_with_Bo16_model.py 0.001 0.2 25.
+run plot_Host_AGN_SMF_with_Bo16_model.py 0.001 0.3 25.
+run plot_Host_AGN_SMF_with_Bo16_model.py 0.001 0.4 25.
+run plot_Host_AGN_SMF_with_Bo16_model.py 0.001 0.2 50.
+run plot_Host_AGN_SMF_with_Bo16_model.py 0.001 0.3 50.
+run plot_Host_AGN_SMF_with_Bo16_model.py 0.001 0.4 50.
+run plot_Host_AGN_SMF_with_Bo16_model.py 0.001 0.2 75.
+run plot_Host_AGN_SMF_with_Bo16_model.py 0.001 0.3 75.
+run plot_Host_AGN_SMF_with_Bo16_model.py 0.001 0.4 75.
 
 clustering_agn_RL_0.005_LX_440.data
 clustering_agn_RL_0.005_LX_440.random
