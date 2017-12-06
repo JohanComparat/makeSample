@@ -145,7 +145,7 @@ for id_snap in range(1,len(snap_Nr),1):
 	cluster_id = n.zeros_like(hd[1].data['z_true'])
 	cluster_bool = (n.zeros_like(hd[1].data['z_true'])==1)
 
-	for id_clus in range(5):#len(cl_numbers)):
+	for id_clus in range(len(cl_numbers)):
 		t1 = time.time()
 		# snapshot id where the clusters are
 		# cluster id
