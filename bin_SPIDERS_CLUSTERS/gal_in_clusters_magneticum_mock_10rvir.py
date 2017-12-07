@@ -116,7 +116,7 @@ plot_dir = os.path.join(top_dir, 'plots')
 snap_Nr, snap_z, snap_r0, snap_r1 = n.loadtxt(os.path.join(lc_dir, "wmap.geometry.dat"), unpack=True, skiprows=3)
 
 # choose a snapshot for the clusters
-for id_snap in range(1,len(snap_Nr),1):
+for id_snap in range(0,len(snap_Nr),1):
 	id_s = str(int(snap_Nr[id_snap])).zfill(3)
 	print('opens cluster file', os.path.join(lc_dir, "wmap."+id_s+".cluster.fits"))
 	hdC = fits.open(os.path.join(lc_dir, "wmap."+id_s+".cluster.fits"))
@@ -144,7 +144,8 @@ for id_snap in range(1,len(snap_Nr),1):
 
 	cluster_id = n.zeros_like(hd[1].data['z_true'])
 	cluster_bool = (n.zeros_like(hd[1].data['z_true'])==1)
-
+	d_cluster_center = n.zeros_like(hd[1].data['z_true'])
+	
 	for id_clus in range(len(cl_numbers)):
 		t1 = time.time()
 		# snapshot id where the clusters are
@@ -161,6 +162,10 @@ for id_snap in range(1,len(snap_Nr),1):
 		gal_in_N_Rvir_in_cluster = (abs(cl_l[cl_num] - hd[1].data['l'])<cl_Rvir_deg * N_Rvir ) & (abs(cl_b[cl_num] - hd[1].data['b'])<cl_Rvir_deg * N_Rvir ) & (hd[1].data['z_true'] > cl_z_m_N_rvir) & (hd[1].data['z_true'] < cl_z_p_N_rvir)
 		cluster_id[gal_in_N_Rvir_in_cluster] = n.ones_like(cluster_id[gal_in_N_Rvir_in_cluster])*id_clus
 		cluster_bool[gal_in_N_Rvir_in_cluster] = (n.zeros_like(cluster_bool[gal_in_N_Rvir_in_cluster])==0)
+		dz = abs(cosmo.comoving_distance(hd[1].data['z_true'][gal_in_N_Rvir_in_cluster]).value - cosmo.comoving_distance(cl_z_true[cl_num]).value)/cl_Rvir[cl_num]
+		dra = abs(cl_l[cl_num] - hd[1].data['l'][gal_in_N_Rvir_in_cluster])/cl_Rvir_deg
+		ddec = abs(cl_b[cl_num] - hd[1].data['b'][gal_in_N_Rvir_in_cluster])/cl_Rvir_deg
+		d_cluster_center[gal_in_N_Rvir_in_cluster] = (dz*dz + dra*dra + ddec*ddec )**0.5
 
 
 	#fb = open(os.path.join(lc_dir, "results_Nrvir_"+str(N_Rvir)+".pkl"), "wb")
@@ -204,6 +209,8 @@ for id_snap in range(1,len(snap_Nr),1):
 	t.add_column( Column(name='Age'       ,         data = hd[1].data['Age'   ][cluster_bool] ) )
 	t.add_column( Column(name='Z'         ,         data = hd[1].data['Z'     ][cluster_bool] ) )
 	t.add_column( Column(name='cluster_id',         data = cluster_id[cluster_bool] )           )
+	t.add_column( Column(name='d_cluster_center',   data = d_cluster_center[cluster_bool] )     )
+
 
 	if os.path.isfile(out_file):
 		os.system("rm "+out_file)
