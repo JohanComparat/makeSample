@@ -4,14 +4,14 @@ import time
 import numpy as n
 t0 = time.time()
 
-dir = os.path.join(os.environ['DATA_DIR'], 'spiders', 'cluster')
+dir = os.path.join(os.environ['HOME'], 'hegcl', 'SPIDERS', 'codex_firefly_matching_2018_mar_22')
 
-hd = fits.open(os.path.join(dir, 'validatedclusters_catalogue_2016-07-04-DR14_version_round1-v4_Xmass-v1.fits.gz'))[1].data
+hd = fits.open(os.path.join(dir, 'CODEX-DR14-MergedSpectroscopicCatalogue_2018-02-05.fits'))[1].data
 
-spm = fits.open(os.path.join(os.environ['DATA_DIR'], 'spm', 'firefly', 'sdss_eboss_firefly-dr14.fits'))
-spm_plate = spm[1].data['PLATE']
-spm_mjd = spm[1].data['MJD']
-spm_fiberid = spm[1].data['FIBERID']
+spm = fits.open(os.path.join(dir, 'FireFly_mag_26.fits'))
+spm_plate = spm[1].data['PLATE_1']
+spm_mjd = spm[1].data['MJD_1']
+spm_fiberid = spm[1].data['FIBERID_1']
 
 index = n.arange(spm[1].header['NAXIS2'])
 
@@ -20,7 +20,7 @@ id_clus = []
 for el in hd :
 	print( el['CLUS_ID'] )
 	for plate, mjd, fib in zip(	el['ALLPLATE'], el['ALLMJD'], el['ALLFIBERID'] ):
-		if plate != -99999 :
+		if plate != -99999   :
 			print( plate, mjd, fib )
 			correspondence = (spm_plate==plate )&( spm_mjd == mjd )&( spm_fiberid == fib )
 			iid = index[correspondence]
@@ -38,10 +38,8 @@ import numpy as n
 t0 = time.time()
 
 all_cols = []
-for cc in DATA.columns:
+for cc in DATA.columns[10:]:
 	all_cols.append(fits.Column(name = cc.name, format = cc.format, array=DATA[cc.name]))
-	print( len(DATA[cc.name]))
-# add a CLUS_ID column
 
 col0 = fits.Column(name='CLUS_ID',format='A10', array=n.array(id_clus) )
 all_cols.append(col0)
@@ -55,5 +53,6 @@ prihdr['author'] = 'JC'
 prihdu = fits.PrimaryHDU(header=prihdr)
 #writes the file
 thdulist = fits.HDUList([prihdu, tb_hdu])
-thdulist.writeto(os.path.join(dir, 'cluster_statistics_2016-11-08-DR14_spm.fits'))
+os.system( 'rm '+os.path.join(dir, 'CODEX-DR14-MergedSpectroscopicCatalogue_2018-02-05-spm26.fits') )
+thdulist.writeto(os.path.join(dir, 'CODEX-DR14-MergedSpectroscopicCatalogue_2018-02-05-spm26.fits') )
 	

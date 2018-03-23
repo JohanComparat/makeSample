@@ -62,13 +62,13 @@ def write_ascii_clusterings_catalog(out_file, ratelim_min = 0.01, hemisphere='N'
   z_data[spec_SDSS] = hduD[1].data['DR14_Z'][spec_SDSS]
   spectro = (z_data>0)
 
-  z_max = lx_2_z_max(lx_min)
+  z_max = 0.4 # lx_2_z_max(lx_min)
 
   flux = hduD[1].data['2RXS_SRC_FLUX']
   dl_cm = cosmo.luminosity_distance(z_data).to(u.cm)
   LX = dl_cm.value**2. * flux * 4 * np.pi
   #(hduD[1].data['2RXS_ExiML']>10)& (hduD[1].data['p_any']>0.5)&
-  starsD = (hduD[1].data['p_any']>0.5)&(hduD[1].data['2RXS_ExiML']>10)& (hduD[1].data['mask_Tycho20Vmag10']==False)& (hduD[1].data['mask_Tycho210Vmag11']==False)& (hduD[1].data['mask_bright_object_rykoff']==False) & (z_data>0) & (z_data<z_max) & (LX>lx_min) 
+  starsD = (hduD[1].data['p_any']>0.5)&(hduD[1].data['2RXS_ExiML']>10)& (hduD[1].data['mask_Tycho20Vmag10']==False)& (hduD[1].data['mask_Tycho210Vmag11']==False)& (hduD[1].data['mask_bright_object_rykoff']==False) & (z_data>0) & (z_data<z_max) #& (LX>lx_min) 
   starsR = (hduR[1].data['mask_Tycho20Vmag10']==False) &(hduR[1].data['mask_Tycho210Vmag11']==False) &(hduR[1].data['mask_bright_object_rykoff']==False)  
  
   if hemisphere=='N':
@@ -104,10 +104,10 @@ def write_ascii_clusterings_catalog(out_file, ratelim_min = 0.01, hemisphere='N'
 print(' / / / / / / / / // / / / / / / / / / / / / / / / / / / // / / / / / / / / / / / / / / / / / / // / / / / / / / / / / / / / / / / / / // / / / / / / / / / / ')
 print('NORTH')
 out_file  = join(os.environ['OBS_REPO'], 'SDSS/dr14/spiders/clustering_catalogs/clustering_agn_N_RL_')
-
-write_ascii_clusterings_catalog(out_file, ratelim_min = 0.005, hemisphere='N', lx_min=1e44)
-write_ascii_clusterings_catalog(out_file, ratelim_min = 0.005, hemisphere='N', lx_min=2e44)
-write_ascii_clusterings_catalog(out_file, ratelim_min = 0.005, hemisphere='N', lx_min=4e44)
+write_ascii_clusterings_catalog(out_file, ratelim_min = 0.005, hemisphere='N', lx_min=1e40)
+#write_ascii_clusterings_catalog(out_file, ratelim_min = 0.005, hemisphere='N', lx_min=1e44)
+#write_ascii_clusterings_catalog(out_file, ratelim_min = 0.005, hemisphere='N', lx_min=2e44)
+#write_ascii_clusterings_catalog(out_file, ratelim_min = 0.005, hemisphere='N', lx_min=4e44)
 #write_ascii_clusterings_catalog(out_file, ratelim_min = 0.005, hemisphere='N', lx_min=8e44)
 print(' / / / / / / / / // / / / / / / / / / / / / / / / / / / // / / / / / / / / / / / / / / / / / / // / / / / / / / / / / / / / / / / / / // / / / / / / / / / / ')
 print('SOUTH')
@@ -118,10 +118,10 @@ ra_rds    = hduR[1].data[ra_name_rds]
 dec_rds    = hduR[1].data[dec_name_rds]
 ratelim_rds    = hduR[1].data['MASK_2RXS_RATELIM']
 down_samp = (np.random.random(len(ra_rds))<0.01)
-
-write_ascii_clusterings_catalog(out_file, ratelim_min = 0.005, hemisphere='S', lx_min=1e44)
-write_ascii_clusterings_catalog(out_file, ratelim_min = 0.005, hemisphere='S', lx_min=2e44)
-write_ascii_clusterings_catalog(out_file, ratelim_min = 0.005, hemisphere='S', lx_min=4e44)
+write_ascii_clusterings_catalog(out_file, ratelim_min = 0.005, hemisphere='S', lx_min=1e40)
+#write_ascii_clusterings_catalog(out_file, ratelim_min = 0.005, hemisphere='S', lx_min=1e44)
+#write_ascii_clusterings_catalog(out_file, ratelim_min = 0.005, hemisphere='S', lx_min=2e44)
+#write_ascii_clusterings_catalog(out_file, ratelim_min = 0.005, hemisphere='S', lx_min=4e44)
 #write_ascii_clusterings_catalog(out_file, ratelim_min = 0.005, hemisphere='S', lx_min=8e44)
 
 
