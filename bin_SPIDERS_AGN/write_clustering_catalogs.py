@@ -11,6 +11,9 @@ import astropy.units as u
 import astropy.cosmology as cc
 cosmo = cc.Planck13
 
+z_min = float(sys.argv[1])
+z_max = float(sys.argv[2])
+
 data_file  = join(os.environ['OBS_REPO'], 'SDSS/dr14/spiders/target/2RXS_AllWISE_catalog_paper_2017May26_withSpectro_with2RXS_mask_DR14area_SPM.fits')
 rds_n_file  = join(os.environ['OBS_REPO'], 'SDSS/dr14/spiders/randoms/randoms_dr14_NGC_with2RXS_mask_DR14area.fits')
 rds_s_file  = join(os.environ['OBS_REPO'], 'SDSS/dr14/spiders/randoms/randoms_dr14_SGC_with2RXS_mask_DR14area.fits')
@@ -34,9 +37,6 @@ dec_name_data = 'ALLW_DEC'
 
 ra_name_rds = 'RA'
 dec_name_rds = 'DEC'
-
-z_min = float(sys.argv[1])
-z_max = float(sys.argv[2])
 
 hduD     = fits.open(data_file)
 ra_data    = hduD[1].data[ra_name_data]
