@@ -167,7 +167,7 @@ def plot_clusterings_catalog(out_file, ratelim = 0.005, hemisphere='N'):
   #p.savefig(out_file+str(ratelim)+"_histogram_redshift.png")
   #p.clf()
 
-  fx_bins = n.arange(-14,-10, 0.2)
+  fx_bins = np.arange(-14,-10, 0.2)
   NN=np.histogram(flux, bins=10**fx_bins)[0]
   density = NN/area
   np.savetxt(out_file+str(z_min)+"_"+str(z_max)+"_"+str(ratelim)+"_"+hemisphere+".2RXS_SRC_FLUX.histogram", np.transpose([ fx_bins[:-1], fx_bins[1:], density, NN ]))

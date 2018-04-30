@@ -15,7 +15,8 @@ z_min = float(sys.argv[1])
 z_max = float(sys.argv[2])
 
 data_file  = join(os.environ['OBS_REPO'], 'SDSS/dr14/spiders/target/2RXS_AllWISE_catalog_paper_2017May26_withSpectro_with2RXS_mask_DR14area_SPM.fits')
-rds_n_file  = join(os.environ['OBS_REPO'], 'SDSS/dr14/spiders/randoms/randoms_dr14_NGC_with2RXS_mask_DR14area.fits')
+rds_n_file  = join(os.environ['OBS_REPO'], 'SD  zs=np.arange(z_min,z_max+dz, dz)
+SS/dr14/spiders/randoms/randoms_dr14_NGC_with2RXS_mask_DR14area.fits')
 rds_s_file  = join(os.environ['OBS_REPO'], 'SDSS/dr14/spiders/randoms/randoms_dr14_SGC_with2RXS_mask_DR14area.fits')
 #nR_NGC = 5135183. # random points
 #nR_SGC = 3292159. # random points
