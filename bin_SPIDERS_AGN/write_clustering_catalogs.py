@@ -35,8 +35,8 @@ dec_name_data = 'ALLW_DEC'
 ra_name_rds = 'RA'
 dec_name_rds = 'DEC'
 
-z_min = sys.argv[1]
-z_max = sys.argv[2]
+z_min = float(sys.argv[1])
+z_max = float(sys.argv[2])
 
 hduD     = fits.open(data_file)
 ra_data    = hduD[1].data[ra_name_data]
