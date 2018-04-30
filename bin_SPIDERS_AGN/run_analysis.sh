@@ -1,4 +1,24 @@
 #!/bin/bash
 
+# SDSS version = DR14
+cd ~/software/linux/makeSample/bin_SPIDERS_AGN
+# compares the AGN host mass function with the prediction from the mock catalog
 run plot_Host_AGN_SMF_with_Bo16_model.py 0.001 0.4 25.
 
+# creates the catalog to estimate clustering
+python write_clustering_catalog.py  0. 0.36
+python write_clustering_catalog.py  0.36 0.77
+python write_clustering_catalog.py  0.77 1.34
+
+cd $OBS_REPO/SDSS/dr14/spiders/clustering_catalogs
+
+cat clustering_agn_N_RL_0.005_N.data clustering_agn_N_RL_0.005_S.data > clustering_agn_RL_0.005.data  
+cat clustering_agn_N_RL_0.005_N.random clustering_agn_N_RL_0.005_S.random > clustering_agn_RL_0.005.random
+
+cd $OBS_REPO/SDSS/dr14/spiders/clustering_measurements/
+
+$DARKSIM_DIR/software/CUTE/CUTE/CUTE param_0_005.ini
+
+
+cd ~/software/linux/makeSample/bin_SPIDERS_AGN
+python plot_clustering.py

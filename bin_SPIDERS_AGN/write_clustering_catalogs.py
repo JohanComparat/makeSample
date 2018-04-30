@@ -35,6 +35,8 @@ dec_name_data = 'ALLW_DEC'
 ra_name_rds = 'RA'
 dec_name_rds = 'DEC'
 
+z_min = sys.argv[1]
+z_max = sys.argv[2]
 
 hduD     = fits.open(data_file)
 ra_data    = hduD[1].data[ra_name_data]
@@ -58,10 +60,7 @@ def write_ascii_clusterings_catalog(out_file, ratelim_min = 0.01, hemisphere='N'
   spec_veron = (hduD[1].data['z_veron']>0)
   z_data[spec_veron] = hduD[1].data['z_veron'][spec_veron]
   z_data[spec_SDSS] = hduD[1].data['DR14_Z'][spec_SDSS]
-  spectro = (z_data>0)
-  z_max = 0.35 
-  #flux = hduD[1].data['2RXS_SRC_FLUX']
-  #(hduD[1].data['2RXS_ExiML']>10)& (hduD[1].data['p_any']>0.5)&
+  spectro = (z_data>z_min)&(z_data<z_max)
   starsD = (hduD[1].data['p_any']>0.5)&(hduD[1].data['2RXS_ExiML']>10)& (hduD[1].data['mask_Tycho20Vmag10']==False)& (hduD[1].data['mask_Tycho210Vmag11']==False)& (hduD[1].data['mask_bright_object_rykoff']==False) & (z_data>0) & (z_data<z_max)
   starsR = (hduR[1].data['mask_Tycho20Vmag10']==False) &(hduR[1].data['mask_Tycho210Vmag11']==False) &(hduR[1].data['mask_bright_object_rykoff']==False)  
  
@@ -91,8 +90,8 @@ def write_ascii_clusterings_catalog(out_file, ratelim_min = 0.01, hemisphere='N'
   RR=rds[:N_rds]#-dz/2.
   print("RR=",len(rds), len(RR))
 
-  np.savetxt(out_file+str(ratelim_min)+"_"+hemisphere+".data", np.transpose([ ra_data[sel_data], dec_data[sel_data], z_data[sel_data], np.ones_like(z_data[sel_data]) ]))
-  np.savetxt(out_file+str(ratelim_min)+"_"+hemisphere+".random", np.transpose([ ra_rds[sel_rds], dec_rds[sel_rds], RR, np.ones_like(RR) ]))
+  np.savetxt(out_file+str(z_min)+"_"+str(z_max)+"_"+str(ratelim_min)+"_"+hemisphere+".data", np.transpose([ ra_data[sel_data], dec_data[sel_data], z_data[sel_data], np.ones_like(z_data[sel_data]) ]))
+  np.savetxt(out_file+str(z_min)+"_"+str(z_max)+"_"+str(ratelim_min)+"_"+hemisphere+".random", np.transpose([ ra_rds[sel_rds], dec_rds[sel_rds], RR, np.ones_like(RR) ]))
 
 print(' / / / / / / / / // / / / / / / / / / / / / / / / / / / // / / / / / / / / / / / / / / / / / / // / / / / / / / / / / / / / / / / / / // / / / / / / / / / / ')
 print('NORTH')
