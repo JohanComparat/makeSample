@@ -156,7 +156,7 @@ def plot_clusterings_catalog(out_file, ratelim = 0.005, hemisphere='N'):
   #p.axes([0.17,0.17,0.78,0.78])
   NN=np.histogram(z_data[sel_data], bins=zs)[0]
   density = NN/area
-  np.savetxt(out_file+str(z_min)+"_"+str(z_max)+"_"+str(ratelim_min)+"_"+hemisphere+".redshift.histogram", np.transpose([ zs[:-1], zs[1:], density, NN ]))
+  np.savetxt(out_file+str(z_min)+"_"+str(z_max)+"_"+str(ratelim)+"_"+hemisphere+".redshift.histogram", np.transpose([ zs[:-1], zs[1:], density, NN ]))
   #p.errorbar((zs[1:]+zs[:-1])/2., density, yerr=density*NN**(-0.5), xerr=dz/2.)
   #p.xlabel('redshift')
   #p.ylabel('N / deg2,  dz=0.05 ')
@@ -170,7 +170,7 @@ def plot_clusterings_catalog(out_file, ratelim = 0.005, hemisphere='N'):
   fx_bins = n.arange(-14,-10, 0.2)
   NN=np.histogram(flux, bins=10**fx_bins)[0]
   density = NN/area
-  np.savetxt(out_file+str(z_min)+"_"+str(z_max)+"_"+str(ratelim_min)+"_"+hemisphere+".2RXS_SRC_FLUX.histogram", np.transpose([ fx_bins[:-1], fx_bins[1:], density, NN ]))
+  np.savetxt(out_file+str(z_min)+"_"+str(z_max)+"_"+str(ratelim)+"_"+hemisphere+".2RXS_SRC_FLUX.histogram", np.transpose([ fx_bins[:-1], fx_bins[1:], density, NN ]))
 
 print(' / / / / / / / / // / / / / / / / / / / / / / / / / / / // / / / / / / / / / / / / / / / / / / // / / / / / / / / / / / / / / / / / / // / / / / / / / / / / ')
 print('NORTH')
