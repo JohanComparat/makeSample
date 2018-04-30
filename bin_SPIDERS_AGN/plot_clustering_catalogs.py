@@ -123,7 +123,7 @@ def plot_clusterings_catalog(out_file, ratelim = 0.005, hemisphere='N'):
 
   p.figure(1, (5,5))
   p.axes([0.17,0.17,0.78,0.78])
-  p.plot(z_data[sel_data], hduD[1].data['2RXS_SRC_FLUX'][sel_data], 'k+')
+  p.plot(z_data[sel_data],flux, 'k+')
   p.axhline(10**(-12.52), label=r'$10^{-12.52}$erg/cm2/s')
   p.xlabel('redshift')
   p.ylabel('Xray flux [0.5-2 keV, erg/cm2/s]')
@@ -152,27 +152,32 @@ def plot_clusterings_catalog(out_file, ratelim = 0.005, hemisphere='N'):
   p.savefig(out_file+str(ratelim)+"_data_Xray_luminosity_redshift.png")
   p.clf()
 
-
-  p.figure(1, (5,5))
-  p.axes([0.17,0.17,0.78,0.78])
+  #p.figure(1, (5,5))
+  #p.axes([0.17,0.17,0.78,0.78])
   NN=np.histogram(z_data[sel_data], bins=zs)[0]
   density = NN/area
-  p.errorbar((zs[1:]+zs[:-1])/2., density, yerr=density*NN**(-0.5), xerr=dz/2.)
-  p.xlabel('redshift')
-  p.ylabel('N / deg2,  dz=0.05 ')
-  p.yscale('log')
-  #p.ylim((1e41, 1e47))
-  p.legend(frameon=False, loc=0)
-  #p.title('data dr14')
-  p.savefig(out_file+str(ratelim)+"_histogram_redshift.png")
-  p.clf()
+  np.savetxt(out_file+str(z_min)+"_"+str(z_max)+"_"+str(ratelim_min)+"_"+hemisphere+".redshift.histogram", np.transpose([ zs[:-1], zs[1:], density, NN ]))
+  #p.errorbar((zs[1:]+zs[:-1])/2., density, yerr=density*NN**(-0.5), xerr=dz/2.)
+  #p.xlabel('redshift')
+  #p.ylabel('N / deg2,  dz=0.05 ')
+  #p.yscale('log')
+  ##p.ylim((1e41, 1e47))
+  #p.legend(frameon=False, loc=0)
+  ##p.title('data dr14')
+  #p.savefig(out_file+str(ratelim)+"_histogram_redshift.png")
+  #p.clf()
+
+  fx_bins = n.arange(-14,-10, 0.2)
+  NN=np.histogram(flux, bins=10**fx_bins)[0]
+  density = NN/area
+  np.savetxt(out_file+str(z_min)+"_"+str(z_max)+"_"+str(ratelim_min)+"_"+hemisphere+".2RXS_SRC_FLUX.histogram", np.transpose([ fx_bins[:-1], fx_bins[1:], density, NN ]))
 
 print(' / / / / / / / / // / / / / / / / / / / / / / / / / / / // / / / / / / / / / / / / / / / / / / // / / / / / / / / / / / / / / / / / / // / / / / / / / / / / ')
 print('NORTH')
 out_file  = join(os.environ['HOME'], 'wwwDir/eRoMok/clustering/data/clustering_agn_')
 
 plot_clusterings_catalog(out_file+'_N', ratelim = 0.005, hemisphere='N')
-plot_clusterings_catalog(out_file+'_N', ratelim = 0.015, hemisphere='N')
+#plot_clusterings_catalog(out_file+'_N', ratelim = 0.015, hemisphere='N')
 
 rds_file = rds_s_file
 
@@ -183,7 +188,7 @@ ratelim_rds    = hduR[1].data['MASK_2RXS_RATELIM']
 down_samp = (np.random.random(len(ra_rds))<0.1)
 
 plot_clusterings_catalog(out_file+'_S', ratelim = 0.005, hemisphere='S')
-plot_clusterings_catalog(out_file+'_S', ratelim = 0.015, hemisphere='S')
+#plot_clusterings_catalog(out_file+'_S', ratelim = 0.015, hemisphere='S')
 
 
 sys.exit()
