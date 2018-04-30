@@ -155,7 +155,7 @@ def plot_clusterings_catalog(out_file, ratelim = 0.005, hemisphere='N'):
 
   p.figure(1, (5,5))
   p.axes([0.17,0.17,0.78,0.78])
-  NN=np.histogram(z_data[sel_data], z_bins=zs)[0]
+  NN=np.histogram(z_data[sel_data], bins=zs)[0]
   density = NN/area
   p.errorbar((zs[1:]+zs[:-1])/2., density, yerr=density*NN**(-0.5), xerr=dz/2.)
   p.xlabel('redshift')
