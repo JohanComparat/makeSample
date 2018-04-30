@@ -55,29 +55,34 @@ down_samp = (np.random.random(len(ra_rds))<0.01)
 z_s = np.arange(0,2,0.001)
 dl_lim = cosmo.luminosity_distance(z_s).to(u.cm)
 
-def write_ascii_clusterings_catalog(out_file, ratelim_min = 0.01, hemisphere='N'):
+def write_ascii_clusterings_catalog(out_file, ratelim_min = 0.005, hemisphere='N'):
+  # redshift array creation
   spec_SDSS = (hduD[1].data['DR14_Z']>0)&(hduD[1].data['DR14_Z_ERR']>0)&(hduD[1].data['DR14_ZWARNING']==0)
   spec_veron = (hduD[1].data['z_veron']>0)
   z_data[spec_veron] = hduD[1].data['z_veron'][spec_veron]
   z_data[spec_SDSS] = hduD[1].data['DR14_Z'][spec_SDSS]
   spectro = (z_data>z_min)&(z_data<z_max)
-  starsD = (hduD[1].data['p_any']>0.5)&(hduD[1].data['2RXS_ExiML']>10)& (hduD[1].data['mask_Tycho20Vmag10']==False)& (hduD[1].data['mask_Tycho210Vmag11']==False)& (hduD[1].data['mask_bright_object_rykoff']==False) & (z_data>0) & (z_data<z_max)
+  # star exclusion in the data
+  starsD = (hduD[1].data['p_any']>0.5)&(hduD[1].data['2RXS_ExiML']>10)& (hduD[1].data['mask_Tycho20Vmag10']==False)& (hduD[1].data['mask_Tycho210Vmag11']==False)& (hduD[1].data['mask_bright_object_rykoff']==False) 
+  # star exclusion in the randoms
   starsR = (hduR[1].data['mask_Tycho20Vmag10']==False) &(hduR[1].data['mask_Tycho210Vmag11']==False) &(hduR[1].data['mask_bright_object_rykoff']==False)  
  
   if hemisphere=='N':
-    sel_data = (z_data<z_max)&(ratelim_data>ratelim_min) &(hduD[1].data['mask_dr14_N'])  &(hduD[1].data['mask_dr14_N_w']>0.9) &(spectro)&(starsD) 
+    # in the NGC, photometric mask addition
+    sel_data = (ratelim_data>ratelim_min) &(hduD[1].data['mask_dr14_N'])  &(hduD[1].data['mask_dr14_N_w']>0.9) &(spectro)&(starsD) 
     sel_rds = (down_samp)&(ratelim_rds>ratelim_min) &(hduR[1].data['mask_dr14_N']) &(hduR[1].data['mask_dr14_N_w']>0.9) &(starsR) 
 
   if hemisphere=='S':
-    sel_data = (z_data<z_max)&(ratelim_data>ratelim_min) &(hduD[1].data['mask_dr14_S'])  &(hduD[1].data['mask_dr14_S_w']>0.9) &(spectro)&(starsD)
+    # in the SGC, photometric mask addition
+    sel_data = (ratelim_data>ratelim_min) &(hduD[1].data['mask_dr14_S'])  &(hduD[1].data['mask_dr14_S_w']>0.9) &(spectro)&(starsD)
     sel_rds = (down_samp)&(ratelim_rds>ratelim_min) &(hduR[1].data['mask_dr14_S']) &(hduR[1].data['mask_dr14_S_w']>0.9) &(starsR) 
 
   # ra figure
   N_data = len(ra_data[sel_data]) 
   N_rds = len(ra_rds[sel_rds]) 
-  print("D,R=",N_data, N_rds)
+  print("number of D,R=",N_data, N_rds)
   dz=0.05
-  zs=np.arange(0., z_max + dz, dz)
+  zs=np.arange(z_min, z_max + dz, dz)
   nn,bb = np.histogram(z_data[sel_data], bins=zs)#, weights=1./w_col.array)
   nz=interp1d((zs[1:]+zs[:-1])/2.,nn)
   rdsz=[]
@@ -97,10 +102,10 @@ print(' / / / / / / / / // / / / / / / / / / / / / / / / / / / // / / / / / / / 
 print('NORTH')
 out_file  = join(os.environ['OBS_REPO'], 'SDSS/dr14/spiders/clustering_catalogs/clustering_agn_N_RL_')
 write_ascii_clusterings_catalog(out_file, ratelim_min = 0.005, hemisphere='N')
+
 print(' / / / / / / / / // / / / / / / / / / / / / / / / / / / // / / / / / / / / / / / / / / / / / / // / / / / / / / / / / / / / / / / / / // / / / / / / / / / / ')
 print('SOUTH')
 rds_file = rds_s_file
-
 hduR     = fits.open(rds_file)
 ra_rds    = hduR[1].data[ra_name_rds]
 dec_rds    = hduR[1].data[dec_name_rds]
