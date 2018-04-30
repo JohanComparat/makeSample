@@ -1,0 +1,101 @@
+svn copy https://svn.sdss.org/data/sdss/stellarpopmodels/trunk https://svn.sdss.org/data/sdss/stellarpopmodels/tags/v1_0_2 -m "Adding new models and broad band filter curves for SDSS, CFHT and DECAM"
+
+run test2.py 0.001 0.2 25.
+run test2.py 0.001 0.3 25.
+run test2.py 0.001 0.4 25.
+
+run plot_Host_AGN_SMF_with_Bo16_model.py 0.001 0.2 25.
+run plot_Host_AGN_SMF_with_Bo16_model.py 0.001 0.3 25.
+run plot_Host_AGN_SMF_with_Bo16_model.py 0.001 0.4 25.
+run plot_Host_AGN_SMF_with_Bo16_model.py 0.001 0.2 50.
+run plot_Host_AGN_SMF_with_Bo16_model.py 0.001 0.3 50.
+run plot_Host_AGN_SMF_with_Bo16_model.py 0.001 0.4 50.
+run plot_Host_AGN_SMF_with_Bo16_model.py 0.001 0.2 75.
+run plot_Host_AGN_SMF_with_Bo16_model.py 0.001 0.3 75.
+run plot_Host_AGN_SMF_with_Bo16_model.py 0.001 0.4 75.
+
+clustering_agn_RL_0.005_LX_440.data
+clustering_agn_RL_0.005_LX_440.random
+clustering_agn_RL_0.005_LX_443.data
+clustering_agn_RL_0.005_LX_443.random
+clustering_agn_RL_0.005_LX_446.data
+clustering_agn_RL_0.005_LX_446.random
+
+
+$DARKSIM_DIR/software/CUTE/CUTE/CUTE param_0_005.ini 
+$DARKSIM_DIR/software/CUTE/CUTE/CUTE param_0_015.ini
+$DARKSIM_DIR/software/CUTE/CUTE/CUTE param_0_0216.ini
+
+Xray    all       EXI10   pany05 
+        z  N      z  N     z  N 
+---------------------------------
+44.0  0.22      0.22 450 0.22 396
+44.3  0.31      0.30 463 0.30 403
+44.6  0.41      0.40 420 0.40 367
+
+Xray &   all  &&     EXI10 &&  pany05 \\
+     &   z & N  &    z  & N   &   z  & N    \\
+44.0 & 0.22 &   &  0.22 & 450 & 0.22 & 396  \\
+44.3 & 0.31 &   &  0.30 & 463 & 0.30 & 403  \\
+44.6 & 0.41 &   &  0.40 & 420 & 0.40 & 367  \\
+
+hmf440 = get_hf(sigma_val=0.8228, boxRedshift=0.22, delta_wrt='mean')
+hmf443 = get_hf(sigma_val=0.8228, boxRedshift=0.31, delta_wrt='mean')
+hmf446 = get_hf(sigma_val=0.8228, boxRedshift=0.41, delta_wrt='mean')
+
+gf440=0.89091352990878625
+gf443=0.84990345086368468
+gf446=0.80704933209279583
+
+cd $OBS_REPO/SDSS/dr14/spiders/clustering_catalogs
+
+
+import astropy.io.fits as fits
+import os
+
+
+import sys
+from os.path import join
+import numpy as n
+
+data_file = join(os.environ['OBS_REPO'], 'SDSS/LSS/LRG/cmass_boss/galaxy_DR12v5_CMASS_North.fits.gz' )
+rds_file  = join(os.environ['OBS_REPO'], 'SDSS/LSS/LRG/cmass_boss/random0_DR12v5_CMASS_North.fits.gz')
+out_file = join(os.environ['OBS_REPO'], 'SDSS/LSS/LRG/cmass_boss/DR12v5_CMASS_North_rd0')
+print("data")
+hduD     = fits.open(data_file)
+ra_data    = hduD[1].data['RA']
+dec_data    = hduD[1].data['DEC']
+z_data = hduD[1].data['Z']
+w_data = ( hduD[1].data['WEIGHT_CP'] +  hduD[1].data['WEIGHT_NOZ'] -1)* hduD[1].data['WEIGHT_SYSTOT']
+print("random")
+hduR     = fits.open(rds_file)
+ra_rds    = hduR[1].data['RA']
+dec_rds    = hduR[1].data['DEC']
+z_rds = hduR[1].data['Z']
+w_rds = n.ones_like(z_rds)
+print("writing")
+n.savetxt(out_file+".data", n.transpose([ ra_data, dec_data, z_data, w_data ]))
+n.savetxt(out_file+".random", n.transpose([ ra_rds, dec_rds, z_rds, w_rds ]))
+
+"radial"         -> Radial correlation function
+"angular"        -> Angular correlation function
+"monopole"       -> Monopole
+"3D_ps"          -> 3D correlation binning in sigma-pi
+"3D_rm".         -> 3D correlation binning in r-mu
+"full".          -> Angular correlation function as a
+					function of redshift and radial separation
+See section 6 below for more information on the different types.
+
+
+$DARKSIM_DIR/software/CUTE/CUTE/CUTE param_angular.ini  
+$DARKSIM_DIR/software/CUTE/CUTE/CUTE param.ini  
+$DARKSIM_DIR/software/CUTE/CUTE/CUTE param_wp.ini
+
+$DARKSIM_DIR/software/CUTE/CUTE/CUTE param_0_005.ini  
+$DARKSIM_DIR/software/CUTE/CUTE/CUTE param_0_015.wprp.ini  
+$DARKSIM_DIR/software/CUTE/CUTE/CUTE param_0_015.ini  
+$DARKSIM_DIR/software/CUTE/CUTE/CUTE param_0_015.wth.ini
+
+$DARKSIM_DIR/software/CUTE/CUTE/CUTE param_0_005_LX440.ini
+$DARKSIM_DIR/software/CUTE/CUTE/CUTE param_0_005_LX443.ini
+$DARKSIM_DIR/software/CUTE/CUTE/CUTE param_0_005_LX446.ini
