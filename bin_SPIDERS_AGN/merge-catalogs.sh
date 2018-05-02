@@ -1,5 +1,8 @@
 
-# Match in 2 arcseconds with topcat cds tool to the Veron & Veron catalog VII/258/vv10 to find 13,403 counterparts
+# Match in 2 arcseconds swith tilts tool to the Veron & Veron catalog VII/258/vv10 to find 13,553 counterparts (10% of the targets)
+# http://www.mpe.mpg.de/XraySurveys/2RXS_XMMSL2/ADD-ONs/2RXS_AllWISE_catalog_paper_2017May26.fits.gz
+# http://cdsarc.u-strasbg.fr/viz-bin/Cat?VII/258
+
 stilts tmatch2 \
 in1=/data36s/comparat/SDSS/dr14/spiders/target/2RXS_AllWISE_catalog_paper_2017May26.fits.gz ifmt1=fits \
 in2=/data36s/comparat/veron-veron-13th-ed.fits ifmt2=fits \
@@ -7,9 +10,34 @@ icmd2='delcols "_RAJ2000 _DEJ2000 Name n_RAJ2000 FC"' \
 matcher=sky params="2" join=all1 find=best \
 values1="ALLW_RA ALLW_DEC" values2="RAJ2000 DEJ2000" \
 ocmd='addcol in_veron "Separation>=0"' \
+ocmd='delcols "Separation"' \
 out=/data36s/comparat/SDSS/dr14/spiders/target/2RXS_AllWISE_catalog_paper_2017May26_VERON.fits 
 
+# Match in 2 arcseconds with stilts tool to the VAC_spiders_2RXS_DR14 to find 9,055 counterparts (7% of the targets)
+# https://data.sdss.org/sas/dr14/eboss/spiders/analysis/VAC_spiders_2RXS_DR14.fits
 
+stilts tmatch2 \
+in1=/data36s/comparat/SDSS/dr14/spiders/target/2RXS_AllWISE_catalog_paper_2017May26_VERON.fits ifmt1=fits \
+in2=/data36s/comparat/SDSS/dr14/spiders/analysis/VAC_spiders_2RXS_DR14.fits ifmt2=fits \
+icmd2='delcols "RXS_IAU_NAME  RXS_ExiML               RXS_Cts                 RXS_e_Cts               RXS_CRate               RXS_e_CRate             RXS_ExpTime             RXS_RAJ2000             RXS_DEJ2000             RXS_Ext                 RXS_e_Ext               RXS_ExtML               RXS_RADEC_ERR           RXS_NEAR_BRIGHT_STAR    RXS_NEAR_BRIGHT_GAL     LOGGALNH                RXS_SRC_FLUX            RXS_SRC_FLUX_ERR        NWAY_bias               NWAY_p_any              NWAY_p_i                ALLW_designation        ALLW_sigra              ALLW_sigdec             ALLW_RADECERR           ALLW_w1mpro             ALLW_w1sigmpro          ALLW_w1snr              ALLW_w2mpro             ALLW_w2sigmpro          ALLW_w2snr              ALLW_w3mpro             ALLW_w3sigmpro          ALLW_w3snr              ALLW_w4mpro             ALLW_w4sigmpro          ALLW_w4snr              ALLW_cc_flags           ALLW_ext_flg            ALLW_var_flg            ALLW_r_2mass            ALLW_n_2mass            ALLW_j_m_2mass          ALLW_j_msig_2mass       ALLW_h_m_2mass          ALLW_h_msig_2mass       ALLW_k_m_2mass          ALLW_k_msig_2mass       NWAY_dist_XRAY_ALLW     GAIA_DR1_ra               GAIA_DR1_dec              GAIA_DR1_source_id        GAIA_DR1_ref_epoch        GAIA_DR1_ra_error         GAIA_DR1_dec_error        GAIA_DR1_parallax         GAIA_DR1_parallax_error   GAIA_DR1_pmra             GAIA_DR1_pmra_error       GAIA_DR1_pmdec            GAIA_DR1_pmdec_error      GAIA_DR1_phot_g_mean_flux GAIA_ALLW_angDist GAIA_DR1_phot_g_mean_flux_error"' \
+matcher=sky params="2" join=all1 find=best suffix1="" suffix2=_DR14 \
+values1="ALLW_RA ALLW_DEC" values2="ALLW_RA ALLW_DEC" \
+ocmd='addcol in_DR14 "Separation>=0"' \
+ocmd='delcols "ALLW_RA_DR14 ALLW_DEC_DR14 Separation"' \
+out=/data36s/comparat/SDSS/dr14/spiders/target/2RXS_AllWISE_catalog_paper_2017May26_VERON_DR14.fits 
+
+# Match in 2 arcseconds with stilts tool to the VAC_spiders_XMMSL_DR14 to find  counterparts (% of the targets)
+# https://data.sdss.org/sas/dr14/eboss/spiders/analysis/VAC_spiders_XMMSL_DR14.fits       
+
+stilts tmatch2 \
+in1=/data36s/comparat/SDSS/dr14/spiders/target/2RXS_AllWISE_catalog_paper_2017May26_VERON_DR14.fits ifmt1=fits \
+in2=/data36s/comparat/SDSS/dr14/spiders/analysis/VAC_spiders_XMMSL_DR14.fits ifmt2=fits \
+icmd2='delcols "GAIA_DR1_ra               GAIA_DR1_dec              GAIA_DR1_source_id        GAIA_DR1_ref_epoch        GAIA_DR1_ra_error         GAIA_DR1_dec_error        GAIA_DR1_parallax         GAIA_DR1_parallax_error   GAIA_DR1_pmra             GAIA_DR1_pmra_error       GAIA_DR1_pmdec            GAIA_DR1_pmdec_error      GAIA_DR1_phot_g_mean_flux GAIA_ALLW_angDist GAIA_DR1_phot_g_mean_flux_error"' \
+matcher=sky params="2" join=all1 find=best suffix1="" suffix2=_XMMSL \
+values1="ALLW_RA ALLW_DEC" values2="ALLW_RA ALLW_DEC" \
+ocmd='addcol in_XMMSL "Separation>=0"' \
+ocmd='delcols "ALLW_RA_DR14 ALLW_DEC_DR14 Separation"' \
+out=/data36s/comparat/SDSS/dr14/spiders/target/2RXS_AllWISE_catalog_paper_2017May26_VERON_DR14_XMMSL.fits 
 
 INFO
 ====
@@ -22,19 +50,6 @@ MISSING MASK : WISE MASK and ROSAT FIELD MASK !!
  
 Data
 ====
-
-full target catalog :
-http://www.mpe.mpg.de/XraySurveys/2RXS_XMMSL2/ADD-ONs/2RXS_AllWISE_catalog_paper_2017May26.fits.gz
-with 
-132,254 targets
-ALLW_RA, ALLW_DEC
-
-Match in 2 arcseconds with topcat cds tool to the Veron & Veron catalog VII/258/vv10
-to find 13,403 counterparts
-
-Match to VAC_spiders_2RXS_DR14.fits
-to find at separation 0 with ALLW_RA, ALLW_DEC: 
-9,055 / 9,073 counterparts
 
 Match with specObj-dr14.fits
 within 1 arcsecond to PLUG_RA, PLUG_DEC
