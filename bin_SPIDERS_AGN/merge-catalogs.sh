@@ -1,3 +1,17 @@
+
+# Match in 2 arcseconds with topcat cds tool to the Veron & Veron catalog VII/258/vv10 to find 13,403 counterparts
+
+stilts tmatch2 \
+in1=/data36s/comparat/SDSS/dr14/spiders/target/2RXS_AllWISE_catalog_paper_2017May26.fits.gz ifmt1=fits \
+in2=/data36s/comparat/veron-veron-13th-ed.fits ifmt2=fits \
+icmd2='delcols "_RAJ2000 _DEJ2000 Name n_RAJ2000 FC"' \
+matcher=sky params="2" join=all1 find=best \
+values1="ALLW_RA ALLW_DEC" values2="RAJ2000 DEJ2000" \
+ocmd='delcols "Separation"' \
+out=/data36s/comparat/SDSS/dr14/spiders/target/2RXS_AllWISE_catalog_paper_2017May26_VERON.fits 
+
+
+
 INFO
 ====
 
@@ -16,12 +30,8 @@ with
 132,254 targets
 ALLW_RA, ALLW_DEC
 
-/data36s/comparat/SDSS/dr14/spiders/target/2RXS_AllWISE_catalog_paper_2017May26.fits.gz
-
 Match in 2 arcseconds with topcat cds tool to the Veron & Veron catalog VII/258/vv10
 to find 13,403 counterparts
-
-/data36s/comparat/veron-veron-13th-ed.fits
 
 Match to VAC_spiders_2RXS_DR14.fits
 to find at separation 0 with ALLW_RA, ALLW_DEC: 
