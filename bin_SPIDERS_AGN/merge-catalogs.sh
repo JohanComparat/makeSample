@@ -1,3 +1,6 @@
+# ds52
+# screen -r AGN_SPIDERS
+
 # Match with latest SDSS pipeline results, find 7208 counterparts
 
 stilts tmatch2 \
