@@ -1,17 +1,318 @@
+# Match with latest SDSS pipeline results, find 7208 counterparts
+
+stilts tmatch2 \
+in1=/data36s/comparat/SDSS/dr14/spiders/target/2RXS_AllWISE_catalog_paper_2017May26.fits.gz ifmt1=fits \
+in2=/data37s/SDSS/catalogs/spAll_short_ZW04-v5_10_10.fits ifmt2=fits \
+matcher=sky params="2" join=all1 find=best \
+values1="ALLW_RA ALLW_DEC" values2="PLUG_RA PLUG_DEC" \
+ocmd='addcol hp3 "healpixNestIndex( 3, ALLW_RA, ALLW_DEC )"' \
+ocmd='addcol hp4 "healpixNestIndex( 4, ALLW_RA, ALLW_DEC )"' \
+ocmd='addcol hp5 "healpixNestIndex( 5, ALLW_RA, ALLW_DEC )"' \
+ocmd='addcol hp6 "healpixNestIndex( 6, ALLW_RA, ALLW_DEC )"' \
+ocmd='addcol hp12 "healpixNestIndex( 12, ALLW_RA, ALLW_DEC )"' \
+ocmd='addcol in_v5_10_10 "Separation>=0"' \
+ocmd='delcols "Separation"' \
+out=/data36s/comparat/SDSS/dr14/spiders/target/2RXS_AllWISE_catalog_paper_2017May26_v5_10_10.fits 
+
+stilts tmatch2 \
+in1=/data36s/comparat/SDSS/dr14/spiders/target/2RXS_AllWISE_catalog_paper_2017May26_v5_10_10.fits ifmt1=fits \
+in2=/data37s/SDSS/catalogs/specObj-SDSS-dr14_short_ZW04.fits ifmt2=fits \
+matcher=sky params="2" join=all1 find=best \
+values1="ALLW_RA ALLW_DEC" values2="PLUG_RA PLUG_DEC" \
+ocmd='addcol in_26 "Separation>=0"' \
+ocmd='delcols "Separation"' \
+out=/data36s/comparat/SDSS/dr14/spiders/target/2RXS_AllWISE_catalog_paper_2017May26_v5_10_10_26.fits 
+
+
+# then
 
 # Match in 2 arcseconds swith tilts tool to the Veron & Veron catalog VII/258/vv10 to find 13,553 counterparts (10% of the targets)
 # http://www.mpe.mpg.de/XraySurveys/2RXS_XMMSL2/ADD-ONs/2RXS_AllWISE_catalog_paper_2017May26.fits.gz
 # http://cdsarc.u-strasbg.fr/viz-bin/Cat?VII/258
 
 stilts tmatch2 \
-in1=/data36s/comparat/SDSS/dr14/spiders/target/2RXS_AllWISE_catalog_paper_2017May26.fits.gz ifmt1=fits \
+in1=/data36s/comparat/SDSS/dr14/spiders/target/2RXS_AllWISE_catalog_paper_2017May26_v5_10_10_26.fits ifmt1=fits \
 in2=/data36s/comparat/veron-veron-13th-ed.fits ifmt2=fits \
 icmd2='delcols "_RAJ2000 _DEJ2000 Name n_RAJ2000 FC"' \
 matcher=sky params="2" join=all1 find=best \
 values1="ALLW_RA ALLW_DEC" values2="RAJ2000 DEJ2000" \
 ocmd='addcol in_veron "Separation>=0"' \
 ocmd='delcols "Separation"' \
-out=/data36s/comparat/SDSS/dr14/spiders/target/2RXS_AllWISE_catalog_paper_2017May26_VERON.fits 
+out=/data36s/comparat/SDSS/dr14/spiders/target/2RXS_AllWISE_catalog_paper_2017May26_v5_10_10_26_VERON.fits 
+
+# 7208 match v5_10_10
+# 21721 match 26
+# 13553 match Veron
+# all matches: 21368
+
+
+# create randoms in a healpix grid downsampling at N_with_z / N_targets. DEC>-20 is sufficient
+
+# full sky randoms :
+
+stilts tpipe \
+in=/data37s/SDSS/catalogs/random-ra-dec.txt ifmt=ascii \
+cmd='addcol hp3 "healpixNestIndex( 3, RA, DEC )"' \
+cmd='addcol hp4 "healpixNestIndex( 4, RA, DEC )"' \
+cmd='addcol hp5 "healpixNestIndex( 5, RA, DEC )"' \
+cmd='addcol hp6 "healpixNestIndex( 6, RA, DEC )"' \
+cmd='addcol hp12 "healpixNestIndex( 12, RA, DEC )"' \
+omode=out out=/data37s/SDSS/catalogs/randoms.fits 
+
+#### 2RXS MASK_2RXS_RATELIM
+# /data36s/comparat/masks/2RXS_HPX_nside4096_all_ratelimit.fits.gz
+
+
+stilts tmatch2 \
+in1=/data36s/comparat/SDSS/dr14/spiders/target/2RXS_AllWISE_catalog_paper_2017May26_v5_10_10_26_VERON.fits ifmt1=fits \
+in2=/data36s/comparat/masks/2RXS_HPX_nside4096_all_ratelimit.fits ifmt2=fits \
+matcher=exact join=all1 find=best \
+values1="hp12" values2='$0' \
+out=/data36s/comparat/SDSS/dr14/spiders/target/2RXS_AllWISE_catalog_paper_2017May26_v5_10_10_26_VERON_2RXS_mask.fits 
+
+
+stilts tmatch2 \
+in1=/data37s/SDSS/catalogs/randoms.fits ifmt1=fits \
+in2=/data36s/comparat/masks/2RXS_HPX_nside4096_all_ratelimit.fits ifmt2=fits \
+matcher=exact join=all1 find=best \
+values1="hp12" values2='$0' \
+out=/data37s/SDSS/catalogs/randoms_2RXS_mask.fits 
+
+# 
+# compute tsr x ssr in hp12 and hp6 vs magnitude (wise) and X flux 
+# ALLW_w1mpro
+# ALLW_w1sigmpro
+# 2RXS_SRC_FLUX
+# 2RXS_SRC_FLUX
+# set(hp6)
+# make histogram per pixel of wise mag
+# 
+# 
+# 
+# 
+
+import numpy as n
+import astropy.io.fits as fits
+
+
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as p
+
+import os
+
+out_dir  = os.path.join(os.environ['HOME'], 'wwwDir/eRoMok/clustering/data/')
+
+d=fits.open('/data36s/comparat/SDSS/dr14/spiders/target/2RXS_AllWISE_catalog_paper_2017May26_v5_10_10_26_VERON_2RXS_mask.fits')[1].data
+
+spec = (d['in_veron']) | (d['in_26']) | (d['in_v5_10_10'])
+
+hp3_list = n.array(list(set(d['hp3'][spec])))
+hp3_list.sort()
+
+hp4_list = n.array(list(set(d['hp4'][spec])))
+hp4_list.sort()
+
+# 4615  hp5 pixels with spectro
+# 10607 hp6 pixels with spectro
+w1_bins = n.hstack(( n.arange(0, 10., 5), n.arange(10, 21., 2.)))
+x_w1 = (w1_bins[1:]+w1_bins[:-1])*0.5
+
+def get_hist(pix, hp_name = 'hp3'):
+	s=(d[hp_name]==pix)
+	nall  = n.histogram(d['ALLW_w1mpro'][s], bins = w1_bins)[0]
+	nspec = n.histogram(d['ALLW_w1mpro'][s & spec], bins = w1_bins)[0]
+	return nspec, nall
+
+hh = n.array([get_hist(pix) for pix in hp3_list ])
+
+
+
+
+p.figure(1, (5,5))
+p.axes([0.17,0.17,0.78,0.78])
+for el in hh[:,1]:
+	p.plot(x_w1, el, color='k', lw=0.1, rasterized=True)
+
+for el in hh[:,0]:
+	p.plot(x_w1, el, color='b', lw=0.1, rasterized=True)
+
+p.xlabel('W1 mag')
+p.ylabel('N/pixel ')
+p.yscale('log')
+#p.ylim((1e-4, 1))
+p.xlim((4,20))
+p.grid()
+p.legend(frameon=False, loc=0)
+#p.title('data dr14')
+p.savefig(os.path.join( out_dir,"w1_histogram.png"))
+p.clf()
+
+
+p.figure(1, (5,5))
+p.axes([0.17,0.17,0.78,0.78])
+
+ratio = []
+for e1, e2 in zip(hh[:,0],hh[:,1]):
+	den = e2
+	den[e2==0]=1
+	ratio.append(e1/den) 
+	p.plot(x_w1, e1/den, color='k', lw=0.05, rasterized=True)
+
+# deep fields :
+sel = (hh[:,0].T[-2]>1)
+
+ratio = n.array(ratio)
+ratio_M = n.mean(ratio[sel], axis=0)
+ratio_MD = n.median(ratio[sel], axis=0)
+ratio_STD = n.std(ratio[sel], axis=0)
+
+# p.errorbar(x_w1, ratio_M, yerr=ratio_STD, label='deep mean')
+p.errorbar(x_w1, ratio_MD, yerr=ratio_STD, label='deep median')
+
+# shallow fields :
+sel = (hh[:,0].T[-2]<=1)
+
+ratio = n.array(ratio)
+ratio_M = n.mean(ratio[sel], axis=0)
+ratio_MD = n.median(ratio[sel], axis=0)
+ratio_STD = n.std(ratio[sel], axis=0)
+
+# p.errorbar(x_w1, ratio_M, yerr=ratio_STD, label='shallow mean')
+p.errorbar(x_w1, ratio_MD, yerr=ratio_STD, label='shallow median')
+
+p.xlabel('W1 mag')
+p.ylabel('N spec/N target ')
+#p.yscale('log')
+#p.ylim((1e-4, 1))
+p.xlim((4,20))
+p.grid()
+p.legend(frameon=False, loc=0)
+#p.title('data dr14')
+p.savefig(os.path.join( out_dir,"w1_histogram_ratio.png"))
+p.clf()
+
+
+
+p.figure(1, (5,5))
+p.axes([0.17,0.17,0.78,0.78])
+
+# deep fields :
+sel = (hh[:,0].T[-2]>1)
+for pix in hp3_list[sel]:
+	ss=(d['hp3']==pix)
+	p.plot(d['ALLW_RA'][ss],d['ALLW_DEC'][ss],'k,', rasterized=True)
+
+# shallow fields :
+sel = (hh[:,0].T[-2]<=1)
+for pix in hp3_list[sel]:
+	ss=(d['hp3']==pix)
+	p.plot(d['ALLW_RA'][ss],d['ALLW_DEC'][ss],'r,', rasterized=True)
+
+
+p.xlabel('r.a.')
+p.ylabel('dec')
+p.grid()
+p.legend(frameon=False, loc=0)
+#p.title('data dr14')
+p.savefig(os.path.join( out_dir,"w1_depth_spec_ra_dec.png"))
+p.clf()
+
+
+for finding the counterparts to 
+ - the 2RXS sources, we adopted an area of 30,434.6 sqdeg.
+ - the XMMSL2 sources, we adopted an area of 25,565 sqdeg.
+
+MISSING MASK : WISE MASK and ROSAT FIELD MASK !!
+ 
+Data
+====
+
+Match with specObj-dr14.fits
+within 1 arcsecond to PLUG_RA, PLUG_DEC
+to find 17,178 counterparts
+
+add column
+hpID_4096
+healpixNestIndex(12, ALLW_RA, ALLW_DEC)
+
+match to depth maps from 2RXS : 2RXS_HPX_nside4096_all_ratelimit.fits.gz
+match in integer (exact)
+hpID_4096 and $0
+
+Save here the catalog :
+/data36s/comparat/SDSS/dr14/spiders/target/2RXS_AllWISE_catalog_paper_2017May26_withSpectro_with2RXS_mask.fits
+Spectroscopic results are available for 20,152 targets.
+
+Mask for DR14 eBOSS footprint 
+cd /data36s/comparat/SDSS/LSS/QSO/v1.9f4$ 
+ls 
+mask-QSO-N-eboss_v1.9f4.ply  mask-QSO-S-eboss_v1.9f4.ply
+
+are copied here : /data36s/comparat/SDSS/dr14/spiders/masks/
+
+cd /data36s/comparat/SDSS/dr14/spiders
+python apply_dr14_ngc_sgc_mask.py 
+
+creates a NGC and a SGC catalog
+/data36s/comparat/SDSS/dr14/spiders/target/2RXS_AllWISE_catalog_paper_2017May26_withSpectro_with2RXS_mask_DR14areaNGC.fits
+/data36s/comparat/SDSS/dr14/spiders/target/2RXS_AllWISE_catalog_paper_2017May26_withSpectro_with2RXS_mask_DR14areaSGC.fits
+
+Randoms
+=======
+
+Use the randoms created for the eBOSS QSO
+/data36s/comparat/SDSS/LSS/QSO/v1.9f4/
+eboss_v1.9f4-QSO-N-eboss_v1.9f4.ran.fits       eboss_v1.9f4-QSO-S-eboss_v1.9f4.ran.fits      
+
+add hpID_4096 :
+healpixNestIndex(12, ALLW_RA, ALLW_DEC)
+
+match to depth maps from 2RXS : 2RXS_HPX_nside4096_all_ratelimit.fits.gz
+match in integer (exact)
+hpID_4096 and $0
+
+saved here :
+/data36s/comparat/SDSS/dr14/spiders/randoms/
+
+Finding the right depth cut
+===========================
+And writes the catalogs in ascii
+
+python ks-test-depth-value.py
+
+first of all angular KS test 
+
+KS-test in ra and dec between 
+ - data 0<z<0.2 and flux > 2e-13
+ - randoms
+
+for increasing values of 'MASK_2RXS_RATELIM' acceptance that mask both data and randoms.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # Match in 2 arcseconds with stilts tool to the VAC_spiders_2RXS_DR14 to find 9,055 counterparts (7% of the targets)
 # https://data.sdss.org/sas/dr14/eboss/spiders/analysis/VAC_spiders_2RXS_DR14.fits
@@ -41,21 +342,11 @@ out=/data36s/comparat/SDSS/dr14/spiders/target/2RXS_AllWISE_catalog_paper_2017Ma
 
 # match to /data37s/SDSS/catalogs/spAll-v5_10_10.fits
 
-# create randoms in a healpix grid downsampling at N_with_z / N_targets. DEC>-20 is sufficient
-
 stilts tpipe \
-in=/data37s/SDSS/catalogs/random-ra-dec.txt ifmt=ascii \
-cmd='addcol hp5 "healpixNestIndex( 5, RA, DEC )"' \
-cmd='addcol hp6 "healpixNestIndex( 6, RA, DEC )"' \
-omode=out out=/data37s/SDSS/catalogs/randoms.fits 
-
-
-stilts tpipe \
-in=/data37s/SDSS/catalogs/spAll-v5_10_10.fits \
-cmd='delcols "PROGRAMNAME               CHUNK                     PLATEQUALITY              PLATESN2                  DEREDSN2                  PRIMTARGET                SECTARGET                 LAMBDA_EFF                BLUEFIBER                 ZOFFSET                   XFOCAL                    YFOCAL                    BOSS_TARGET1              BOSS_TARGET2              ANCILLARY_TARGET1         ANCILLARY_TARGET2         EBOSS_TARGET0             EBOSS_TARGET1             EBOSS_TARGET2             EBOSS_TARGET_ID           THING_ID_TARGETING        SPECPRIMARY               SPECBOSS                  BOSS_SPECOBJ_ID           NSPECOBS                  CALIBFLUX                 CALIBFLUX_IVAR            FRACNSIGMA                FRACNSIGHI                FRACNSIGLO                SPECTROFLUX               SPECTROFLUX_IVAR          SPECTROSYNFLUX            SPECTROSYNFLUX_IVAR       SPECTROSKYFLUX            ANYANDMASK                ANYORMASK                 SPEC1_G                   SPEC1_R                   SPEC1_I                   SPEC2_G                   SPEC2_R                   SPEC2_I                   ELODIE_FILENAME           ELODIE_OBJECT             ELODIE_SPTYPE             ELODIE_BV                 ELODIE_TEFF               ELODIE_LOGG               ELODIE_FEH                ELODIE_Z                  ELODIE_Z_ERR              ELODIE_Z_MODELERR         ELODIE_RCHI2              ELODIE_DOF                Z_NOQSO                   Z_ERR_NOQSO               ZNUM_NOQSO                ZWARNING_NOQSO            CLASS_NOQSO               SUBCLASS_NOQSO            RCHI2DIFF_NOQSO           VDISP_LNL                 SPECOBJID                 OBJID                     PARENTID                  FIELDID                   SKYVERSION                MODE                      CLEAN                     RUN                       RERUN                     CAMCOL                    FIELD                     ID                        PARENT                    NCHILD                    OBJC_TYPE                 OBJC_PROB_PSF             OBJC_FLAGS                OBJC_FLAGS2               OBJC_ROWC                 OBJC_ROWCERR              OBJC_COLC                 OBJC_COLCERR              ROWVDEG                   ROWVDEGERR                COLVDEG                   COLVDEGERR                ROWC                      ROWCERR                   COLC                      COLCERR                   PETROTHETA                PETROTHETAERR             PETROTH50                 PETROTH50ERR              PETROTH90                 PETROTH90ERR              Q                         QERR                      U                         UERR                      M_E1                      M_E2                      M_E1E1ERR                 M_E1E2ERR                 M_E2E2ERR                 M_RR_CC                   M_RR_CCERR                M_CR4                     M_E1_PSF                  M_E2_PSF                  M_RR_CC_PSF               M_CR4_PSF                 THETA_DEV                 THETA_DEVERR              AB_DEV                    AB_DEVERR                 THETA_EXP                 THETA_EXPERR              AB_EXP                    AB_EXPERR                 FRACDEV                   FLAGS                     FLAGS2                    TYPE                      PROB_PSF                  NPROF                     PROFMEAN_NMGY             PROFERR_NMGY              STAR_LNL                  EXP_LNL                   DEV_LNL                   PSP_STATUS                PIXSCALE                  PHI_OFFSET                PHI_DEV_DEG               PHI_EXP_DEG               EXTINCTION                SKYFLUX                   SKYFLUX_IVAR              PSFFLUX                   PSFFLUX_IVAR              PSFMAG                    PSFMAGERR                 FIBERFLUX                 FIBERFLUX_IVAR            FIBERMAG                  FIBERMAGERR               FIBER2FLUX                FIBER2FLUX_IVAR           FIBER2MAG                 FIBER2MAGERR              CMODELFLUX                CMODELFLUX_IVAR           CMODELMAG                 CMODELMAGERR              MODELFLUX                 MODELFLUX_IVAR            MODELMAG                  MODELMAGERR               PETROFLUX                 PETROFLUX_IVAR            PETROMAG                  PETROMAGERR               DEVFLUX                   DEVFLUX_IVAR              DEVMAG                    DEVMAGERR                 EXPFLUX                   EXPFLUX_IVAR              EXPMAG                    EXPMAGERR                 APERFLUX                  APERFLUX_IVAR             CLOUDCAM                  CALIB_STATUS              NMGYPERCOUNT              NMGYPERCOUNT_IVAR         TAI                       RESOLVE_STATUS            THING_ID                  IFIELD                    BALKAN_ID                 NOBSERVE                  NDETECT                   NEDGE                     SCORE  "' \
+in=/data37s/SDSS/26/catalogs/specObj-SDSS-dr14.fits \
+cmd='delcols "SURVEY                     INSTRUMENT                  CHUNK                       PROGRAMNAME                 PLATERUN                    PLATEQUALITY             PLATESN2                   DEREDSN2                    LAMBDA_EFF                  BLUEFIBER                  ZOFFSET                     SNTURNOFF                  NTURNOFF                    SPECPRIMARY                 SPECSDSS                    SPECLEGACY                 SPECSEGUE                   SPECSEGUE1               SPECSEGUE2                 SPECBOSS                   BOSS_SPECOBJ_ID             SPECOBJID                   FLUXOBJID                   BESTOBJID                  TARGETOBJID                 PLATEID                     NSPECOBS                    FIRSTRELEASE               RUN2D                       RUN1D                      DESIGNID                    CX                         CY                          CZ                          XFOCAL                      YFOCAL                     SOURCETYPE                  TARGETTYPE                 THING_ID_TARGETING          THING_ID                   PRIMTARGET                  SECTARGET                   LEGACY_TARGET1              LEGACY_TARGET2             SPECIAL_TARGET1             SPECIAL_TARGET2            SEGUE1_TARGET1              SEGUE1_TARGET2             SEGUE2_TARGET1              SEGUE2_TARGET2              MARVELS_TARGET1             MARVELS_TARGET2            BOSS_TARGET1                BOSS_TARGET2               EBOSS_TARGET0               EBOSS_TARGET1              EBOSS_TARGET2               EBOSS_TARGET_ID             ANCILLARY_TARGET1           ANCILLARY_TARGET2          SPECTROGRAPHID             CHI68P                     FRACNSIGMA                  FRACNSIGHI                  FRACNSIGLO                 SPECTROFLUX                 SPECTROFLUX_IVAR           SPECTROSYNFLUX              SPECTROSYNFLUX_IVAR        SPECTROSKYFLUX              ANYANDMASK                 ANYORMASK                   SPEC1_G                    SPEC1_R                     SPEC1_I                    SPEC2_G                    SPEC2_R                    SPEC2_I                     ELODIE_FILENAME            ELODIE_OBJECT               ELODIE_SPTYPE              ELODIE_BV                   ELODIE_TEFF                ELODIE_LOGG                 ELODIE_FEH                 ELODIE_Z                    ELODIE_Z_ERR               ELODIE_Z_MODELERR           ELODIE_RCHI2               ELODIE_DOF                  Z_NOQSO                     Z_ERR_NOQSO                 ZWARNING_NOQSO             CLASS_NOQSO                 SUBCLASS_NOQSO             RCHI2DIFF_NOQSO             Z_PERSON                   CLASS_PERSON                Z_CONF_PERSON               COMMENTS_PERSON             CALIBFLUX                  CALIBFLUX_IVAR      "' \
 cmd='select "(ZWARNING==0 || ZWARNING==4) && Z>Z_ERR && Z_ERR>0"' \
-omode=out out=/data37s/SDSS/catalogs/spAll_short_ZW04-v5_10_10.fits 
-
+omode=out out=/data37s/SDSS/catalogs/specObj-SDSS-dr14_short_ZW04.fits 
 
 stilts tmatch2 \
 in1=/data37s/SDSS/catalogs/2RXS_AllWISE_catalog_paper_2017May26.fits ifmt1=fits \
@@ -268,73 +559,3 @@ out=/data37s/SDSS/catalogs/2RXS_AllWISE_catalog_paper_2017May26_DR14P.fits
     144 SNR_74_93                  D
     145 Separation                 D
  
-
-for finding the counterparts to 
- - the 2RXS sources, we adopted an area of 30,434.6 sqdeg.
- - the XMMSL2 sources, we adopted an area of 25,565 sqdeg.
-
-MISSING MASK : WISE MASK and ROSAT FIELD MASK !!
- 
-Data
-====
-
-Match with specObj-dr14.fits
-within 1 arcsecond to PLUG_RA, PLUG_DEC
-to find 17,178 counterparts
-
-add column
-hpID_4096
-healpixNestIndex(12, ALLW_RA, ALLW_DEC)
-
-match to depth maps from 2RXS : 2RXS_HPX_nside4096_all_ratelimit.fits.gz
-match in integer (exact)
-hpID_4096 and $0
-
-Save here the catalog :
-/data36s/comparat/SDSS/dr14/spiders/target/2RXS_AllWISE_catalog_paper_2017May26_withSpectro_with2RXS_mask.fits
-Spectroscopic results are available for 20,152 targets.
-
-Mask for DR14 eBOSS footprint 
-cd /data36s/comparat/SDSS/LSS/QSO/v1.9f4$ 
-ls 
-mask-QSO-N-eboss_v1.9f4.ply  mask-QSO-S-eboss_v1.9f4.ply
-
-are copied here : /data36s/comparat/SDSS/dr14/spiders/masks/
-
-cd /data36s/comparat/SDSS/dr14/spiders
-python apply_dr14_ngc_sgc_mask.py 
-
-creates a NGC and a SGC catalog
-/data36s/comparat/SDSS/dr14/spiders/target/2RXS_AllWISE_catalog_paper_2017May26_withSpectro_with2RXS_mask_DR14areaNGC.fits
-/data36s/comparat/SDSS/dr14/spiders/target/2RXS_AllWISE_catalog_paper_2017May26_withSpectro_with2RXS_mask_DR14areaSGC.fits
-
-Randoms
-=======
-
-Use the randoms created for the eBOSS QSO
-/data36s/comparat/SDSS/LSS/QSO/v1.9f4/
-eboss_v1.9f4-QSO-N-eboss_v1.9f4.ran.fits       eboss_v1.9f4-QSO-S-eboss_v1.9f4.ran.fits      
-
-add hpID_4096 :
-healpixNestIndex(12, ALLW_RA, ALLW_DEC)
-
-match to depth maps from 2RXS : 2RXS_HPX_nside4096_all_ratelimit.fits.gz
-match in integer (exact)
-hpID_4096 and $0
-
-saved here :
-/data36s/comparat/SDSS/dr14/spiders/randoms/
-
-Finding the right depth cut
-===========================
-And writes the catalogs in ascii
-
-python ks-test-depth-value.py
-
-first of all angular KS test 
-
-KS-test in ra and dec between 
- - data 0<z<0.2 and flux > 2e-13
- - randoms
-
-for increasing values of 'MASK_2RXS_RATELIM' acceptance that mask both data and randoms.
