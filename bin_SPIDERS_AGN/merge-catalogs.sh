@@ -1,6 +1,6 @@
 # ds52
 # screen -r AGN_SPIDERS
-
+	
 # Match with latest SDSS pipeline results, find 7208 counterparts
 
 stilts tmatch2 \
@@ -96,8 +96,6 @@ out=/data37s/SDSS/catalogs/randoms_2RXS_mask.fits
 
 import numpy as n
 import astropy.io.fits as fits
-
-
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as p
@@ -108,7 +106,14 @@ out_dir  = os.path.join(os.environ['HOME'], 'wwwDir/eRoMok/clustering/data/')
 
 d=fits.open('/data36s/comparat/SDSS/dr14/spiders/target/2RXS_AllWISE_catalog_paper_2017May26_v5_10_10_26_VERON_2RXS_mask.fits')[1].data
 
-spec = (d['in_veron']) | (d['in_26']) | (d['in_v5_10_10'])
+ALL= (d['p_any']>0.5) & (d['2RXS_ExiML']>10) & (d['ALLW_w1mpro']>10)& (d['ALLW_w1mpro']<17)
+
+spec = ( ALL ) & ( (d['in_veron']) | (d['in_26']) | (d['in_v5_10_10']) )
+
+spec_v510 = ( ALL ) & (d['in_v5_10_10']) 
+spec_26 = ( ALL ) & (d['in_26']) 
+spec_vv = ( ALL ) & (d['in_veron']) 
+
 
 hp3_list = n.array(list(set(d['hp3'][spec])))
 hp3_list.sort()
@@ -121,13 +126,13 @@ hp4_list.sort()
 w1_bins = n.hstack(( n.arange(0, 10., 5), n.arange(10, 21., 2.)))
 x_w1 = (w1_bins[1:]+w1_bins[:-1])*0.5
 
-def get_hist(pix, hp_name = 'hp3'):
+def get_hist(pix, hp_name = 'hp4'):
 	s=(d[hp_name]==pix)
-	nall  = n.histogram(d['ALLW_w1mpro'][s], bins = w1_bins)[0]
-	nspec = n.histogram(d['ALLW_w1mpro'][s & spec], bins = w1_bins)[0]
+	nall  = n.histogram(d['ALLW_w1mpro'][(s)&(ALL)], bins = w1_bins)[0]
+	nspec = n.histogram(d['ALLW_w1mpro'][(s)&(spec)], bins = w1_bins)[0]
 	return nspec, nall
 
-hh = n.array([get_hist(pix) for pix in hp3_list ])
+hh = n.array([get_hist(pix) for pix in hp4_list ])
 
 
 
@@ -163,7 +168,7 @@ for e1, e2 in zip(hh[:,0],hh[:,1]):
 	p.plot(x_w1, e1/den, color='k', lw=0.05, rasterized=True)
 
 # deep fields :
-sel = (hh[:,0].T[-2]>1)
+sel = (hh[:,0].T[-3]>1)
 
 ratio = n.array(ratio)
 ratio_M = n.mean(ratio[sel], axis=0)
@@ -174,7 +179,7 @@ ratio_STD = n.std(ratio[sel], axis=0)
 p.errorbar(x_w1, ratio_MD, yerr=ratio_STD, label='deep median')
 
 # shallow fields :
-sel = (hh[:,0].T[-2]<=1)
+sel = (hh[:,0].T[-3]<=1)
 
 ratio = n.array(ratio)
 ratio_M = n.mean(ratio[sel], axis=0)
@@ -201,15 +206,15 @@ p.figure(1, (5,5))
 p.axes([0.17,0.17,0.78,0.78])
 
 # deep fields :
-sel = (hh[:,0].T[-2]>1)
-for pix in hp3_list[sel]:
-	ss=(d['hp3']==pix)
+sel = (hh[:,0].T[-3]>1)
+for pix in hp4_list[sel]:
+	ss=(d['hp4']==pix)
 	p.plot(d['ALLW_RA'][ss],d['ALLW_DEC'][ss],'k,', rasterized=True)
 
 # shallow fields :
-sel = (hh[:,0].T[-2]<=1)
-for pix in hp3_list[sel]:
-	ss=(d['hp3']==pix)
+sel = (hh[:,0].T[-3]<=1)
+for pix in hp4_list[sel]:
+	ss=(d['hp4']==pix)
 	p.plot(d['ALLW_RA'][ss],d['ALLW_DEC'][ss],'r,', rasterized=True)
 
 
@@ -223,6 +228,23 @@ p.clf()
 
 
 
+p.figure(1, (5,5))
+p.axes([0.17,0.17,0.78,0.78])
+
+p.plot(d['Z_1'][spec_v510], d['ALLW_w1mpro'][spec_v510], 'k,', alpha=0.5, label='v5', rasterized=True)
+p.plot(d['Z_2'][spec_26]  , d['ALLW_w1mpro'][spec_26],   'b,', alpha=0.5, label='26', rasterized=True)
+p.plot(d['z'][spec_vv]    , d['ALLW_w1mpro'][spec_vv],   'r,', alpha=0.5, label='vv', rasterized=True)
+
+p.xlabel('redshift')
+p.ylabel('w1 mag')
+p.grid()
+# p.xscale('log')
+p.ylim((8,17))
+p.xlim((0.01,1.5))
+p.legend(frameon=False, loc=0)
+#p.title('data dr14')
+p.savefig(os.path.join( out_dir,"w1_depth_spec_z_w1mag.png"))
+p.clf()
 
 
 
