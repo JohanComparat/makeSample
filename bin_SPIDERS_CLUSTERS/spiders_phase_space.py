@@ -112,36 +112,127 @@ def get_props(cc, spm, z_name_spm):
 	#return n.array(delta_z), n.array(highest_sfrs), n.array(youngest_ages), n.array(sep_r200c), n.array(stellar_masses), n.array(is_member)				
 	return n.array(delta_z), n.array(sep_r200c), n.array(stellar_masses), n.array(is_member), n.array(stellar_ages)
 
-#delta_z, highest_sfrs, youngest_ages, sep_r200c, stellar_mass , is_mem = get_props(cc, spm26, 'Z')
-t0 = time.time()
-DATA = [] 
-for cc in cat[100:]:
-	print(cc['CLUS_ID'], time.time()-t0)
-	#delta_z, highest_sfrs, youngest_ages, sep_r200c, stellar_mass , is_mem = get_props(cc, spmV5, 'Z_NOQSO')
-	delta_z, sep_r200c, stellar_mass , is_mem, ages = get_props(cc, spmV5, 'Z_NOQSO')
-	mem = (is_mem==1)
-	if len(delta_z[mem]>0):
-		#DATA.append([delta_z[mem], highest_sfrs[mem], youngest_ages[mem], sep_r200c[mem], stellar_mass[mem]])
-		DATA.append([delta_z[mem], sep_r200c[mem], stellar_mass[mem], ages[mem]])
+##delta_z, highest_sfrs, youngest_ages, sep_r200c, stellar_mass , is_mem = get_props(cc, spm26, 'Z')
+#t0 = time.time()
+#DATA = [] 
+#for cc in cat[100:]:
+	#print(cc['CLUS_ID'], time.time()-t0)
+	##delta_z, highest_sfrs, youngest_ages, sep_r200c, stellar_mass , is_mem = get_props(cc, spmV5, 'Z_NOQSO')
+	#delta_z, sep_r200c, stellar_mass , is_mem, ages = get_props(cc, spmV5, 'Z_NOQSO')
+	#mem = (is_mem==1)
+	#if len(delta_z[mem]>0):
+		##DATA.append([delta_z[mem], highest_sfrs[mem], youngest_ages[mem], sep_r200c[mem], stellar_mass[mem]])
+		#DATA.append([delta_z[mem], sep_r200c[mem], stellar_mass[mem], ages[mem]])
 
-p.figure(1, (5,5))
-p.title('SPIDERS')
-for el in DATA:
-	p.scatter(el[1], el[0], s=30, c=n.log10(el[2]), edgecolors='face')
+## SAVE DATA
+#ttt = n.hstack((DATA))
+
+#n.savetxt(os.path.join(os.environ['DATA_DIR'], 'spiders', 'cluster', 'phase-space.dat'), ttt)
+
+dz_i, radius_i, mass_i, age_i = n.loadtxt(os.path.join(os.environ['DATA_DIR'], 'spiders', 'cluster', 'phase-space.dat'))
+
+
+ok = (radius_i>0 )&( dz_i > -10)&(dz_i<10)&( mass_i>0)&( age_i>0)
+
+radius = radius_i[ok]
+dz = dz_i[ok]
+mass = mass_i[ok]
+age = age_i[ok]
+
+z_bins = n.arange(-3., 3., 0.5)
+r_bins = n.arange(0., 1.5, 0.1)
+XX, YY = n.meshgrid(r_bins[:-1]+0.05, z_bins[:-1]+0.25)
+
+p.figure(0, (5.5, 4.5))
+p.axes([0.2,0.2,0.7,0.7])
+HH = n.histogram2d(radius, dz, bins=[r_bins, z_bins])[0].T
+p.scatter(XX[HH>1], YY[HH>1], c=HH[HH>1], s=60, edgecolors='none', marker='s' )
 
 p.xlabel('r/r200c')
 p.ylabel(r'c$\Delta$ z (galaxy - cluster) / $\sigma_v$')
 cb=p.colorbar(shrink=0.7)
-cb.set_label('stellar mass')
+cb.set_label('Number')
+#p.xscale('log')
+#p.yscale('log')
+p.xlim((0.0,1.5))
+p.ylim((-3.,3.))
+p.title('all members')
+p.grid()
+p.savefig(os.path.join(os.environ['DATA_DIR'], 'spiders', 'cluster', 'phase-space.png'))
+p.clf()
+
+med_mass = n.median(mass)
+
+s_low = (mass < med_mass)
+s_high = (mass >= med_mass)
+
+p.figure(0, (5.5, 4.5))
+p.axes([0.2,0.2,0.7,0.7])
+HH_low = n.histogram2d(radius[s_low], dz[s_low], bins=[r_bins, z_bins])[0].T
+HH_high = n.histogram2d(radius[s_high], dz[s_high], bins=[r_bins, z_bins])[0].T
+
+diff = HH_high-HH_low
+
+p.scatter(XX[HH>1], YY[HH>1], c=diff[HH>1], s=100, edgecolors='none', marker='s', cmap = 'gnuplot' )
+
+p.xlabel('r/r200c')
+p.ylabel(r'c$\Delta$ z (galaxy - cluster) / $\sigma_v$')
+cb=p.colorbar(shrink=0.7)
+cb.set_label('N(more massive)-N(less massive)')
+#p.xscale('log')
+#p.yscale('log')
+p.xlim((0.0,1.5))
+p.ylim((-3.,3.))
+p.title('all members')
+p.grid()
+p.savefig(os.path.join(os.environ['DATA_DIR'], 'spiders', 'cluster', 'phase-space-mass-diff.png'))
+p.clf()
+
+
+med_age = n.median(age)
+
+s_low = (age < med_age)
+s_high = (age >= med_age)
+
+p.figure(0, (5.5, 4.5))
+p.axes([0.2,0.2,0.7,0.7])
+HH_low = n.histogram2d(radius[s_low], dz[s_low], bins=[r_bins, z_bins])[0].T
+HH_high = n.histogram2d(radius[s_high], dz[s_high], bins=[r_bins, z_bins])[0].T
+
+diff = HH_high-HH_low
+
+p.scatter(XX[HH>1], YY[HH>1], c=diff[HH>1], s=100, edgecolors='none', marker='s', cmap='gnuplot' )
+
+p.xlabel('r/r200c')
+p.ylabel(r'c$\Delta$ z (galaxy - cluster) / $\sigma_v$')
+cb=p.colorbar(shrink=0.7)
+cb.set_label('N(older)-N(younger)')
+#p.xscale('log')
+#p.yscale('log')
+p.xlim((0.0,1.5))
+p.ylim((-3.,3.))
+p.title('all members')
+p.grid()
+p.savefig(os.path.join(os.environ['DATA_DIR'], 'spiders', 'cluster', 'phase-space-age-diff.png'))
+p.clf()
+
+
+p.figure(1, (5,5))
+p.title('SPIDERS')
+p.scatter(test[1], test[0], s=5, c=n.log10(test[3]), edgecolors='face')
+
+p.xlabel('r/r200c')
+p.ylabel(r'c$\Delta$ z (galaxy - cluster) / $\sigma_v$')
+cb=p.colorbar(shrink=0.7)
+cb.set_label('age')
 #p.xscale('log')
 #p.yscale('log')
 p.xlim((0.0,1.5))
 p.ylim((-4.,5.))
 p.grid()
-p.savefig(os.path.join(os.environ['DATA_DIR'], 'spiders', 'cluster', 'phase-space.png'))
+p.savefig(os.path.join(os.environ['DATA_DIR'], 'spiders', 'cluster', 'phase-space-age.png'))
 p.clf()
 
-# SAVE DATA
 
 
 sys.exit()
