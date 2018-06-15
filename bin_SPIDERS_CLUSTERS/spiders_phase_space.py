@@ -84,6 +84,7 @@ def get_props(cc, spm, z_name_spm):
 	sep_r200c = []
 	delta_z = []
 	stellar_masses = []
+	stellar_ages = []
 	is_member = []
 	# gets the cluster properties
 	z_clus = cc['CLUZSPEC']
@@ -109,19 +110,19 @@ def get_props(cc, spm, z_name_spm):
 				#youngest_ages.append(n.min(all_ages))
 				#highest_sfrs.append(n.max(sfr_inst))
 	#return n.array(delta_z), n.array(highest_sfrs), n.array(youngest_ages), n.array(sep_r200c), n.array(stellar_masses), n.array(is_member)				
-	return n.array(delta_z), n.array(sep_r200c), n.array(stellar_masses), n.array(is_member)
+	return n.array(delta_z), n.array(sep_r200c), n.array(stellar_masses), n.array(is_member), n.array(stellar_ages)
 
 #delta_z, highest_sfrs, youngest_ages, sep_r200c, stellar_mass , is_mem = get_props(cc, spm26, 'Z')
 t0 = time.time()
 DATA = [] 
-for cc in cat[20:35]:
+for cc in cat[100:]:
 	print(cc['CLUS_ID'], time.time()-t0)
 	#delta_z, highest_sfrs, youngest_ages, sep_r200c, stellar_mass , is_mem = get_props(cc, spmV5, 'Z_NOQSO')
-	delta_z, sep_r200c, stellar_mass , is_mem = get_props(cc, spmV5, 'Z_NOQSO')
+	delta_z, sep_r200c, stellar_mass , is_mem, ages = get_props(cc, spmV5, 'Z_NOQSO')
 	mem = (is_mem==1)
 	if len(delta_z[mem]>0):
 		#DATA.append([delta_z[mem], highest_sfrs[mem], youngest_ages[mem], sep_r200c[mem], stellar_mass[mem]])
-		DATA.append([delta_z[mem], sep_r200c[mem], stellar_mass[mem]])
+		DATA.append([delta_z[mem], sep_r200c[mem], stellar_mass[mem], ages[mem]])
 
 p.figure(1, (5,5))
 p.title('SPIDERS')
@@ -139,6 +140,9 @@ p.ylim((-4.,5.))
 p.grid()
 p.savefig(os.path.join(os.environ['DATA_DIR'], 'spiders', 'cluster', 'phase-space.png'))
 p.clf()
+
+# SAVE DATA
+
 
 sys.exit()
 
