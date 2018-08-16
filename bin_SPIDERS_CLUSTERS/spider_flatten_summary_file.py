@@ -4,9 +4,14 @@ import time
 import numpy as n
 t0 = time.time()
 
-dir = os.path.join(os.environ['HOME'], 'hegcl', 'SPIDERS', 'codex_firefly_matching_2018_mar_22')
+#dir = os.path.join(os.environ['HOME'], 'hegcl', 'SPIDERS', 'codex_firefly_matching_2018_mar_22')
 
-hd = fits.open(os.path.join(dir, 'CODEX-DR14-MergedSpectroscopicCatalogue_2018-02-05.fits'))[1].data
+#hd = fits.open(os.path.join(dir, 'CODEX-DR14-MergedSpectroscopicCatalogue_2018-02-05.fits'))[1].data
+
+
+dir = os.path.join(os.environ['HOME'], 'hegcl', 'SPIDERS')
+
+hd = fits.open(os.path.join(dir, 'validatedclusters_catalogue_2018-04-27_version_round123-v1_Xmass123-v1.fits'))[1].data
 
 
 DATA = []
@@ -106,10 +111,31 @@ for el in hd :
       new_line = n.hstack((line_start, line_part2))
       DATA.append(new_line) 
 
-header1 = " CLUS_ID    CODEX     KIND    COMPONENT     RA     DEC     RA_OPT     DEC_OPT    LAMBDA_CHISQ     LAMBDA_CHISQ_OPT     Z_LAMBDA     Z_LAMBDA_ERR     OBSSTATUS     NSUBMITTED     NTILED     NHASZ     NISNEWEBOSS     NISNEWSEQUELS    NISNEWSPIDERS     NISNEWSPIDERS_RASS_CLUS    NISNEWSPIDERS_XCLASS_CLUS     NISNEWSEQUELS_RASS_CLUS     NMEM     CLUZSPEC     CLUZSPECBOOT     CLUZSPECRUEL     CLUVDISP_GAP     CLUVDISPERR_GAP     CLUVDISP_BWT     CLUVDISPERR_BWT     CLUVDISPTYPE     CLUVDISPBEST     CLUVDISPBESTERR    ADDCOMMENT     DAZSPEC     NOKZ     NMEMBERS     SCREEN_CLU_RA_W     SCREEN_CLU_DEC_W     SCREEN_CLUZSPEC     SCREEN_CLUZSPEC_ERR     SCREEN_CLUZSPEC_SPREAD     SCREEN_CLUVDISP_GAP     SCREEN_CLUVDISP_BWT     SCREEN_CLUVDISP_BEST     SCREEN_NMEMBERS_W     STATUS     NINSPECTORS     NVALID     M200C     EM200C     LX0124     ELX     LC     R200C_DEG     KT    EKT     EZ     RAPP_R500     ACOR     KCOR     PSFCOR     FLUX052     EFLUX052     SIGMA    NH   IDLSPEC1D_Z   IDLSPEC1D_Z_ERR   IDLSPEC1D_ZWARNING   IDLSPEC1D_Z_NOQSO   IDLSPEC1D_Z_ERR_NOQSO   IDLSPEC1D_ZWARNING_NOQSO  PRIORITIES_SEQUELS   PRIORITIES_SPIDERS   FIBER2MAG_I   CMODELMAG_I  PROBABILITIES   RA   DEC   BCGFLAG   PLATE   MJD   FIBERID   ISMEMBER  SCREEN_ISMEMBER_W "
+header1 = " CLUS_ID    CODEX     KIND    COMPONENT     RA     DEC     RA_OPT     DEC_OPT    LAMBDA_CHISQ     LAMBDA_CHISQ_OPT     Z_LAMBDA     Z_LAMBDA_ERR     OBSSTATUS     NSUBMITTED     NTILED     NHASZ     NISNEWEBOSS     NISNEWSEQUELS    NISNEWSPIDERS     NISNEWSPIDERS_RASS_CLUS    NISNEWSPIDERS_XCLASS_CLUS     NISNEWSEQUELS_RASS_CLUS     NMEM     CLUZSPEC     CLUZSPECBOOT     CLUZSPECRUEL     CLUVDISP_GAP     CLUVDISPERR_GAP     CLUVDISP_BWT     CLUVDISPERR_BWT     CLUVDISPTYPE     CLUVDISPBEST     CLUVDISPBESTERR    ADDCOMMENT     DAZSPEC     NOKZ     NMEMBERS     SCREEN_CLU_RA_W     SCREEN_CLU_DEC_W     SCREEN_CLUZSPEC     SCREEN_CLUZSPEC_ERR     SCREEN_CLUZSPEC_SPREAD     SCREEN_CLUVDISP_GAP     SCREEN_CLUVDISP_BWT     SCREEN_CLUVDISP_BEST     SCREEN_NMEMBERS_W     STATUS     NINSPECTORS     NVALID     M200C     EM200C     LX0124     ELX     LC     R200C_DEG     KT    EKT     EZ     RAPP_R500     ACOR     KCOR     PSFCOR     FLUX052     EFLUX052     SIGMA    NH   IDLSPEC1D_Z   IDLSPEC1D_Z_ERR   IDLSPEC1D_ZWARNING   IDLSPEC1D_Z_NOQSO   IDLSPEC1D_Z_ERR_NOQSO   IDLSPEC1D_ZWARNING_NOQSO  PRIORITIES_SEQUELS   PRIORITIES_SPIDERS   FIBER2MAG_I   CMODELMAG_I  PROBABILITIES   RA_GAL   DEC_GAL   BCGFLAG   PLATE   MJD   FIBERID   ISMEMBER  SCREEN_ISMEMBER_W "
 
 header = ", ".join(header1.split())
 
-n.savetxt(os.path.join(dir, 'CODEX-DR14-MergedSpectroscopicCatalogue_2018-02-05-flat.csv'), DATA, header = header, fmt='%s', delimiter=',')
+#n.savetxt(os.path.join(dir, 'CODEX-DR14-MergedSpectroscopicCatalogue_2018-02-05-flat.csv'), DATA, header = header, fmt='%s', delimiter=',')
 
-os.system("""stilts tpipe in=/home/comparat/hegcl/SPIDERS/codex_firefly_matching_2018_mar_22/CODEX-DR14-MergedSpectroscopicCatalogue_2018-02-05-flat.csv ifmt=csv omode=out out=/home/comparat/hegcl/SPIDERS/codex_firefly_matching_2018_mar_22/CODEX-DR14-MergedSpectroscopicCatalogue_2018-02-05-flat.fits ofmt=fits""")
+n.savetxt(os.path.join(dir, 'validatedclusters_catalogue_2018-04-27_version_round123-v1_Xmass123-v1-flat.csv'), DATA, header = header, fmt='%s', delimiter=',')
+
+
+
+os.system("""stilts tpipe in=/home/comparat/hegcl/SPIDERS/validatedclusters_catalogue_2018-04-27_version_round123-v1_Xmass123-v1-flat.csv ifmt=csv omode=out out=/home/comparat/hegcl/SPIDERS/validatedclusters_catalogue_2018-04-27_version_round123-v1_Xmass123-v1-flat.fits ofmt=fits""")
+
+"""
+stilts tmatch2 ifmt1=fits ifmt2=fits \
+  in1=/home/comparat/hegcl/SPIDERS/validatedclusters_catalogue_2018-04-27_version_round123-v1_Xmass123-v1-flat.fits \
+  in2=/home/comparat/data2/firefly/v1_1_0/26/catalogs/sdss_firefly-26_Chabrier_MILES.fits \
+  omode=out out=/home/comparat/hegcl/SPIDERS/validatedclusters_catalogue_2018-04-27_version_round123-v1_Xmass123-v1-flat-FF26.fits \
+  matcher=3d values1='PLATE MJD FIBERID' values2='PLATE MJD FIBERID' params=0.00001 join=all1 \
+  suffix1=_a suffix2=_b 
+
+stilts tmatch2 ifmt1=fits ifmt2=fits \
+  in1=/home/comparat/hegcl/SPIDERS/validatedclusters_catalogue_2018-04-27_version_round123-v1_Xmass123-v1-flat.fits \
+  in2=/home/comparat/data2/firefly/v1_1_0/v5_10_0/catalogs/eboss_firefly-v5_10_0_Chabrier_MILES.fits \
+  omode=out out=/home/comparat/hegcl/SPIDERS/validatedclusters_catalogue_2018-04-27_version_round123-v1_Xmass123-v1-flat-FFv5.fits \
+  matcher=3d values1='PLATE MJD FIBERID' values2='PLATE MJD FIBERID' params=0.00001 join=all1 \
+  suffix1=_a suffix2=_b 
+
+"""
