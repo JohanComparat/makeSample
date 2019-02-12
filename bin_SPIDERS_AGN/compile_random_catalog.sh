@@ -1,42 +1,4 @@
 #!/bin/sh
-
-# ds52
-# screen -r AGN_SPIDERS
-# Match with latest SDSS pipeline results, find 7208 counterparts
-
-CAT_IN=/data44s/eroAGN_WG_DATA/DATA/photometry/catalogs/2RXS/2RXS_AllWISE_catalog_paper_2017May26.fits.gz
-
-CAT_SPEC_v5_11_0=/data44s/eroAGN_WG_DATA/DATA/spectroscopy/catalogs/SDSS/v5_11_0/spAll-v5_11_0.fits
-CAT_SPEC_26=/data44s/eroAGN_WG_DATA/DATA/spectroscopy/catalogs/SDSS/26/specObj-SDSS-dr14.fits
-
-CAT_TMP=/data36s/comparat/AGN_clustering/catalogs/tmp.fits 
-CAT_OUT=/data36s/comparat/AGN_clustering/catalogs/2RXS_AllWISE_catalog_paper_2017May26_v5_11_0_sdss_26.fits 
-
-
-# then
-
-# Match in 2 arcseconds swith tilts tool to the Veron & Veron catalog VII/258/vv10 to find 13,553 counterparts (10% of the targets)
-# http://www.mpe.mpg.de/XraySurveys/2RXS_XMMSL2/ADD-ONs/2RXS_AllWISE_catalog_paper_2017May26.fits.gz
-# http://cdsarc.u-strasbg.fr/viz-bin/Cat?VII/258
-
-stilts tmatch2 \
-in1=/data36s/comparat/SDSS/dr14/spiders/target/2RXS_AllWISE_catalog_paper_2017May26_v5_10_10_26.fits ifmt1=fits \
-in2=/data36s/comparat/veron-veron-13th-ed.fits ifmt2=fits \
-icmd2='delcols "_RAJ2000 _DEJ2000 Name n_RAJ2000 FC"' \
-matcher=sky params="2" join=all1 find=best \
-values1="ALLW_RA ALLW_DEC" values2="RAJ2000 DEJ2000" \
-ocmd='addcol in_veron "Separation>=0"' \
-ocmd='delcols "Separation"' \
-out=/data36s/comparat/SDSS/dr14/spiders/target/2RXS_AllWISE_catalog_paper_2017May26_v5_10_10_26_VERON.fits 
-
-# 7208 match v5_10_10
-# 21721 match 26
-# 13553 match Veron
-# all matches: 21368
-
-
-# create randoms in a healpix grid downsampling at N_with_z / N_targets. DEC>-20 is sufficient
-
 # full sky randoms :
 
 stilts tpipe \

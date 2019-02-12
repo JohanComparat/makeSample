@@ -1,4 +1,7 @@
 #!/bin/bash
+cd ~/software/linux/makeSample/bin_SPIDERS_AGN
+sh compile_specz_catalog.py
+
 
 # SDSS version = DR14
 cd ~/software/linux/makeSample/bin_SPIDERS_AGN
