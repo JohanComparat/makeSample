@@ -1,6 +1,18 @@
 #!/bin/bash
 cd ~/software/linux/makeSample/bin_SPIDERS_AGN
 sh compile_specz_catalog.py
+sh compile_random_catalog.sh
+
+python unwise-depth.py
+
+/data44s/eroAGN_WG_DATA/DATA/photometry/catalogs/unwise/release/depth-mask/mask-0000m107.cat.fits
+depth.list
+
+UNWISE_DEPTH_CAT=/data44s/eroAGN_WG_DATA/DATA/photometry/catalogs/unwise/release/depth-cat.fits
+
+stilts tcat \
+ifmt=fits in=@/data44s/eroAGN_WG_DATA/DATA/photometry/catalogs/unwise/release/depth.list \
+omode=out out=$UNWISE_DEPTH_CAT \
 
 
 # SDSS version = DR14
