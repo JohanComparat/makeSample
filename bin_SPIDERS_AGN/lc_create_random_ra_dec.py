@@ -11,4 +11,4 @@ for i in range(20):
 	dec  = n.arccos( z / r2 ) * 180/n.pi - 90.
 	ra = n.arctan2( y , x ) * 180/n.pi + 180.
 	topdir = '/data44s/eroAGN_WG_DATA/DATA/randoms/'
-	n.savetxt(topdir+'random-ra-dec-'+str(i)'.txt', n.transpose([ra[sel],dec[sel]]), header="RA DEC")
+	n.savetxt(topdir+'random-ra-dec-'+str(i)+'.txt', n.transpose([ra[sel],dec[sel]]), header="RA DEC")
