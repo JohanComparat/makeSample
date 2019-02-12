@@ -46,8 +46,8 @@ for ii in range(len(file_list)):
 		density_per_pixel[nside]    = number_per_pixel[nside]    /healpy.nside2pixarea(nside , degrees=True)
 		median_dfluxlbs_per_pixel[nside]    = np.array([np.median(f0[1].data['dfluxlbs'][(HEALPIX_VAL[nside] == el)]) for el in set_HP[nside]])  
 		median_fwhm_per_pixel[nside]    = np.array([np.median(f0[1].data['fwhm'][(HEALPIX_VAL[nside] == el)]) for el in set_HP[nside]])  
-		ra_hp = np.array([ healpy.pix2ang(nside, pix_id, nest=True)[1]*180./np.pi for pix_id in set_HP[nside] ])
-		dec_hp = np.array([ (healpy.pix2ang(nside, pix_id, nest=True)[0]-np.pi/2.)*180./np.pi for pix_id in set_HP[nside] ])
+		ra_hp[nside] = np.array([ healpy.pix2ang(nside, pix_id, nest=True)[1]*180./np.pi for pix_id in set_HP[nside] ])
+		dec_hp[nside] = np.array([ (healpy.pix2ang(nside, pix_id, nest=True)[0]-np.pi/2.)*180./np.pi for pix_id in set_HP[nside] ])
 
 	for nside in nside_values:
 		hdu_cols = fits.ColDefs([
