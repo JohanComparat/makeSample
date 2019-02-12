@@ -12,7 +12,7 @@ nl = lambda selection : len(selection.nonzero()[0])
 top_dir = '/data44s/eroAGN_WG_DATA/DATA/photometry/catalogs/unwise/release/'
 file_list = np.loadtxt(os.path.join(top_dir, 'cat.list'), unpack=True, dtype='str')
 
-nside_values = 2**np.arange(6,13,1)
+nside_values = 2**np.arange(10,11,1)
 
 for ii in range(len(file_list)):
 	out_file = os.path.join(top_dir, 'depth-mask', 'mask-'+file_list[ii])
@@ -29,7 +29,14 @@ for ii in range(len(file_list)):
 	density_per_pixel = {}
 	median_dfluxlbs_per_pixel = {}
 	median_fwhm_per_pixel = {}
+	ra_hp = {}
+	dec_hp = {}
 
+	prihdr = fits.Header()
+	prihdr['author'] = 'COMPARAT'
+	prihdu = fits.PrimaryHDU(header=prihdr)
+
+	hdu_list = [prihdu]
 	for nside in nside_values:
 		HEALPIX_VAL[nside] = healpy.ang2pix(nside,  f0[1].data['dec']*np.pi/180.+ np.pi/2. , f0[1].data['ra']*np.pi/180. , nest=True)
 		set_HP[nside] = np.array(list(set(HEALPIX_VAL[nside]   )))
@@ -39,13 +46,8 @@ for ii in range(len(file_list)):
 		density_per_pixel[nside]    = number_per_pixel[nside]    /healpy.nside2pixarea(nside , degrees=True)
 		median_dfluxlbs_per_pixel[nside]    = np.array([np.median(f0[1].data['dfluxlbs'][(HEALPIX_VAL[nside] == el)]) for el in set_HP[nside]])  
 		median_fwhm_per_pixel[nside]    = np.array([np.median(f0[1].data['fwhm'][(HEALPIX_VAL[nside] == el)]) for el in set_HP[nside]])  
-
-
-	prihdr = fits.Header()
-	prihdr['author'] = 'COMPARAT'
-	prihdu = fits.PrimaryHDU(header=prihdr)
-
-	hdu_list = [prihdu]
+		ra_hp = np.array([ healpy.pix2ang(nside, pix_id, nest=True)[1]*180./np.pi for pix_id in set_HP[nside] ])
+		dec_hp = np.array([ (healpy.pix2ang(nside, pix_id, nest=True)[0]-np.pi/2.)*180./np.pi for pix_id in set_HP[nside] ])
 
 	for nside in nside_values:
 		hdu_cols = fits.ColDefs([
@@ -53,7 +55,9 @@ for ii in range(len(file_list)):
 		fits.Column(name='N'                 , format='K' , array = number_per_pixel[nside] ),   
 		fits.Column(name='RHO'               , format='1E' ,  array = density_per_pixel[nside] ),   
 		fits.Column(name='MED_DFLUXLBS'      , format='1E' ,  array = median_dfluxlbs_per_pixel[nside] ),   
-		fits.Column(name='MED_FWHM'          , format='1E' ,  array = median_fwhm_per_pixel[nside] ),   
+		fits.Column(name='MED_FWHM'          , format='1E' ,  array = median_fwhm_per_pixel[nside] ),  
+		fits.Column(name='RA_PIX'          , format='1E' ,  array = ra_hp[nside] ),  
+		fits.Column(name='DEC_PIX'          , format='1E' ,  array = dec_hp[nside] )
 		])
 		hdu = fits.BinTableHDU.from_columns(hdu_cols)
 		hdu.name = 'healpix_'+str(nside)
