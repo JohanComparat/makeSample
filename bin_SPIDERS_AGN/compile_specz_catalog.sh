@@ -25,7 +25,7 @@ ocmd='addcol hp6 "healpixNestIndex( 6, ALLW_RA, ALLW_DEC )"' \
 ocmd='addcol hp12 "healpixNestIndex( 12, ALLW_RA, ALLW_DEC )"' \
 ocmd='addcol in_BOSS_v5_11_0 "Separation>=0"' \
 ocmd='delcols "Separation"' \
-omode=out out=CAT_TMP
+omode=out ofmt=fits out=CAT_TMP
 
 stilts tmatch2 \
 in1=CAT_TMP ifmt1=fits \
@@ -35,4 +35,4 @@ values1="ALLW_RA ALLW_DEC" values2="PLUG_RA PLUG_DEC" \
 suffix1="" suffix2="_SDSS_26" \
 ocmd='addcol in_SDSS_26 "Separation>=0"' \
 ocmd='delcols "Separation"' \
-out=$CAT_OUT
+omode=out ofmt=fits out=$CAT_OUT
