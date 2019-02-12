@@ -1,32 +1,30 @@
 #!/bin/sh
 # full sky randoms :
+ls /data44s/eroAGN_WG_DATA/DATA/randoms/random-ra-dec-*.txt > /data44s/eroAGN_WG_DATA/DATA/randoms/randoms.list
 
-stilts tpipe \
-in=/data37s/SDSS/catalogs/random-ra-dec.txt ifmt=ascii \
-cmd='addcol hp3 "healpixNestIndex( 3, RA, DEC )"' \
-cmd='addcol hp4 "healpixNestIndex( 4, RA, DEC )"' \
-cmd='addcol hp5 "healpixNestIndex( 5, RA, DEC )"' \
-cmd='addcol hp6 "healpixNestIndex( 6, RA, DEC )"' \
-cmd='addcol hp12 "healpixNestIndex( 12, RA, DEC )"' \
-omode=out out=/data37s/SDSS/catalogs/randoms.fits 
+RANDOM_CAT=/data44s/eroAGN_WG_DATA/DATA/randoms/randoms.fits
+RANDOM_CAT_MASKED=/data44s/eroAGN_WG_DATA/DATA/randoms/randoms_2rxsmask.fits
+
+#Masks
+MASK_2RXS=/data44s/eroAGN_WG_DATA/DATA/masks/2RXS_HPX_nside4096_all_ratelimit.fits
+MASK_XMMSL=/data44s/eroAGN_WG_DATA/DATA/masks/XMMSL_Map_withflags.fits
+
+stilts tcat \
+ifmt=ascii in=@/data44s/eroAGN_WG_DATA/DATA/randoms/randoms.list \
+omode=out out=$RANDOM_CAT \
+ocmd='addcol hp3 "healpixNestIndex( 3, RA, DEC )"' \
+ocmd='addcol hp4 "healpixNestIndex( 4, RA, DEC )"' \
+ocmd='addcol hp5 "healpixNestIndex( 5, RA, DEC )"' \
+ocmd='addcol hp6 "healpixNestIndex( 6, RA, DEC )"' \
+ocmd='addcol hp12 "healpixNestIndex( 12, RA, DEC )"' 
 
 #### 2RXS MASK_2RXS_RATELIM
-# /data36s/comparat/masks/2RXS_HPX_nside4096_all_ratelimit.fits.gz
-
 stilts tmatch2 \
-in1=/data36s/comparat/SDSS/dr14/spiders/target/2RXS_AllWISE_catalog_paper_2017May26_v5_10_10_26_VERON.fits ifmt1=fits \
-in2=/data36s/comparat/masks/2RXS_HPX_nside4096_all_ratelimit.fits ifmt2=fits \
+in1=$RANDOM_CAT ifmt1=fits \
+in2=$MASK_2RXS ifmt2=fits \
 matcher=exact join=all1 find=best \
 values1="hp12" values2='$0' \
-out=/data36s/comparat/SDSS/dr14/spiders/target/2RXS_AllWISE_catalog_paper_2017May26_v5_10_10_26_VERON_2RXS_mask.fits 
-
-
-stilts tmatch2 \
-in1=/data37s/SDSS/catalogs/randoms.fits ifmt1=fits \
-in2=/data36s/comparat/masks/2RXS_HPX_nside4096_all_ratelimit.fits ifmt2=fits \
-matcher=exact join=all1 find=best \
-values1="hp12" values2='$0' \
-out=/data37s/SDSS/catalogs/randoms_2RXS_mask.fits 
+out=$RANDOM_CAT_MASKED 
 
 # 
 # compute tsr x ssr in hp12 and hp6 vs magnitude (wise) and X flux 
