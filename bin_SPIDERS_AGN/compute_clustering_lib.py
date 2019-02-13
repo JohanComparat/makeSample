@@ -1,5 +1,6 @@
 import numpy as n
 import lc_setup
+import astropy.io.fits as fits
 import h5py    # HDF5 support
 import os
 import glob
@@ -16,36 +17,27 @@ cosmoMD = FlatLambdaCDM(H0=67.77*u.km/u.s/u.Mpc, Om0=0.307115)
 
 theory_dir = '/data17s/darksim/theory/camb'
 		
-def get_ra_dec_z_data(Lname, tracer_name, zmin, zmax):
-	out_dir = '/data17s/darksim/MD/MD_1.0Gpc/h5_lc/clustering_catalogs_'+Lname+'/'
-	out_name = os.path.join(out_dir , Lname + '_' + tracer_name + '_' + str(zmin) + '_' + str(zmax) + '.data')
-	
-	path_2_lc = '/data17s/darksim/MD/MD_1.0Gpc/h5_lc/lc_'+Lname+'.hdf5'
-	print('opens data')
-	f = h5py.File(path_2_lc, 'r')
-	
-	if tracer_name == '4MOST_BGLZ' :
-		is_gal = (f['/sky_position/selection'].value)&(f['/4MOST_COSMO_tracers/is_BG_lz'].value)
-	if tracer_name == '4MOST_BGHZ' :
-		is_gal = (f['/sky_position/selection'].value)&(f['/4MOST_COSMO_tracers/is_BG_hz'].value)
-	if tracer_name == '4MOST_ELG' :
-		is_gal = (f['/sky_position/selection'].value)&(f['/4MOST_COSMO_tracers/is_ELG'].value)
-	if tracer_name == 'EBOSS_ELG' :
-		is_gal = (f['/sky_position/selection'].value)&(f['/EBOSS_tracers/is_ELG'].value)
-	if tracer_name == '4MOST_QSO' :
-		is_gal = (f['/sky_position/selection'].value)&(f['/4MOST_COSMO_tracers/is_QSO'].value)
-	if tracer_name == 'eRo_AGN' :
-		is_gal = (f['/sky_position/selection'].value) & (f['/agn_properties/agn_activity'].value==1) & (f['/agn_properties/rxay_flux_05_20'].value>1e-14)
-	if tracer_name == 'eRo_CLUS' :
-		is_gal = (f['/sky_position/selection'].value) & (f['/cluster_properties/rxay_flux_05_24'].value>1e-14)
-	if tracer_name == 'eRo_CGAL' :
-		is_gal = (f['/sky_position/selection'].value) &(f['/cluster_galaxies/cluster_flux_05_24'].value>1e-14)&(f['/optical_galaxy_magnitudes/sdss_mag_r'].value<23.5)#&(f['/cluster_galaxies/red_sequence_flag'].value)
-	if tracer_name == 'RASS_AGN' :
-		is_gal = (f['/sky_position/selection'].value) & (f['/agn_properties/agn_activity'].value==1) & (f['/agn_properties/rxay_flux_05_20'].value>10**(-12.52))
-	
-	n_gal = len(f['/sky_position/redshift_S'].value[is_gal])
-	sel = (is_gal)&(f['/sky_position/redshift_S'].value>zmin)&(f['/sky_position/redshift_S'].value<zmax)
-	n.savetxt(out_name, n.transpose([f['/sky_position/RA'].value[sel], f['/sky_position/DEC'].value[sel], f['/sky_position/redshift_S'].value[sel], n.ones_like(f['/sky_position/redshift_S'].value[sel])]) )
+
+# catalogs :
+# /data44s/eroAGN_WG_DATA/DATA/photometry/catalogs/2RXS/2RXS_AllWISE_catalog_paper_2017May26.fits.gz
+# /data44s/eroAGN_WG_DATA/DATA/photometry/catalogs/XMM/XMMSL2_AllWISE_catalog_paper_2017JUN09.fits.gz
+# /data44s/eroAGN_WG_DATA/DATA/randoms/randoms.fits
+
+# sub catalogs
+# - full cat
+# - cut abs(gal_lat)>20 degrees
+# - cut on X-ray depth map
+# - cut on wise depth map
+
+# write ascii catalogs + param files here :
+# 
+
+out_dir='/data36s/comparat/AGN_clustering/angular_clustering/'
+
+def get_ra_dec_z_data(data, selection, out_name ):
+	out_name = os.path.join(out_dir , out_name + '.data')
+	n_gal = len( data['RA'][selection] )
+	n.savetxt(out_name, n.transpose([data['RA'][selection], data['DEC'][selection], 0.7*n.ones_like(data['RA'][selection]), n.ones_like(data['RA'][selection]) ])  )
 	print(out_name, n_gal)
 	return n_gal
 
