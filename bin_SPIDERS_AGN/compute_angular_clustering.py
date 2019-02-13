@@ -28,3 +28,43 @@ def compute_clustering(name, out_dir):
 	os.system("~/darksim/software/CUTE/CUTE/CUTE "+out_name+'.ini')
 
 compute_clustering('2RXS_AllWISE_catalog_paper_2017May26_X_GAL', out_dir)
+compute_clustering('XMMSL2_AllWISE_catalog_paper_2017JUN09_X_GAL', out_dir)
+
+
+def plot_results(name, out_dir):
+	out_name = os.path.join(out_dir , name )
+
+	fig = p.figure(2, (10,8))
+	# wedge plot
+	fig.add_subplot(2,2,1)
+
+	ra, dec, z, w = np.loadtxt(out_name + '.data', unpack=True)
+	p.plot(ra, dec, marker=',', color='b', alpha=0.1, rasterized = True, ls='None')
+	p.xlabel('R.A. [deg]')
+	p.ylabel('Dec. [deg]')
+	p.title('data')
+
+	fig.add_subplot(2,2,2)
+	ra, dec, z, w = np.loadtxt(out_name + '.random', unpack=True)
+	p.plot(ra, dec, marker=',', color='b', alpha=0.1, rasterized = True, ls='None')
+	p.xlabel('R.A. [deg]')
+	p.ylabel('Dec. [deg]')
+	p.title('randoms')
+
+	fig.add_subplot(2,2,3)
+	# nz
+	DATA = np.loadtxt(out_name + '.wtheta', unpack=True)
+	p.errorbar(DATA[0], DATA[1], yerr=DATA[1]*DATA[2]**(-0.5), rasterized = True)
+	p.xlabel('theta [deg]')
+	p.ylabel('w(theta) ')
+	p.xscale('log')
+	p.yscale('log')
+	p.grid()
+	
+	p.savefig(out_name+".png")
+	p.clf()
+
+plot_results('XMMSL2_AllWISE_catalog_paper_2017JUN09_X_GAL', out_dir)
+plot_results('2RXS_AllWISE_catalog_paper_2017May26_X_GAL', out_dir)
+
+
