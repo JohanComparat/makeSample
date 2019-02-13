@@ -13,9 +13,9 @@ VV_CAT=/data44s/eroAGN_WG_DATA/DATA/spectroscopy/catalogs/veron-veron-13th-ed.fi
 CAT_SPEC_2QZ=/data44s/eroAGN_WG_DATA/DATA/spectroscopy/catalogs/2QZ/2QZ.fits
 
 # output catalog names
-CAT_TMP=/data36s/comparat/AGN_clustering/catalogs/tmp.fits 
-CAT_OUT=/data36s/comparat/AGN_clustering/catalogs/2RXS_AllWISE_catalog_paper_2017May26_v5_11_0_sdss_26.fits 
-CAT_SPEC_0=/data36s/comparat/AGN_clustering/catalogs/2RXS_AllWISE_catalog_paper_2017May26_v5_11_0_sdss_26_VERON.fits 
+CAT_TMP=/data36s/comparat/AGN_clustering/catalogs/rxs_tmp.fits 
+CAT_OUT=/data36s/comparat/AGN_clustering/catalogs/rxs_tmp2.fits 
+CAT_SPEC_0=/data36s/comparat/AGN_clustering/catalogs/rxs_tmp3.fits 
 
 # final output name
 CAT_SPEC=/data36s/comparat/AGN_clustering/catalogs/2RXS_AllWISE_catalog_paper_2017May26_v5_11_0_sdss_26_VERON_2QZ.fits 
