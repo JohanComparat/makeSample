@@ -1,31 +1,27 @@
 #!/bin/sh
 
-"""
-cd /data44s/eroAGN_WG_DATA/DATA/spectroscopy/catalogs/2QZ
-cat *.txt > full.txt
-stilts tpipe in=full.txt ifmt=ascii omode=out out=full.fits ofmt=fits 
-
-"""
 # ds52
 # screen -r AGN_SPIDERS
-# Match with latest SDSS pipeline results, find 7208 counterparts
 
 # input catalog
-CAT_IN=/data44s/eroAGN_WG_DATA/DATA/photometry/catalogs/2RXS/2RXS_AllWISE_catalog_paper_2017May26.fits.gz
+CAT_IN=/data44s/eroAGN_WG_DATA/DATA/photometry/catalogs/XMM/XMMSL2_AllWISE_catalog_paper_2017JUN09.fits.gz
 
 # spectroscopic catalogs
-CAT_SPEC_2QZ=/data44s/eroAGN_WG_DATA/DATA/spectroscopy/catalogs/2QZ/2QZ.fits
 CAT_SPEC_v5_11_0=/data44s/eroAGN_WG_DATA/DATA/spectroscopy/catalogs/SDSS/v5_11_0/spAll-v5_11_0.fits
 CAT_SPEC_26=/data44s/eroAGN_WG_DATA/DATA/spectroscopy/catalogs/SDSS/26/specObj-SDSS-dr14.fits
 VV_CAT=/data44s/eroAGN_WG_DATA/DATA/spectroscopy/catalogs/veron-veron-13th-ed.fits
+CAT_SPEC_2QZ=/data44s/eroAGN_WG_DATA/DATA/spectroscopy/catalogs/2QZ/2QZ.fits
 
-# output catalogs
+# output catalog names
 CAT_TMP=/data36s/comparat/AGN_clustering/catalogs/tmp.fits 
-CAT_OUT=/data36s/comparat/AGN_clustering/catalogs/2RXS_AllWISE_catalog_paper_2017May26_v5_11_0_sdss_26.fits 
-CAT_SPEC_0=/data36s/comparat/AGN_clustering/catalogs/2RXS_AllWISE_catalog_paper_2017May26_v5_11_0_sdss_26_VERON.fits 
-CAT_SPEC=/data36s/comparat/AGN_clustering/catalogs/2RXS_AllWISE_catalog_paper_2017May26_v5_11_0_sdss_26_VERON_2QZ.fits 
+CAT_OUT=/data36s/comparat/AGN_clustering/catalogs/tmp2.fits  
+CAT_SPEC_0=/data36s/comparat/AGN_clustering/catalogs/tmp3.fits 
 
-CAT_SPEC_MASKED=/data36s/comparat/AGN_clustering/catalogs/2RXS_AllWISE_catalog_paper_2017May26_v5_11_0_sdss_26_VERON_MASKED.fits 
+# final output name
+CAT_SPEC=/data36s/comparat/AGN_clustering/catalogs/XMMSL2_AllWISE_catalog_paper_2017JUN09_v5_11_0_sdss_26_VERON_2QZ.fits 
+
+# masking the final catalog
+CAT_SPEC_MASKED=/data36s/comparat/AGN_clustering/catalogs/XMMSL2_AllWISE_catalog_paper_2017JUN09_v5_11_0_sdss_26_VERON_MASKED.fits 
 
 #Masks
 MASK_2RXS=/data44s/eroAGN_WG_DATA/DATA/masks/2RXS_HPX_nside4096_all_ratelimit.fits
@@ -83,7 +79,7 @@ rm $CAT_SPEC_0
 
 stilts tmatch2 \
 in1=$CAT_SPEC ifmt1=fits \
-in2=$MASK_2RXS ifmt2=fits \
+in2=$MASK_XMMSL ifmt2=fits \
 matcher=exact join=all1 find=best \
 values1="hp12" values2='$0' \
 omode=out out=$CAT_SPEC_MASKED
