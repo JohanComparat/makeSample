@@ -1,5 +1,11 @@
 #!/bin/sh
 
+"""
+cd /data44s/eroAGN_WG_DATA/DATA/spectroscopy/catalogs/2QZ
+cat *.txt > full.txt
+stilts tpipe in=full.txt ifmt=ascii omode=out out=full.fits ofmt=fits 
+
+"""
 # ds52
 # screen -r AGN_SPIDERS
 # Match with latest SDSS pipeline results, find 7208 counterparts
@@ -8,6 +14,7 @@
 CAT_IN=/data44s/eroAGN_WG_DATA/DATA/photometry/catalogs/2RXS/2RXS_AllWISE_catalog_paper_2017May26.fits.gz
 
 # spectroscopic catalogs
+CAT_SPEC_2QZ=/data44s/eroAGN_WG_DATA/DATA/spectroscopy/catalogs/2QZ/2QZ.fits
 CAT_SPEC_v5_11_0=/data44s/eroAGN_WG_DATA/DATA/spectroscopy/catalogs/SDSS/v5_11_0/spAll-v5_11_0.fits
 CAT_SPEC_26=/data44s/eroAGN_WG_DATA/DATA/spectroscopy/catalogs/SDSS/26/specObj-SDSS-dr14.fits
 VV_CAT=/data44s/eroAGN_WG_DATA/DATA/spectroscopy/catalogs/veron-veron-13th-ed.fits
@@ -15,7 +22,9 @@ VV_CAT=/data44s/eroAGN_WG_DATA/DATA/spectroscopy/catalogs/veron-veron-13th-ed.fi
 # output catalogs
 CAT_TMP=/data36s/comparat/AGN_clustering/catalogs/tmp.fits 
 CAT_OUT=/data36s/comparat/AGN_clustering/catalogs/2RXS_AllWISE_catalog_paper_2017May26_v5_11_0_sdss_26.fits 
-CAT_SPEC=/data36s/comparat/AGN_clustering/catalogs/2RXS_AllWISE_catalog_paper_2017May26_v5_11_0_sdss_26_VERON.fits 
+CAT_SPEC_0=/data36s/comparat/AGN_clustering/catalogs/2RXS_AllWISE_catalog_paper_2017May26_v5_11_0_sdss_26_VERON.fits 
+CAT_SPEC=/data36s/comparat/AGN_clustering/catalogs/2RXS_AllWISE_catalog_paper_2017May26_v5_11_0_sdss_26_VERON_2QZ.fits 
+
 CAT_SPEC_MASKED=/data36s/comparat/AGN_clustering/catalogs/2RXS_AllWISE_catalog_paper_2017May26_v5_11_0_sdss_26_VERON_MASKED.fits 
 
 #Masks
@@ -56,10 +65,21 @@ values1="ALLW_RA ALLW_DEC" values2="RAJ2000 DEJ2000" \
 suffix1="" suffix2="_VV_ed13" \
 ocmd='addcol in_veron "Separation>=0"' \
 ocmd='delcols "Separation"' \
+out=$CAT_SPEC_0
+
+stilts tmatch2 \
+in1=$CAT_OUT ifmt1=fits \
+in2=$CAT_SPEC_2QZ ifmt2=fits \
+matcher=sky params="2" join=all1 find=best \
+values1="ALLW_RA ALLW_DEC" values2="RAJ2000 DEJ2000" \
+suffix1="" suffix2="_2QZ" \
+ocmd='addcol in_2QZ "Separation>=0"' \
+ocmd='delcols "Separation"' \
 out=$CAT_SPEC
 
 rm $CAT_TMP
 rm $CAT_OUT
+rm $CAT_SPEC_0
 
 stilts tmatch2 \
 in1=$CAT_SPEC ifmt1=fits \
