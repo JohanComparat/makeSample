@@ -93,7 +93,7 @@ def plot_results(name, out_dir):
 	p.ylabel('Counts / dz=0.1')
 	#p.xscale('log')
 	p.yscale('log')
-	p.title(str(n.median(z_D[z_D>0])))
+	p.title(str(np.median(z_D[z_D>0])))
 	p.grid()
 	
 	p.tight_layout()
@@ -115,7 +115,7 @@ def plot_results(name, out_dir):
 #compute_clustering('2RXS_AllWISE_catalog_paper_2017May26_X_GAL_noStars_rtlim_gt_0_015', out_dir)
 #plot_results('2RXS_AllWISE_catalog_paper_2017May26_X_GAL_noStars_rtlim_gt_0_015', out_dir)
 
-compute_clustering('2RXSALLWISE_XGAL_ratelim004_gaia12', out_dir)
+#compute_clustering('2RXSALLWISE_XGAL_ratelim004_gaia12', out_dir)
 plot_results('2RXSALLWISE_XGAL_ratelim004_gaia12', out_dir)
 os.system('cp /data36s/comparat/AGN_clustering/angular_clustering/*.png /home/comparat/wwwDir/stuff/')
 
