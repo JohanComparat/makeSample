@@ -20,7 +20,7 @@ out_dir = '/data36s/comparat/AGN_clustering/angular_clustering/'
 
 deg_to_rad = np.pi/180.
 arcsec = 1. / 3600.
-rs = np.arange(0,20,.1)*arcsec
+rs = 10**np.arange(-1,1.6,0.1) *arcsec
 
 # SDSS WISE CATALOGS
 # path_2_file = '/data44s/eroAGN_WG_DATA/DATA/masks/SDSS_WISE_imageprop_nside512.fits'
@@ -56,7 +56,7 @@ gaia_dir = '/data44s/eroAGN_WG_DATA/DATA/photometry/catalogs/GAIA/DR2/'
 gaia_table_list = np.array(glob.glob(os.path.join(gaia_dir, 'table_*.fits')))
 gaia_table_list.sort()
 
-for gaia_file in gaia_table_list[1:]:
+for gaia_file in gaia_table_list[1:][::-1]:
 	print(gaia_file)
 	hdu_G     = fits.open(gaia_file)
 	ra_gaia, dec_gaia = hdu_G[1].data['ra'], hdu_G[1].data['dec']

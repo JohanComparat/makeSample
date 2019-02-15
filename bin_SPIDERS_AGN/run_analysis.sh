@@ -6,6 +6,11 @@ sh compile_specz_catalog_XMMSL2.sh
 
 sh compile_random_catalog.sh
 
+python create_gaia_mask_2RXS.py
+
+# adds a boolean column if yes or no it is too close to a star
+python apply_gaia_mask.py
+
 python write_angular_clustering_catalogs.py
 python compute_angular_clustering.py
 
