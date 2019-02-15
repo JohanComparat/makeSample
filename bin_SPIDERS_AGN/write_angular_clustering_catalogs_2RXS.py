@@ -21,7 +21,7 @@ data_file = path_2_data_2rxs
 
 path_2_randoms = '/data44s/eroAGN_WG_DATA/DATA/randoms/randoms_2rxsmask_GAIA_star_mask.fits'
 
-suffix = 'mask_gaia_g_lt_17'
+suffix = 'ratelim004_gaia12'
 
 # sub catalogs
 # - full cat
@@ -42,12 +42,20 @@ hduD     = fits.open(data_file)
 ra_data    = hduD[1].data[ra_name_data]
 dec_data    = hduD[1].data[dec_name_data]
 
-hduD[1].data['Z']
-hduD[1].data['Z_SDSS_26']
-hduD[1].data['z1']
-hduD[1].data['z2']
-
 z_data = np.zeros_like(ra_data)
+
+boss_ok = (hduD[1].data['Z']>0)&(hduD[1].data['ZWARNING']==0)
+sdss_ok = (hduD[1].data['Z_SDSS_26']>0)
+z1_ok   = (hduD[1].data['z1'] >0 )
+z2_ok   = (hduD[1].data['z2'] >0 )
+
+z_data[z1_ok  ] = hduD[1].data['z1']       [z1_ok  ]
+z_data[z2_ok  ] = hduD[1].data['z2']       [z2_ok  ]
+z_data[boss_ok] = hduD[1].data['Z']        [boss_ok]
+z_data[sdss_ok] = hduD[1].data['Z_SDSS_26'][sdss_ok]
+
+# add VV redshift, eventually
+
 ratelim_data    = hduD[1].data['RATELIM']
 
 coords = SkyCoord(ra_data, dec_data, unit='deg', frame='icrs')
@@ -71,11 +79,11 @@ near_a_star_D = (hduD[1].data['nearby_gaia_star_-10_g_5'] |
 	)
 
 
-stars_data = (hduD[1].data['p_any']>0.5)&(hduD[1].data['2RXS_ExiML']>10)
-rt_sel_data = (ratelim_data>0.015)
+high_likelihood = (hduD[1].data['2RXS_ExiML']>10)#(hduD[1].data['p_any']>0.5)&
+rt_sel_data = (ratelim_data<0.05)&(ratelim_data>0) 
 x_gal_data = (abs(bb_data)>20)&(dec_data<65)&(dec_data>-65)&(bb_ecl_data.value>-80)
-selection_data = (x_gal_data)&(near_a_star_D==False)
-# &(stars_data==False)&(rt_sel_data) 
+
+selection_data = (x_gal_data)&(near_a_star_D==False)&(rt_sel_data) #& (high_likelihood)
 
 N_data = len(ra_data[selection_data])
 
@@ -86,7 +94,7 @@ ra_rds    = hduR[1].data[ra_name_rds]
 dec_rds    = hduR[1].data[dec_name_rds]
 ratelim_rds    = hduR[1].data['RATELIM']
 
-rt_sel_data = (ratelim_rds>0)#0.015)
+rt_sel_data = (ratelim_rds<0.05)&(ratelim_rds>0)
 
 coords = SkyCoord(ra_rds, dec_rds, unit='deg', frame='icrs')
 bb_rds = coords.galactic.b.value
@@ -123,11 +131,11 @@ selection_rds = (x_gal_rds) & (down_samp) & (rt_sel_data) &(near_a_star_R==False
 
 N_rds = len(ra_rds[selection_rds])
 
-out_data = os.path.join(out_dir , '2RXS_AllWISE_catalog_paper_2017May26_X_GAL_'+suffix+'.data')
-np.savetxt(out_data, np.transpose([ra_data[selection_data], dec_data[selection_data], 0.7*np.ones_like(ra_data[selection_data]), np.ones_like(ra_data[selection_data]) ])  )
+out_data = os.path.join(out_dir, '2RXSALLWISE_XGAL_' + suffix + '.data')
+np.savetxt(out_data, np.transpose([ra_data[selection_data], dec_data[selection_data], z_data[selection_data], np.ones_like(ra_data[selection_data]) ])  )
 print(out_data)
 
-out_rds = os.path.join(out_dir , '2RXS_AllWISE_catalog_paper_2017May26_X_GAL_'+suffix+'.random')
+out_rds = os.path.join(out_dir, '2RXSALLWISE_XGAL_' + suffix + '.random')
 np.savetxt(out_rds, np.transpose([ra_rds[selection_rds], dec_rds[selection_rds], 0.7*np.ones_like(ra_rds[selection_rds]), np.ones_like(ra_rds[selection_rds]) ])  )
 print(out_rds)
 

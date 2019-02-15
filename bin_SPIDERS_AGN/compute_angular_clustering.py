@@ -40,7 +40,7 @@ def plot_results(name, out_dir):
 	# wedge plot
 	fig.add_subplot(3,2,1)
 
-	ra_D, dec_D, z, w = np.loadtxt(out_name + '.data', unpack=True)
+	ra_D, dec_D, z_D, w = np.loadtxt(out_name + '.data', unpack=True)
 	p.plot(ra_D, dec_D, marker=',', color='b', alpha=0.5, rasterized = True, ls='None', label=str(len(ra_D)))
 	p.xlabel('R.A. [deg]')
 	p.ylabel('Dec. [deg]')
@@ -85,7 +85,16 @@ def plot_results(name, out_dir):
 	p.xscale('log')
 	p.yscale('log')
 	p.grid()
-		
+
+	fig.add_subplot(3,2,6)
+	# nz
+	p.hist(z_D, bins=np.arange(0,2.6,0.1), rasterized = True)
+	p.xlabel('redshift')
+	p.ylabel('Counts / dz=0.1')
+	#p.xscale('log')
+	p.yscale('log')
+	p.grid()
+	
 	p.tight_layout()
 	p.savefig(out_name+".png")
 	p.clf()
@@ -105,12 +114,15 @@ def plot_results(name, out_dir):
 #compute_clustering('2RXS_AllWISE_catalog_paper_2017May26_X_GAL_noStars_rtlim_gt_0_015', out_dir)
 #plot_results('2RXS_AllWISE_catalog_paper_2017May26_X_GAL_noStars_rtlim_gt_0_015', out_dir)
 
-#compute_clustering('2RXS_AllWISE_catalog_paper_2017May26_X_GAL_noStars_rtlim_gt_0_015', out_dir)
-#plot_results('2RXS_AllWISE_catalog_paper_2017May26_X_GAL_noStars_rtlim_gt_0_015', out_dir)
+#compute_clustering('2RXSALLWISE_XGAL_ratelim_005_gaia12', out_dir)
+plot_results('2RXSALLWISE_XGAL_ratelim_005_gaia12', out_dir)
+os.system('cp /data36s/comparat/AGN_clustering/angular_clustering/*.png /home/comparat/wwwDir/stuff/')
 
 #ls /data36s/comparat/AGN_clustering/angular_clustering/*.random
 
-all_files = np.array(['2RXS_AllWISE_catalog_paper_2017May26_X_GAL_mask_gaia_g_lt_10'
+all_files = np.array([
+'2RXSALLWISE_XGAL_ratelim_005_gaia12'
+,'2RXS_AllWISE_catalog_paper_2017May26_X_GAL_mask_gaia_g_lt_10'
 ,'2RXS_AllWISE_catalog_paper_2017May26_X_GAL_mask_gaia_g_lt_11'
 ,'2RXS_AllWISE_catalog_paper_2017May26_X_GAL_mask_gaia_g_lt_12'
 ,'2RXS_AllWISE_catalog_paper_2017May26_X_GAL_mask_gaia_g_lt_13'
@@ -126,6 +138,7 @@ all_files = np.array(['2RXS_AllWISE_catalog_paper_2017May26_X_GAL_mask_gaia_g_lt
 ,'2RXS_AllWISE_catalog_paper_2017May26_X_GAL_noStars_rtlim_gt_0_015'
 ,'2RXS_AllWISE_catalog_paper_2017May26_X_GAL'
 ,'XMMSL2_AllWISE_catalog_paper_2017JUN09_X_GAL'])
+
 
 for ffi in all_files:
 	#compute_clustering(ffi, out_dir)
