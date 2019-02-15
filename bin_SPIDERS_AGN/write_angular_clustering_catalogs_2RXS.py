@@ -47,9 +47,10 @@ bb_data = coords.galactic.b.value
 ll_data = coords.galactic.l.value
 bb_ecl_data = coords.barycentrictrueecliptic.lat
 
-#stars_data = (hduD[1].data['p_any']>0.5)&(hduD[1].data['2RXS_ExiML']>10)
-x_gal_data = (abs(bb_data)>20)&(dec_data<80)&(dec_data>-80)&(bb_ecl_data>-80)#&(stars_data==False)
-selection_data = (x_gal_data)
+stars_data = (hduD[1].data['p_any']>0.5)&(hduD[1].data['2RXS_ExiML']>10)
+rt_sel_data = (ratelim_data>0.015)
+x_gal_data = (abs(bb_data)>20)&(dec_data<80)&(dec_data>-80)&(bb_ecl_data.value>-80)
+selection_data = (x_gal_data)&(stars_data==False)&(rt_sel_data)
 
 N_data = len(ra_data[selection_data])
 
@@ -60,12 +61,14 @@ ra_rds    = hduR[1].data[ra_name_rds]
 dec_rds    = hduR[1].data[dec_name_rds]
 ratelim_rds    = hduR[1].data['RATELIM']
 
+rt_sel_data = (ratelim_rds>0.015)
+
 coords = SkyCoord(ra_rds, dec_rds, unit='deg', frame='icrs')
 bb_rds = coords.galactic.b.value
 ll_rds = coords.galactic.l.value
 bb_ecl_rds = coords.barycentrictrueecliptic.lat
 
-x_gal_rds = (abs(bb_rds)>20)&(dec_rds<80)&(dec_rds>-80)&(bb_ecl_rds>-80)
+x_gal_rds = (abs(bb_rds)>20)&(dec_rds<80)&(dec_rds>-80)&(bb_ecl_rds.value>-80)
 
 N_rds = len(ra_rds[x_gal_rds])
 
@@ -75,15 +78,15 @@ rd_rds = np.random.random(len(ra_rds))
 frac = 20./(N_rds/N_data)
 down_samp = (rd_rds<frac)
 
-selection_rds = (x_gal_rds) & (down_samp)
+selection_rds = (x_gal_rds) & (down_samp) & (rt_sel_data)
 
 N_rds = len(ra_rds[selection_rds])
 
 
-out_data = os.path.join(out_dir , '2RXS_AllWISE_catalog_paper_2017May26_X_GAL.data')
+out_data = os.path.join(out_dir , '2RXS_AllWISE_catalog_paper_2017May26_X_GAL_noStars_rtlim_gt_0_015.data')
 np.savetxt(out_data, np.transpose([ra_data[selection_data], dec_data[selection_data], 0.7*np.ones_like(ra_data[selection_data]), np.ones_like(ra_data[selection_data]) ])  )
 
-out_rds = os.path.join(out_dir , '2RXS_AllWISE_catalog_paper_2017May26_X_GAL.random')
+out_rds = os.path.join(out_dir , '2RXS_AllWISE_catalog_paper_2017May26_X_GAL_noStars_rtlim_gt_0_015.random')
 np.savetxt(out_rds, np.transpose([ra_rds[selection_rds], dec_rds[selection_rds], 0.7*np.ones_like(ra_rds[selection_rds]), np.ones_like(ra_rds[selection_rds]) ])  )
 
 

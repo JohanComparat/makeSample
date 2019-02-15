@@ -45,7 +45,7 @@ ll_data = coords.galactic.l.value
 bb_ecl_data = coords.barycentrictrueecliptic.lat
 
 #stars_data = (hduD[1].data['p_any']>0.5)#&(hduD[1].data['2RXS_ExiML']>10)
-x_gal_data = (abs(bb_data)>20)&(dec_data<80)&(dec_data>-80)&(bb_ecl_data>-80)#&(stars_data==False)
+x_gal_data = (abs(bb_data)>20)&(dec_data<80)&(dec_data>-80)&(bb_ecl_data.value>-80)#&(stars_data==False)
 selection_data = (x_gal_data)
 
 N_data = len(ra_data[selection_data])
@@ -61,7 +61,7 @@ bb_rds = coords.galactic.b.value
 ll_rds = coords.galactic.l.value
 bb_ecl_rds = coords.barycentrictrueecliptic.lat
 
-x_gal_rds = (abs(bb_rds)>20)&(dec_rds<80)&(dec_rds>-80)&(bb_ecl_rds>-80)
+x_gal_rds = (abs(bb_rds)>20)&(dec_rds<80)&(dec_rds>-80)&(bb_ecl_rds.value>-80)
 
 N_rds = len(ra_rds[x_gal_rds])
 
