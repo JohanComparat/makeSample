@@ -20,7 +20,7 @@ out_dir = '/data36s/comparat/AGN_clustering/angular_clustering/'
 
 deg_to_rad = np.pi/180.
 arcsec = 1. / 3600.
-rs = np.arange(80)*arcsec/2.
+rs = np.arange(0,20,.1)*arcsec
 
 # SDSS WISE CATALOGS
 # path_2_file = '/data44s/eroAGN_WG_DATA/DATA/masks/SDSS_WISE_imageprop_nside512.fits'
