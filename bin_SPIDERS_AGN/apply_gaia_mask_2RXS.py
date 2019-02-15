@@ -51,25 +51,26 @@ gaia_table_list.sort()
 
 valid_ids = np.array([0, 1, 2,3,4,8,9,10,11,12])
 
+# decision by how many arcseconds we mask
 gaia_file_2_radius = {
-	'table_-10_g_5.fits' :  10. ,
-	'table_5_g_6.fits'   :  6 ,
-	'table_6_g_7.fits'   :  4 ,
-	'table_7_g_8.fits'   :  3 ,
-	'table_8_g_9.fits'   :  2 ,
-	'table_9_g_10.fits'  :  2 ,
-	'table_10_g_11.fits' :  2 ,
-	'table_11_g_12.fits' :  2 ,
-	'table_12_g_13.fits' :  2 ,
-	'table_13_g_14.fits' :  2 ,
-	'table_14_g_15.fits' :  1 ,
-	'table_15_g_16.fits' :  1 ,
-	'table_16_g_17.fits' :  1 
+	'table_-10_g_5.fits' :  20. ,
+	'table_5_g_6.fits'   :  15. ,
+	'table_6_g_7.fits'   :  10. ,
+	'table_7_g_8.fits'   :  8. ,
+	'table_8_g_9.fits'   :  6. ,
+	'table_9_g_10.fits'  :  4. ,
+	'table_10_g_11.fits' :  3. ,
+	'table_11_g_12.fits' :  3. ,
+	'table_12_g_13.fits' :  2. ,
+	'table_13_g_14.fits' :  2. ,
+	'table_14_g_15.fits' :  1. ,
+	'table_15_g_16.fits' :  1. ,
+	'table_16_g_17.fits' :  1. 
 	}
 
-star_nearby = []
+gaia_file_2_mask_array = {}
 
-for gaia_file in gaia_table_list[valid_ids]:
+def get_mask(gaia_file):
 	print(gaia_file)
 	r_mask = gaia_file_2_radius[os.path.basename(gaia_file)] / 3600.
 	hdu_G     = fits.open(gaia_file)
@@ -79,13 +80,36 @@ for gaia_file in gaia_table_list[valid_ids]:
 	Tree_obj_Gaia = BallTree(gaia_coordinates, metric='haversine') 
 	test_c = Tree_obj_Gaia.query_radius(agn_coordinates, r = r_mask, count_only = True) 
 	to_be_masked = (test_c>0)
-	star_nearby.append( to_be_masked )
 	print('N to mask:', len(to_be_masked.nonzero()[0]))
+	return to_be_masked
 
-mask_array = np.transpose(star_nearby).any(axis=1)
-c_mask = Column(mask_array, name='nearby_gaia_star')
 
-hduD.add_column(c_mask)
+for gaia_file in gaia_table_list:
+	gaia_file_2_mask_array[os.path.basename(gaia_file)] = get_mask(gaia_file)
+
+
+#mask_array_bright = np.transpose([
+	#gaia_file_2_mask_array['table_-10_g_5.fits' ],
+	#gaia_file_2_mask_array['table_5_g_6.fits'   ],
+	#gaia_file_2_mask_array['table_6_g_7.fits'   ],	
+	#gaia_file_2_mask_array['table_7_g_8.fits'   ],	
+	#gaia_file_2_mask_array['table_8_g_9.fits'   ],	
+	#gaia_file_2_mask_array['table_9_g_10.fits'  ]
+	#]).any(axis=1)
+
+hduD.add_column( Column(gaia_file_2_mask_array['table_-10_g_5.fits'  ], name='nearby_gaia_star_-10_g_5' ) )
+hduD.add_column( Column(gaia_file_2_mask_array['table_5_g_6.fits'    ], name='nearby_gaia_star_5_g_6'   ) )
+hduD.add_column( Column(gaia_file_2_mask_array['table_6_g_7.fits'    ], name='nearby_gaia_star_6_g_7'   ) )
+hduD.add_column( Column(gaia_file_2_mask_array['table_7_g_8.fits'    ], name='nearby_gaia_star_7_g_8'   ) )
+hduD.add_column( Column(gaia_file_2_mask_array['table_8_g_9.fits'    ], name='nearby_gaia_star_8_g_9'   ) )
+hduD.add_column( Column(gaia_file_2_mask_array['table_9_g_10.fits'   ], name='nearby_gaia_star_9_g_10'  ) )
+hduD.add_column( Column(gaia_file_2_mask_array['table_10_g_11.fits'  ], name='nearby_gaia_star_10_g_11' ) )
+hduD.add_column( Column(gaia_file_2_mask_array['table_11_g_12.fits'  ], name='nearby_gaia_star_11_g_12' ) )
+hduD.add_column( Column(gaia_file_2_mask_array['table_12_g_13.fits'  ], name='nearby_gaia_star_12_g_13' ) )
+hduD.add_column( Column(gaia_file_2_mask_array['table_13_g_14.fits'  ], name='nearby_gaia_star_13_g_14' ) )
+hduD.add_column( Column(gaia_file_2_mask_array['table_14_g_15.fits'  ], name='nearby_gaia_star_14_g_15' ) )
+hduD.add_column( Column(gaia_file_2_mask_array['table_15_g_16.fits'  ], name='nearby_gaia_star_15_g_16' ) )
+hduD.add_column( Column(gaia_file_2_mask_array['table_16_g_17.fits'  ], name='nearby_gaia_star_16_g_17' ) )
 
 print( out_file )
 if os.path.isfile(out_file):
