@@ -15,13 +15,13 @@ in_dir  = '/data36s/comparat/AGN_clustering/catalogs/'
 out_dir = '/data36s/comparat/AGN_clustering/angular_clustering/'
 
 # catalogs :
-path_2_data_2rxs   = join( in_dir, '2RXS_AllWISE_catalog_paper_2017May26_v5_11_0_sdss_26_VERON_MASKED.fits'   )
+path_2_data_2rxs   = join( in_dir, '2RXS_AllWISE_catalog_paper_2017May26_v5_11_0_sdss_26_VERON_MASKED_GAIA_star_mask.fits'   )
 
 data_file = path_2_data_2rxs
 
 path_2_randoms = '/data44s/eroAGN_WG_DATA/DATA/randoms/randoms_2rxsmask_GAIA_star_mask.fits'
 
-suffix = 'mask_gaia_g_lt_6'
+suffix = 'mask_gaia_g_lt_17'
 
 # sub catalogs
 # - full cat
@@ -41,6 +41,12 @@ dec_name_rds = 'DEC'
 hduD     = fits.open(data_file)
 ra_data    = hduD[1].data[ra_name_data]
 dec_data    = hduD[1].data[dec_name_data]
+
+hduD[1].data['Z']
+hduD[1].data['Z_SDSS_26']
+hduD[1].data['z1']
+hduD[1].data['z2']
+
 z_data = np.zeros_like(ra_data)
 ratelim_data    = hduD[1].data['RATELIM']
 
@@ -51,12 +57,12 @@ bb_ecl_data = coords.barycentrictrueecliptic.lat
 
 near_a_star_D = (hduD[1].data['nearby_gaia_star_-10_g_5'] |
 	hduD[1].data['nearby_gaia_star_5_g_6']   |
-	#hduD[1].data['nearby_gaia_star_6_g_7']   |
-	#hduD[1].data['nearby_gaia_star_7_g_8']   |
-	#hduD[1].data['nearby_gaia_star_8_g_9']   |
-	#hduD[1].data['nearby_gaia_star_9_g_10']  |
-	#hduD[1].data['nearby_gaia_star_10_g_11'] |
-	#hduD[1].data['nearby_gaia_star_11_g_12'] |
+	hduD[1].data['nearby_gaia_star_6_g_7']   |
+	hduD[1].data['nearby_gaia_star_7_g_8']   |
+	hduD[1].data['nearby_gaia_star_8_g_9']   |
+	hduD[1].data['nearby_gaia_star_9_g_10']  |
+	hduD[1].data['nearby_gaia_star_10_g_11'] |
+	hduD[1].data['nearby_gaia_star_11_g_12'] #|
 	#hduD[1].data['nearby_gaia_star_12_g_13'] |
 	#hduD[1].data['nearby_gaia_star_13_g_14'] |
 	#hduD[1].data['nearby_gaia_star_14_g_15'] |
@@ -67,8 +73,9 @@ near_a_star_D = (hduD[1].data['nearby_gaia_star_-10_g_5'] |
 
 stars_data = (hduD[1].data['p_any']>0.5)&(hduD[1].data['2RXS_ExiML']>10)
 rt_sel_data = (ratelim_data>0.015)
-x_gal_data = (abs(bb_data)>20)&(dec_data<80)&(dec_data>-80)&(bb_ecl_data.value>-80)
-selection_data = (x_gal_data)&(stars_data==False)&(rt_sel_data) &(near_a_star_D==False)
+x_gal_data = (abs(bb_data)>20)&(dec_data<65)&(dec_data>-65)&(bb_ecl_data.value>-80)
+selection_data = (x_gal_data)&(near_a_star_D==False)
+# &(stars_data==False)&(rt_sel_data) 
 
 N_data = len(ra_data[selection_data])
 
@@ -79,14 +86,14 @@ ra_rds    = hduR[1].data[ra_name_rds]
 dec_rds    = hduR[1].data[dec_name_rds]
 ratelim_rds    = hduR[1].data['RATELIM']
 
-rt_sel_data = (ratelim_rds>0.015)
+rt_sel_data = (ratelim_rds>0)#0.015)
 
 coords = SkyCoord(ra_rds, dec_rds, unit='deg', frame='icrs')
 bb_rds = coords.galactic.b.value
 ll_rds = coords.galactic.l.value
 bb_ecl_rds = coords.barycentrictrueecliptic.lat
 
-x_gal_rds = (abs(bb_rds)>20)&(dec_rds<80)&(dec_rds>-80)&(bb_ecl_rds.value>-80)
+x_gal_rds = (abs(bb_rds)>20)&(dec_rds<65)&(dec_rds>-65)&(bb_ecl_rds.value>-80)
 
 N_rds = len(ra_rds[x_gal_rds])
 
@@ -99,12 +106,12 @@ down_samp = (rd_rds<frac)
 
 near_a_star_R = (hduR[1].data['nearby_gaia_star_-10_g_5'] |
 	hduR[1].data['nearby_gaia_star_5_g_6']   |
-	#hduR[1].data['nearby_gaia_star_6_g_7']   |
-	#hduR[1].data['nearby_gaia_star_7_g_8']   |
-	#hduR[1].data['nearby_gaia_star_8_g_9']   |
-	#hduR[1].data['nearby_gaia_star_9_g_10']  |
-	#hduR[1].data['nearby_gaia_star_10_g_11'] |
-	#hduR[1].data['nearby_gaia_star_11_g_12'] |
+	hduR[1].data['nearby_gaia_star_6_g_7']   |
+	hduR[1].data['nearby_gaia_star_7_g_8']   |
+	hduR[1].data['nearby_gaia_star_8_g_9']   |
+	hduR[1].data['nearby_gaia_star_9_g_10']  |
+	hduR[1].data['nearby_gaia_star_10_g_11'] |
+	hduR[1].data['nearby_gaia_star_11_g_12'] #|
 	#hduR[1].data['nearby_gaia_star_12_g_13'] |
 	#hduR[1].data['nearby_gaia_star_13_g_14'] |
 	#hduR[1].data['nearby_gaia_star_14_g_15'] |
@@ -112,8 +119,7 @@ near_a_star_R = (hduR[1].data['nearby_gaia_star_-10_g_5'] |
 	#hduR[1].data['nearby_gaia_star_16_g_17'] 
 	)
 
-
-selection_rds = (x_gal_rds) & (down_samp) & (rt_sel_data)  &(near_a_star_R==False)
+selection_rds = (x_gal_rds) & (down_samp) & (rt_sel_data) &(near_a_star_R==False)
 
 N_rds = len(ra_rds[selection_rds])
 

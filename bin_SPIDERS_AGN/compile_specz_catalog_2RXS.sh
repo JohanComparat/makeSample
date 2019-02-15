@@ -64,7 +64,7 @@ ocmd='delcols "Separation"' \
 out=$CAT_SPEC_0
 
 stilts tmatch2 \
-in1=$CAT_OUT ifmt1=fits \
+in1=$CAT_SPEC_0 ifmt1=fits \
 in2=$CAT_SPEC_2QZ ifmt2=fits \
 matcher=sky params="2" join=all1 find=best \
 values1="ALLW_RA ALLW_DEC" values2="RAJ2000 DEJ2000" \
