@@ -88,11 +88,12 @@ def plot_results(name, out_dir):
 
 	fig.add_subplot(3,2,6)
 	# nz
-	p.hist(z_D, bins=np.arange(0,2.6,0.1), rasterized = True)
+	p.hist(z_D[z_D>0], bins=np.arange(0,2.6,0.1), rasterized = True)
 	p.xlabel('redshift')
 	p.ylabel('Counts / dz=0.1')
 	#p.xscale('log')
 	p.yscale('log')
+	p.title(str(n.median(z_D[z_D>0])))
 	p.grid()
 	
 	p.tight_layout()
@@ -114,30 +115,31 @@ def plot_results(name, out_dir):
 #compute_clustering('2RXS_AllWISE_catalog_paper_2017May26_X_GAL_noStars_rtlim_gt_0_015', out_dir)
 #plot_results('2RXS_AllWISE_catalog_paper_2017May26_X_GAL_noStars_rtlim_gt_0_015', out_dir)
 
-#compute_clustering('2RXSALLWISE_XGAL_ratelim_005_gaia12', out_dir)
-plot_results('2RXSALLWISE_XGAL_ratelim_005_gaia12', out_dir)
+compute_clustering('2RXSALLWISE_XGAL_ratelim004_gaia12', out_dir)
+plot_results('2RXSALLWISE_XGAL_ratelim004_gaia12', out_dir)
 os.system('cp /data36s/comparat/AGN_clustering/angular_clustering/*.png /home/comparat/wwwDir/stuff/')
 
 #ls /data36s/comparat/AGN_clustering/angular_clustering/*.random
 
 all_files = np.array([
 '2RXSALLWISE_XGAL_ratelim_005_gaia12'
-,'2RXS_AllWISE_catalog_paper_2017May26_X_GAL_mask_gaia_g_lt_10'
-,'2RXS_AllWISE_catalog_paper_2017May26_X_GAL_mask_gaia_g_lt_11'
-,'2RXS_AllWISE_catalog_paper_2017May26_X_GAL_mask_gaia_g_lt_12'
-,'2RXS_AllWISE_catalog_paper_2017May26_X_GAL_mask_gaia_g_lt_13'
-,'2RXS_AllWISE_catalog_paper_2017May26_X_GAL_mask_gaia_g_lt_14'
-,'2RXS_AllWISE_catalog_paper_2017May26_X_GAL_mask_gaia_g_lt_15'
-,'2RXS_AllWISE_catalog_paper_2017May26_X_GAL_mask_gaia_g_lt_16'
-,'2RXS_AllWISE_catalog_paper_2017May26_X_GAL_mask_gaia_g_lt_17'
-,'2RXS_AllWISE_catalog_paper_2017May26_X_GAL_mask_gaia_g_lt_7'
-,'2RXS_AllWISE_catalog_paper_2017May26_X_GAL_mask_gaia_g_lt_8'
-,'2RXS_AllWISE_catalog_paper_2017May26_X_GAL_mask_gaia_g_lt_9'
-,'2RXS_AllWISE_catalog_paper_2017May26_X_GAL_noStars'
-,'2RXS_AllWISE_catalog_paper_2017May26_X_GAL_noStars_rtlim_gt_0_005'
-,'2RXS_AllWISE_catalog_paper_2017May26_X_GAL_noStars_rtlim_gt_0_015'
-,'2RXS_AllWISE_catalog_paper_2017May26_X_GAL'
-,'XMMSL2_AllWISE_catalog_paper_2017JUN09_X_GAL'])
+#,'2RXS_AllWISE_catalog_paper_2017May26_X_GAL_mask_gaia_g_lt_10'
+#,'2RXS_AllWISE_catalog_paper_2017May26_X_GAL_mask_gaia_g_lt_11'
+#,'2RXS_AllWISE_catalog_paper_2017May26_X_GAL_mask_gaia_g_lt_12'
+#,'2RXS_AllWISE_catalog_paper_2017May26_X_GAL_mask_gaia_g_lt_13'
+#,'2RXS_AllWISE_catalog_paper_2017May26_X_GAL_mask_gaia_g_lt_14'
+#,'2RXS_AllWISE_catalog_paper_2017May26_X_GAL_mask_gaia_g_lt_15'
+#,'2RXS_AllWISE_catalog_paper_2017May26_X_GAL_mask_gaia_g_lt_16'
+#,'2RXS_AllWISE_catalog_paper_2017May26_X_GAL_mask_gaia_g_lt_17'
+#,'2RXS_AllWISE_catalog_paper_2017May26_X_GAL_mask_gaia_g_lt_7'
+#,'2RXS_AllWISE_catalog_paper_2017May26_X_GAL_mask_gaia_g_lt_8'
+#,'2RXS_AllWISE_catalog_paper_2017May26_X_GAL_mask_gaia_g_lt_9'
+#,'2RXS_AllWISE_catalog_paper_2017May26_X_GAL_noStars'
+#,'2RXS_AllWISE_catalog_paper_2017May26_X_GAL_noStars_rtlim_gt_0_005'
+#,'2RXS_AllWISE_catalog_paper_2017May26_X_GAL_noStars_rtlim_gt_0_015'
+#,'2RXS_AllWISE_catalog_paper_2017May26_X_GAL'
+#,'XMMSL2_AllWISE_catalog_paper_2017JUN09_X_GAL'
+])
 
 
 for ffi in all_files:
