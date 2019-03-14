@@ -15,8 +15,8 @@ from sklearn.neighbors import BallTree, DistanceMetric
 from astropy.table import Table,unique,Column
 from math import radians, cos, sin, asin, sqrt, pi
 
-in_dir  = '/data36s/comparat/AGN_clustering/catalogs/'
-out_dir = '/data36s/comparat/AGN_clustering/angular_clustering/'
+in_dir  = '/data36s/comparat/CODEX_clustering/catalogs/'
+out_dir = '/data36s/comparat/CODEX_clustering/angular_clustering/'
 
 deg_to_rad = np.pi/180.
 arcsec = 1. / 3600.
@@ -27,14 +27,14 @@ rs = np.arange(0,20,.1)*arcsec
 # hdu_S     = fits.open(path_2_file)
 
 # DATA 
-path_2_data_2rxs   = join( in_dir, '2RXS_AllWISE_catalog_paper_2017May26_v5_11_0_sdss_26_VERON_MASKED.fits'   )
+path_2_data_2rxs   = join( in_dir, 'cat_spiders_masked_X.fits' )
 
 out_file = path_2_data_2rxs[:-5]+'_GAIA_star_mask.fits'
 
 data_file = path_2_data_2rxs
 
-ra_name_data = 'ALLW_RA'
-dec_name_data = 'ALLW_DEC'
+ra_name_data = 'RA'
+dec_name_data = 'Dec'
 
 hduD = Table.read(data_file)
 
@@ -53,16 +53,16 @@ valid_ids = np.array([0, 1, 2,3,4,8,9,10,11,12])
 
 # decision by how many arcseconds we mask
 gaia_file_2_radius = {
-	'table_-10_g_5.fits' :  20. ,
-	'table_5_g_6.fits'   :  15. ,
-	'table_6_g_7.fits'   :  10. ,
-	'table_7_g_8.fits'   :  8. ,
-	'table_8_g_9.fits'   :  6. ,
-	'table_9_g_10.fits'  :  4. ,
-	'table_10_g_11.fits' :  3. ,
-	'table_11_g_12.fits' :  3. ,
-	'table_12_g_13.fits' :  2. ,
-	'table_13_g_14.fits' :  2. ,
+	'table_-10_g_5.fits' :  60. ,
+	'table_5_g_6.fits'   :  30. ,
+	'table_6_g_7.fits'   :  20. ,
+	'table_7_g_8.fits'   :  10. ,
+	'table_8_g_9.fits'   :  8. ,
+	'table_9_g_10.fits'  :  6. ,
+	'table_10_g_11.fits' :  4. ,
+	'table_11_g_12.fits' :  2. ,
+	'table_12_g_13.fits' :  1. ,
+	'table_13_g_14.fits' :  1. ,
 	'table_14_g_15.fits' :  1. ,
 	'table_15_g_16.fits' :  1. ,
 	'table_16_g_17.fits' :  1. 

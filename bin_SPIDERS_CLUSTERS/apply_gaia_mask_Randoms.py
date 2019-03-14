@@ -28,7 +28,7 @@ rs = np.arange(0,20,.1)*arcsec
 
 # DATA 
 
-path_2_data_2rxs = '/data44s/eroAGN_WG_DATA/DATA/randoms/randoms_2rxsmask.fits'
+path_2_data_2rxs = '/path/to/random.fits'
 
 out_file = path_2_data_2rxs[:-5]+'_GAIA_star_mask.fits'
 
@@ -54,16 +54,16 @@ valid_ids = np.array([0, 1, 2,3,4,8,9,10,11,12])
 
 # decision by how many arcseconds we mask
 gaia_file_2_radius = {
-	'table_-10_g_5.fits' :  20. ,
-	'table_5_g_6.fits'   :  15. ,
-	'table_6_g_7.fits'   :  10. ,
-	'table_7_g_8.fits'   :  8. ,
-	'table_8_g_9.fits'   :  6. ,
-	'table_9_g_10.fits'  :  4. ,
-	'table_10_g_11.fits' :  3. ,
-	'table_11_g_12.fits' :  3. ,
-	'table_12_g_13.fits' :  2. ,
-	'table_13_g_14.fits' :  2. ,
+	'table_-10_g_5.fits' :  60. ,
+	'table_5_g_6.fits'   :  30. ,
+	'table_6_g_7.fits'   :  20. ,
+	'table_7_g_8.fits'   :  10. ,
+	'table_8_g_9.fits'   :  8. ,
+	'table_9_g_10.fits'  :  6. ,
+	'table_10_g_11.fits' :  4. ,
+	'table_11_g_12.fits' :  2. ,
+	'table_12_g_13.fits' :  1. ,
+	'table_13_g_14.fits' :  1. ,
 	'table_14_g_15.fits' :  1. ,
 	'table_15_g_16.fits' :  1. ,
 	'table_16_g_17.fits' :  1. 
