@@ -3,9 +3,9 @@ from os.path import join
 import numpy as np
 import matplotlib.pyplot as p
 
-out_dir = '/data36s/comparat/AGN_clustering/angular_clustering/'
+out_dir = '/data36s/comparat/CODEX_clustering/angular_clustering/'
 
-xcorr_list = np.array(glob.glob(os.path.join(out_dir , '2RXS_AllWISE_catalog_paper_2017May26_X_GAIA_table_*.fits.data')))
+xcorr_list = np.array(glob.glob(os.path.join(out_dir , 'cat_spiders_masked_X_GAIA_table_*.fits.data')))
 xcorr_list.sort()
 
 valid_ids = np.array([0, 1, 2,9,10,11,12,13])
@@ -45,7 +45,7 @@ p.xlim((0.1,40))
 p.ylim((0.,2.))
 #p.yscale('log')
 p.grid()
-p.savefig(os.path.join(out_dir ,'2RXS_GAIA_faint.png'))
+p.savefig(os.path.join(out_dir ,'CODEX_GAIA_faint.png'))
 p.clf()
 
 p.figure(1, (8,5))
@@ -62,14 +62,14 @@ p.legend(frameon=False, loc=0)
 p.xlabel('separation to star [arcseconds]')
 p.ylabel('relative density of targets')
 p.xscale('log')
-p.xlim((0.1,40))
+p.xlim((0.1,200))
 p.ylim((0.,2.))
 #p.yscale('log')
 p.grid()
-p.savefig(os.path.join(out_dir ,'2RXS_GAIA_bright.png'))
+p.savefig(os.path.join(out_dir ,'CODEX_GAIA_bright.png'))
 p.clf()
 
 
-os.system("cp /data36s/comparat/AGN_clustering/angular_clustering/2RXS_GAIA*.png /home/comparat/wwwDir/stuff/")
+os.system("cp "+out_dir+"CODEX_GAIA*.png /home/comparat/wwwDir/stuff/")
 
 

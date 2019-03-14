@@ -15,39 +15,32 @@ from sklearn.neighbors import BallTree, DistanceMetric
 from astropy.table import Table,unique
 from math import radians, cos, sin, asin, sqrt, pi
 
-in_dir  = '/data36s/comparat/AGN_clustering/catalogs/'
-out_dir = '/data36s/comparat/AGN_clustering/angular_clustering/'
+in_dir  = '/data36s/comparat/CODEX_clustering/catalogs/'
+out_dir = '/data36s/comparat/CODEX_clustering/angular_clustering/'
 
 deg_to_rad = np.pi/180.
 arcsec = 1. / 3600.
 rs = 10**np.arange(-1,1.6,0.1) *arcsec
-
-# SDSS WISE CATALOGS
-# path_2_file = '/data44s/eroAGN_WG_DATA/DATA/masks/SDSS_WISE_imageprop_nside512.fits'
-# hdu_S     = fits.open(path_2_file)
+#rs = 10**np.arange(-1,2.6,0.1) *arcsec
 
 # DATA 
-path_2_data_2rxs   = join( in_dir, '2RXS_AllWISE_catalog_paper_2017May26_v5_11_0_sdss_26_VERON_MASKED.fits'   )
+path_2_data_2rxs   = join( in_dir, 'cat_spiders_masked_X.fits' )
 data_file = path_2_data_2rxs
 
-ra_name_data = 'ALLW_RA'
-dec_name_data = 'ALLW_DEC'
+ra_name_data = 'RA'
+dec_name_data = 'Dec'
 
 hduD     = fits.open(data_file)
 ra_data    = hduD[1].data[ra_name_data]
 dec_data    = hduD[1].data[dec_name_data]
-z_data = np.zeros_like(ra_data)
-ratelim_data    = hduD[1].data['RATELIM']
+z_data  = hduD[1].data['z']
 
 coords = SkyCoord(ra_data, dec_data, unit='deg', frame='icrs')
 bb_data = coords.galactic.b.value
 ll_data = coords.galactic.l.value
 bb_ecl_data = coords.barycentrictrueecliptic.lat
 
-stars_data = (hduD[1].data['p_any']>0.5)&(hduD[1].data['2RXS_ExiML']>10)
-rt_sel_data = (ratelim_data>0.015)
-x_gal_data = (abs(bb_data)>20)&(dec_data<80)&(dec_data>-80)&(bb_ecl_data.value>-80)
-selection_data = (x_gal_data)&(stars_data==False)&(rt_sel_data)
+selection_data = (z_data>0)
 
 N_data = len(ra_data[selection_data])
 
@@ -56,7 +49,7 @@ gaia_dir = '/data44s/eroAGN_WG_DATA/DATA/photometry/catalogs/GAIA/DR2/'
 gaia_table_list = np.array(glob.glob(os.path.join(gaia_dir, 'table_*.fits')))
 gaia_table_list.sort()
 
-for gaia_file in gaia_table_list[1:][::-1]:
+for gaia_file in gaia_table_list[1:][::-1][:5]:
 	print(gaia_file)
 	hdu_G     = fits.open(gaia_file)
 	ra_gaia, dec_gaia = hdu_G[1].data['ra'], hdu_G[1].data['dec']
@@ -84,7 +77,7 @@ for gaia_file in gaia_table_list[1:][::-1]:
 
 	pair_density = Delta_N_pairs/(area*N_data*N_gaia)
 
-	out_data = os.path.join(out_dir , '2RXS_AllWISE_catalog_paper_2017May26_X_GAIA_'+os.path.basename(gaia_file)+'.data')
+	out_data = os.path.join(out_dir , 'cat_spiders_masked_X_GAIA_'+os.path.basename(gaia_file)+'.data')
 	np.savetxt(out_data, np.transpose([rs[1:], pair_density]), header='radius_arcsec density' )
 
 
@@ -126,11 +119,8 @@ area = 4.*np.pi*(rs[1:]**2 - rs[:-1]**2)
 
 pair_density = Delta_N_pairs/(area*N_data*N_gaia)
 
-out_data = os.path.join(out_dir , '2RXS_AllWISE_catalog_paper_2017May26_X_GAIA_table_4_g_5.fits.data')
+out_data = os.path.join(out_dir , 'cat_spiders_masked_X_GAIA_table_4_g_5.fits.data')
 np.savetxt(out_data, np.transpose([rs[1:], pair_density]), header='radius_arcsec density' )
-
-
-
 
 mag_sel = (g_mag<=4)
 selection_gaia = (x_gal_gaia)&(mag_sel)
@@ -154,6 +144,6 @@ area = 4.*np.pi*(rs[1:]**2 - rs[:-1]**2)
 
 pair_density = Delta_N_pairs/(area*N_data*N_gaia)
 
-out_data = os.path.join(out_dir , '2RXS_AllWISE_catalog_paper_2017May26_X_GAIA_table_1_g_4.fits.data')
+out_data = os.path.join(out_dir , 'cat_spiders_masked_X_GAIA_table_1_g_4.fits.data')
 np.savetxt(out_data, np.transpose([rs[1:], pair_density]), header='radius_arcsec density' )
 
