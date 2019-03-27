@@ -79,11 +79,11 @@ near_a_star_D = (hduD[1].data['nearby_gaia_star_-10_g_5'] |
 	)
 
 
-high_likelihood = (hduD[1].data['2RXS_ExiML']>10)#(hduD[1].data['p_any']>0.5)&
-rt_sel_data = (ratelim_data<0.05)&(ratelim_data>0) 
+high_likelihood = ( hduD[1].data['2RXS_ExiML'] > 10 ) & ( hduD[1].data['p_any'] > 0.5 ) & ( hduD[1].data['p_i'] > 0.1 )
+rt_sel_data = (ratelim_data<0.05) & (ratelim_data>0) 
 x_gal_data = (abs(bb_data)>20)&(dec_data<65)&(dec_data>-65)&(bb_ecl_data.value>-80)
 
-selection_data = (x_gal_data)&(near_a_star_D==False)&(rt_sel_data) #& (high_likelihood)
+selection_data = (x_gal_data)&(near_a_star_D==False)&(rt_sel_data) & (high_likelihood)
 
 N_data = len(ra_data[selection_data])
 
