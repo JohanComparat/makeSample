@@ -122,7 +122,7 @@ os.system('cp /data36s/comparat/AGN_clustering/angular_clustering/*.png /home/co
 #ls /data36s/comparat/AGN_clustering/angular_clustering/*.random
 
 all_files = np.array([
-'2RXSALLWISE_XGAL_ratelim_005_gaia12'
+'2RXSALLWISE_XGAL_ratelim004_gaia12'
 #,'2RXS_AllWISE_catalog_paper_2017May26_X_GAL_mask_gaia_g_lt_10'
 #,'2RXS_AllWISE_catalog_paper_2017May26_X_GAL_mask_gaia_g_lt_11'
 #,'2RXS_AllWISE_catalog_paper_2017May26_X_GAL_mask_gaia_g_lt_12'
@@ -143,7 +143,7 @@ all_files = np.array([
 
 
 for ffi in all_files:
-	#compute_clustering(ffi, out_dir)
+	compute_clustering(ffi, out_dir)
 	plot_results(ffi, out_dir)
 
 os.system('cp /data36s/comparat/AGN_clustering/angular_clustering/*.png /home/comparat/wwwDir/stuff/')
