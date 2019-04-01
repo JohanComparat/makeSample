@@ -9,9 +9,11 @@ t0 = time.time()
 #hd = fits.open(os.path.join(dir, 'CODEX-DR14-MergedSpectroscopicCatalogue_2018-02-05.fits'))[1].data
 
 
-dir = os.path.join(os.environ['HOME'], 'hegcl', 'SPIDERS')
+dir2 = os.path.join(os.environ['HOME'], 'hegcl', 'SPIDERS')
+dir = os.path.join(os.environ['HOME'], 'data', 'spiders', 'cluster')
 
-hd = fits.open(os.path.join(dir, 'validatedclusters_catalogue_2018-04-27_version_round123-v1_Xmass123-v1.fits'))[1].data
+#hd = fits.open(os.path.join(dir, 'validatedclusters_catalogue_2018-04-27_version_round123-v1_Xmass123-v1.fits'))[1].data
+hd = fits.open(os.path.join(dir, 'validatedclusters_catalogue_2018-12-04_version_round1-v1_Xmass1-v1.fits.gz'))[1].data
 
 
 DATA = []
@@ -117,25 +119,24 @@ header = ", ".join(header1.split())
 
 #n.savetxt(os.path.join(dir, 'CODEX-DR14-MergedSpectroscopicCatalogue_2018-02-05-flat.csv'), DATA, header = header, fmt='%s', delimiter=',')
 
-n.savetxt(os.path.join(dir, 'validatedclusters_catalogue_2018-04-27_version_round123-v1_Xmass123-v1-flat.csv'), DATA, header = header, fmt='%s', delimiter=',')
+out_file = os.path.join(dir, 'validatedclusters_catalogue_2018-12-04_version_round1-v1_Xmass1-v1-flat.csv')
+n.savetxt(out_file, DATA, header = header, fmt='%s', delimiter=',')
+
+out_file_fits = os.path.join(dir, 'validatedclusters_catalogue_2018-12-04_version_round1-v1_Xmass1-v1-flat.fits')
+cmd = """stilts tpipe in="""+out_file+""" ifmt=csv omode=out ofmt=fits out="""+out_file_fits
+print(cmd)
+#os.system(cmd)
+
+# then does the matching on the DS machines, spALL is 14G !!
+
+out_file_fits2 = os.path.join(dir2, 'validatedclusters_catalogue_2018-12-04_version_round1-v1_Xmass1-v1-flat.fits')
+spAll_file = '/home/comparat/data1/SDSS/dr16/spAll-v5_11_0.fits'
+out_file_fits_all = os.path.join(dir2, 'validatedclusters_catalogue_2018-12-04_version_round1-v1_Xmass1-v1-flat_DR16_v5_11_0.fits')
 
 
+c0 = """stilts tmatch2 ifmt1=fits ifmt2=fits in1="""+out_file_fits2
+c1 = """ in2="""+spAll_file+"""  omode=out out="""+out_file_fits_all
+c2 = """ matcher=3d values1='PLATE MJD FIBERID' values2='PLATE MJD FIBERID' params=0.00001 join=all1  suffix1=_spiders suffix2=_DR16 """
 
-os.system("""stilts tpipe in=/home/comparat/hegcl/SPIDERS/validatedclusters_catalogue_2018-04-27_version_round123-v1_Xmass123-v1-flat.csv ifmt=csv omode=out out=/home/comparat/hegcl/SPIDERS/validatedclusters_catalogue_2018-04-27_version_round123-v1_Xmass123-v1-flat.fits ofmt=fits""")
-
-"""
-stilts tmatch2 ifmt1=fits ifmt2=fits \
-  in1=/home/comparat/hegcl/SPIDERS/validatedclusters_catalogue_2018-04-27_version_round123-v1_Xmass123-v1-flat.fits \
-  in2=/home/comparat/data2/firefly/v1_1_0/26/catalogs/sdss_firefly-26_Chabrier_MILES.fits \
-  omode=out out=/home/comparat/hegcl/SPIDERS/validatedclusters_catalogue_2018-04-27_version_round123-v1_Xmass123-v1-flat-FF26.fits \
-  matcher=3d values1='PLATE MJD FIBERID' values2='PLATE MJD FIBERID' params=0.00001 join=all1 \
-  suffix1=_a suffix2=_b 
-
-stilts tmatch2 ifmt1=fits ifmt2=fits \
-  in1=/home/comparat/hegcl/SPIDERS/validatedclusters_catalogue_2018-04-27_version_round123-v1_Xmass123-v1-flat.fits \
-  in2=/home/comparat/data2/firefly/v1_1_0/v5_10_0/catalogs/eboss_firefly-v5_10_0_Chabrier_MILES.fits \
-  omode=out out=/home/comparat/hegcl/SPIDERS/validatedclusters_catalogue_2018-04-27_version_round123-v1_Xmass123-v1-flat-FFv5.fits \
-  matcher=3d values1='PLATE MJD FIBERID' values2='PLATE MJD FIBERID' params=0.00001 join=all1 \
-  suffix1=_a suffix2=_b 
-
-"""
+cmd = c0+c1+c2
+print(cmd)

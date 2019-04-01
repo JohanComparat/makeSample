@@ -79,9 +79,10 @@ near_a_star_D = (hduD[1].data['nearby_gaia_star_-10_g_5'] |
 	)
 
 
-high_likelihood = ( hduD[1].data['2RXS_ExiML'] > 6 ) & ( hduD[1].data['p_any'] > 0.5 ) & ( hduD[1].data['p_i'] > 0.8 )
+high_likelihood = ( hduD[1].data['2RXS_ExiML'] > 6 ) & ( hduD[1].data['p_any'] > 0.1 ) & (hduD[1].data['ALLW_w1mpro']>-1.625*np.log10(hduD[1].data['2RXS_SRC_FLUX']*0.5868)-8.8) 
+#& ( hduD[1].data['p_i'] > 0.8 )
 rt_sel_data = (ratelim_data<0.05) & (ratelim_data>0) 
-x_gal_data = (abs(bb_data)>20)&(dec_data<65)&(dec_data>-65)&(bb_ecl_data.value>-80)&(ra_data<250)
+x_gal_data = (abs(bb_data)>20)&(dec_data<65)&(dec_data>-65)&(bb_ecl_data.value>-80)#&(ra_data<250)
 
 selection_data = (x_gal_data)&(near_a_star_D==False)&(rt_sel_data) & (high_likelihood)
 
@@ -101,7 +102,7 @@ bb_rds = coords.galactic.b.value
 ll_rds = coords.galactic.l.value
 bb_ecl_rds = coords.barycentrictrueecliptic.lat
 
-x_gal_rds = (abs(bb_rds)>20)&(dec_rds<65)&(dec_rds>-65)&(bb_ecl_rds.value>-80)&(ra_rds<250)
+x_gal_rds = (abs(bb_rds)>20)&(dec_rds<65)&(dec_rds>-65)&(bb_ecl_rds.value>-80)#&(ra_rds<250)
 
 N_rds = len(ra_rds[x_gal_rds])
 
