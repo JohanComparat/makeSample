@@ -68,7 +68,7 @@ for bin_low, bin_high in zip (bins_x[:-1], bins_x[1:]):
 for bin_low, bin_high in zip (bins_x[:-1], bins_x[1:]):
 	name = "clusterCGAL_"+str(bin_low)+"_r_"+str(bin_high)+'_highCZ.ascii'
 	print(name)
-	selection = (n.log10(sep_r200c)>=bin_low) & (n.log10(sep_r200c)<bin_high) & (sep_r200c>=0) & (cat['ISMEMBER']==1)&(delta_z<1./3.)
+	selection = (n.log10(sep_r200c)>=bin_low) & (n.log10(sep_r200c)<bin_high) & (sep_r200c>=0) & (cat['ISMEMBER']==1)&(delta_z>1./3.)
 	DATA = n.transpose([cat['PLATE'], cat['MJD'], cat['FIBERID'], cat['IDLSPEC1D_Z_NOQSO']])[selection]
 	if len(cat['PLATE'][selection])>10:
 		n.savetxt(os.path.join(path_2_stack_lists, name), DATA)
