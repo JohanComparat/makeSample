@@ -33,7 +33,12 @@ center = coord.ICRS(ra=cat['RA_OPT']*u.degree, dec=cat['DEC_OPT']*u.degree)
 position = coord.ICRS(cat['RA_GAL']*u.degree, cat['DEC_GAL']*u.degree)
 sep_r200c =  (center.separation(position)/(cat['R200C_DEG']*u.degree)).value 
 
-ok = (sep_r200c>=0) & (cat['ISMEMBER']==1)
+z_clus = cat['CLUZSPEC']
+
+ok = (sep_r200c>=0) & (cat['ISMEMBER']==1) & (0.1<z_clus) & (z_clus<0.3)
+
+delta_z = abs((cat['IDLSPEC1D_Z_NOQSO'] - z_clus)*3e5/cat['CLUVDISPBEST'] )
+
 
 log_sep_r200c = n.log10(sep_r200c[ok])
 bins = n.arange(n.min(log_sep_r200c)-1, n.max(log_sep_r200c)+2, 0.00001)
@@ -49,5 +54,23 @@ for bin_low, bin_high in zip (bins_x[:-1], bins_x[1:]):
 	print(name)
 	selection = (n.log10(sep_r200c)>=bin_low) & (n.log10(sep_r200c)<bin_high) & (sep_r200c>=0) & (cat['ISMEMBER']==1)
 	DATA = n.transpose([cat['PLATE'], cat['MJD'], cat['FIBERID'], cat['IDLSPEC1D_Z_NOQSO']])[selection]
-	n.savetxt(os.path.join(path_2_stack_lists, name), DATA)
+	if len(cat['PLATE'][selection])>10:
+		n.savetxt(os.path.join(path_2_stack_lists, name), DATA)
+
+
+for bin_low, bin_high in zip (bins_x[:-1], bins_x[1:]):
+	name = "clusterCGAL_"+str(bin_low)+"_r_"+str(bin_high)+'_lowCZ.ascii'
+	print(name)
+	selection = (n.log10(sep_r200c)>=bin_low) & (n.log10(sep_r200c)<bin_high) & (sep_r200c>=0) & (cat['ISMEMBER']==1)&(delta_z<1./3.)
+	DATA = n.transpose([cat['PLATE'], cat['MJD'], cat['FIBERID'], cat['IDLSPEC1D_Z_NOQSO']])[selection]
+	if len(cat['PLATE'][selection])>10:
+		n.savetxt(os.path.join(path_2_stack_lists, name), DATA)
+
+for bin_low, bin_high in zip (bins_x[:-1], bins_x[1:]):
+	name = "clusterCGAL_"+str(bin_low)+"_r_"+str(bin_high)+'_highCZ.ascii'
+	print(name)
+	selection = (n.log10(sep_r200c)>=bin_low) & (n.log10(sep_r200c)<bin_high) & (sep_r200c>=0) & (cat['ISMEMBER']==1)&(delta_z<1./3.)
+	DATA = n.transpose([cat['PLATE'], cat['MJD'], cat['FIBERID'], cat['IDLSPEC1D_Z_NOQSO']])[selection]
+	if len(cat['PLATE'][selection])>10:
+		n.savetxt(os.path.join(path_2_stack_lists, name), DATA)
 
