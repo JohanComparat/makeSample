@@ -177,4 +177,4 @@ def plot_models(id_model=1):
 		p.clf()
 
 plot_models(1)
-plot_models(2)
+#plot_models(2)

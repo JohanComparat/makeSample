@@ -50,13 +50,12 @@ itp = interp1d( out_N, bins[1:] )
 bins_x = n.hstack((itp( n.arange(0, len(log_sep_r200c), 400 ) ), log_sep_r200c.max()+0.1))
 
 for bin_low, bin_high in zip (bins_x[:-1], bins_x[1:]):
-	name = "clusterCGAL_"+str(bin_low)+"_r_"+str(bin_high)+'.ascii'
+	name = "clusterCGAL_"+str(bin_low)+"_r_"+str(bin_high)+'_allCZ.ascii'
 	print(name)
 	selection = (n.log10(sep_r200c)>=bin_low) & (n.log10(sep_r200c)<bin_high) & (sep_r200c>=0) & (cat['ISMEMBER']==1)
 	DATA = n.transpose([cat['PLATE'], cat['MJD'], cat['FIBERID'], cat['IDLSPEC1D_Z_NOQSO']])[selection]
 	if len(cat['PLATE'][selection])>10:
 		n.savetxt(os.path.join(path_2_stack_lists, name), DATA)
-
 
 for bin_low, bin_high in zip (bins_x[:-1], bins_x[1:]):
 	name = "clusterCGAL_"+str(bin_low)+"_r_"+str(bin_high)+'_lowCZ.ascii'
