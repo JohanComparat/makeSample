@@ -7,7 +7,7 @@ import SpectraStackingEBOSS as sse
 
 spec_dir = join(os.environ['HOME'],"SDSS/stacks/X_AGN")
 
-file_list = n.array(glob.glob(os.path.join(spec_dir, 'full_*.asc')))
+file_list = n.array(glob.glob(os.path.join(spec_dir, 'full_*_zmin_00_zmax_50.asc')))
 
 def stack_it(specList ):
  outfile = join(spec_dir, os.path.basename(specList)[:-4]+".stack")

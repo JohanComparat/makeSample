@@ -12,6 +12,8 @@ version = 'v1'
 
 zmins = n.hstack((-0.01, 0.005, n.arange(0.1,3.0,0.1) ))
 zmaxs = n.hstack((0.005, n.arange(0.,3.0,0.1)+0.5))
+zmins = n.array([-0.005])
+zmaxs = n.array([5.])
 
 # on laptop
 #path_2_cats = os.path.join(os.environ['HOME'], 'data', 'spiders', 'agn')
