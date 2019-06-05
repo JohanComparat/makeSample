@@ -10,7 +10,7 @@ import pickle
 
 version = 'v1'
 
-zmins = n.hstack((0., 0.005, n.arange(0.1,3.0,0.1) ))
+zmins = n.hstack((-0.01, 0.005, n.arange(0.1,3.0,0.1) ))
 zmaxs = n.hstack((0.005, n.arange(0.,3.0,0.1)+0.5))
 
 # on laptop
