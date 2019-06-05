@@ -8,6 +8,7 @@ import SpectraStackingEBOSS as sse
 spec_dir = join(os.environ['HOME'],"SDSS/stacks/SPIDERS_C_GAL")
 
 file_list = n.array(glob.glob(os.path.join(spec_dir, '*highCZ.ascii')))
+file_name = os.path.join(spec_dir, 'clusterCGAL_allz.ascii')
 
 def stack_it(specList ):
  outfile = join(spec_dir, os.path.basename(specList)[:-6]+".stack")
@@ -19,8 +20,9 @@ def stack_it(specList ):
   stack.createStackMatrix()
   stack.stackSpectra()
 
-for file_input in file_list:
- stack_it(file_input)
+stack_it(file_name)
+#for file_input in file_list:
+ #stack_it(file_input)
 
 
 
