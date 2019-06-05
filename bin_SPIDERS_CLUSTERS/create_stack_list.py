@@ -35,7 +35,7 @@ sep_r200c =  (center.separation(position)/(cat['R200C_DEG']*u.degree)).value
 
 z_clus = cat['CLUZSPEC']
 
-ok = (sep_r200c>=0) & (cat['ISMEMBER']==1) & (0.1<z_clus) & (z_clus<0.3)
+ok = (sep_r200c>=0) & (cat['ISMEMBER']==1) #& (0.1<z_clus) & (z_clus<0.3)
 
 delta_z = abs((cat['IDLSPEC1D_Z_NOQSO'] - z_clus)*3e5/cat['CLUVDISPBEST'] )
 
@@ -48,6 +48,19 @@ from scipy.interpolate import interp1d
 itp = interp1d( out_N, bins[1:] )
 	
 bins_x = n.hstack((itp( n.arange(0, len(log_sep_r200c), 400 ) ), log_sep_r200c.max()+0.1))
+
+name = "clusterCGAL_allz.ascii"
+print(name)
+selection = (cat['ISMEMBER']==1)
+DATA = n.transpose([cat['PLATE'], cat['MJD'], cat['FIBERID'], cat['IDLSPEC1D_Z_NOQSO']])[selection]
+n.savetxt(os.path.join(path_2_stack_lists, name), DATA)
+
+name = "clusterCGAL_allz_inner.ascii"
+print(name)
+selection = (cat['ISMEMBER']==1)&(n.log10(sep_r200c)<-1)
+DATA = n.transpose([cat['PLATE'], cat['MJD'], cat['FIBERID'], cat['IDLSPEC1D_Z_NOQSO']])[selection]
+n.savetxt(os.path.join(path_2_stack_lists, name), DATA)
+
 
 for bin_low, bin_high in zip (bins_x[:-1], bins_x[1:]):
 	name = "clusterCGAL_"+str(bin_low)+"_r_"+str(bin_high)+'_allCZ.ascii'
