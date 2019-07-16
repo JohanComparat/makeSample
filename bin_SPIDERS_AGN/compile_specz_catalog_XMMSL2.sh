@@ -9,7 +9,7 @@ CAT_IN=/data44s/eroAGN_WG_DATA/DATA/photometry/catalogs/XMM/XMMSL2_AllWISE_catal
 # spectroscopic catalogs
 CAT_SPEC_v5_13_0=/data44s/eroAGN_WG_DATA/DATA/spectroscopy/catalogs/SDSS/v5_13_0/spAll-v5_13_0.fits
 CAT_SPEC_26=/data44s/eroAGN_WG_DATA/DATA/spectroscopy/catalogs/SDSS/26/specObj-SDSS-dr14.fits
-VV_CAT=/data44s/eroAGN_WG_DATA/DATA/spectroscopy/catalogs/veron-veron-13th-ed.fits
+VV_CAT=/data44s/eroAGN_WG_DATA/DATA/spectroscopy/catalogs/VERON_VERON/veron-veron-13th-ed.fits
 CAT_SPEC_2QZ=/data44s/eroAGN_WG_DATA/DATA/spectroscopy/catalogs/2QZ/2QZ.fits
 
 # output catalog names
