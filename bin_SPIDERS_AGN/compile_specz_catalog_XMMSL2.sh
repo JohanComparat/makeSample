@@ -21,7 +21,7 @@ CAT_SPEC_0=/data36s/comparat/AGN_clustering/catalogs/xmm_tmp3.fits
 CAT_SPEC=/data36s/comparat/AGN_clustering/catalogs/XMMSL2_AllWISE_catalog_paper_2017JUN09_v5_13_0_sdss_26_VERON_2QZ.fits 
 
 # masking the final catalog
-CAT_SPEC_MASKED=/data36s/comparat/AGN_clustering/catalogs/XMMSL2_AllWISE_catalog_paper_2017JUN09_v5_13_0_sdss_26_VERON_MASKED.fits 
+CAT_SPEC_MASKED=/data36s/comparat/AGN_clustering/catalogs/XMMSL2_AllWISE_catalog_paper_2017JUN09_v5_13_0_sdss_26_VERON_2QZ_MASKED.fits 
 
 #Masks
 MASK_2RXS=/data44s/eroAGN_WG_DATA/DATA/masks/2RXS_HPX_nside4096_all_ratelimit.fits
@@ -64,7 +64,7 @@ ocmd='delcols "Separation"' \
 out=$CAT_SPEC_0
 
 stilts tmatch2 \
-in1=$CAT_OUT ifmt1=fits \
+in1=$CAT_SPEC_0 ifmt1=fits \
 in2=$CAT_SPEC_2QZ ifmt2=fits \
 matcher=sky params="2" join=all1 find=best \
 values1="ALLW_RA ALLW_DEC" values2="RAJ2000 DEJ2000" \
