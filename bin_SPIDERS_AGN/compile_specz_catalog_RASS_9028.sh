@@ -4,7 +4,7 @@
 # screen -r AGN_SPIDERS
 
 # input catalog
-CAT_IN=/data36s/comparat/SDSS/dr14/spiders/target/spiderstargetAGN-SPIDERS_RASS_AGN-v2.1.fits
+CAT_IN=/data36s/comparat/SDSS/dr14/spiders/target/spiderstargetAGN-SPIDERS_RASS_AGN-v2.1-hdu2.fits
 
 # spectroscopic catalogs
 CAT_SPEC_v5_13_0=/data44s/eroAGN_WG_DATA/DATA/spectroscopy/catalogs/SDSS/v5_13_0/spAll-v5_13_0.fits
@@ -33,11 +33,11 @@ in2=$CAT_SPEC_v5_13_0 ifmt2=fits \
 matcher=sky params="1.5" join=all1 find=best \
 values1="ALLWISE_RA ALLWISE_DEC" values2="PLUG_RA PLUG_DEC" \
 suffix1="" suffix2="_BOSS_v5_13_0" \
-ocmd='addcol hp3 "healpixNestIndex( 3, ALLW_RA, ALLW_DEC )"' \
-ocmd='addcol hp4 "healpixNestIndex( 4, ALLW_RA, ALLW_DEC )"' \
-ocmd='addcol hp5 "healpixNestIndex( 5, ALLW_RA, ALLW_DEC )"' \
-ocmd='addcol hp6 "healpixNestIndex( 6, ALLW_RA, ALLW_DEC )"' \
-ocmd='addcol hp12 "healpixNestIndex( 12, ALLW_RA, ALLW_DEC )"' \
+ocmd='addcol hp3 "healpixNestIndex( 3, ALLWISE_RA, ALLWISE_DEC )"' \
+ocmd='addcol hp4 "healpixNestIndex( 4, ALLWISE_RA, ALLWISE_DEC )"' \
+ocmd='addcol hp5 "healpixNestIndex( 5, ALLWISE_RA, ALLWISE_DEC )"' \
+ocmd='addcol hp6 "healpixNestIndex( 6, ALLWISE_RA, ALLWISE_DEC )"' \
+ocmd='addcol hp12 "healpixNestIndex( 12, ALLWISE_RA, ALLWISE_DEC )"' \
 ocmd='addcol in_BOSS_v5_13_0 "Separation>=0"' \
 ocmd='delcols "Separation"' \
 omode=out ofmt=fits out=$CAT_TMP
