@@ -1,6 +1,9 @@
 #!/bin/bash
 cd ~/software/linux/makeSample/bin_SPIDERS_AGN
 
+sh compile_specz_catalog_RASS_9028.sh
+sh compile_specz_catalog_XMMSL_819.sh
+
 sh compile_specz_catalog_2RXS.sh
 sh compile_specz_catalog_XMMSL2.sh
 

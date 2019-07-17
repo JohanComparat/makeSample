@@ -30,7 +30,7 @@ MASK_XMMSL=/data44s/eroAGN_WG_DATA/DATA/masks/XMMSL_Map_withflags.fits
 stilts tmatch2 \
 in1=$CAT_IN ifmt1=fits \
 in2=$CAT_SPEC_v5_13_0 ifmt2=fits \
-matcher=sky params="1" join=all1 find=best \
+matcher=sky params="1.5" join=all1 find=best \
 values1="ALLW_RA ALLW_DEC" values2="PLUG_RA PLUG_DEC" \
 suffix1="" suffix2="_BOSS_v5_13_0" \
 ocmd='addcol hp3 "healpixNestIndex( 3, ALLW_RA, ALLW_DEC )"' \
@@ -56,7 +56,7 @@ stilts tmatch2 \
 in1=$CAT_OUT ifmt1=fits \
 in2=$VV_CAT ifmt2=fits \
 icmd2='delcols "_RAJ2000 _DEJ2000 Name n_RAJ2000 FC"' \
-matcher=sky params="2" join=all1 find=best \
+matcher=sky params="1.5" join=all1 find=best \
 values1="ALLW_RA ALLW_DEC" values2="RAJ2000 DEJ2000" \
 suffix1="" suffix2="_VV_ed13" \
 ocmd='addcol in_veron "Separation>=0"' \
@@ -66,7 +66,7 @@ out=$CAT_SPEC_0
 stilts tmatch2 \
 in1=$CAT_SPEC_0 ifmt1=fits \
 in2=$CAT_SPEC_2QZ ifmt2=fits \
-matcher=sky params="2" join=all1 find=best \
+matcher=sky params="1.5" join=all1 find=best \
 values1="ALLW_RA ALLW_DEC" values2="RAJ2000 DEJ2000" \
 suffix1="" suffix2="_2QZ" \
 ocmd='addcol in_2QZ "Separation>=0"' \
