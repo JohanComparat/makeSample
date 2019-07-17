@@ -31,7 +31,7 @@ stilts tmatch2 \
 in1=$CAT_IN ifmt1=fits \
 in2=$CAT_SPEC_v5_13_0 ifmt2=fits \
 matcher=sky params="1.5" join=all1 find=best \
-values1="ALLW_RA ALLW_DEC" values2="PLUG_RA PLUG_DEC" \
+values1="ALLWISE_RA ALLWISE_DEC" values2="PLUG_RA PLUG_DEC" \
 suffix1="" suffix2="_BOSS_v5_13_0" \
 ocmd='addcol hp3 "healpixNestIndex( 3, ALLW_RA, ALLW_DEC )"' \
 ocmd='addcol hp4 "healpixNestIndex( 4, ALLW_RA, ALLW_DEC )"' \
@@ -46,7 +46,7 @@ stilts tmatch2 \
 in1=$CAT_TMP ifmt1=fits \
 in2=$CAT_SPEC_26 ifmt2=fits \
 matcher=sky params="1.5" join=all1 find=best \
-values1="ALLW_RA ALLW_DEC" values2="PLUG_RA PLUG_DEC" \
+values1="ALLWISE_RA ALLWISE_DEC" values2="PLUG_RA PLUG_DEC" \
 suffix1="" suffix2="_SDSS_26" \
 ocmd='addcol in_SDSS_26 "Separation>=0"' \
 ocmd='delcols "Separation"' \
@@ -57,7 +57,7 @@ in1=$CAT_OUT ifmt1=fits \
 in2=$VV_CAT ifmt2=fits \
 icmd2='delcols "_RAJ2000 _DEJ2000 Name n_RAJ2000 FC"' \
 matcher=sky params="1.5" join=all1 find=best \
-values1="ALLW_RA ALLW_DEC" values2="RAJ2000 DEJ2000" \
+values1="ALLWISE_RA ALLWISE_DEC" values2="RAJ2000 DEJ2000" \
 suffix1="" suffix2="_VV_ed13" \
 ocmd='addcol in_veron "Separation>=0"' \
 ocmd='delcols "Separation"' \
@@ -67,7 +67,7 @@ stilts tmatch2 \
 in1=$CAT_SPEC_0 ifmt1=fits \
 in2=$CAT_SPEC_2QZ ifmt2=fits \
 matcher=sky params="1.5" join=all1 find=best \
-values1="ALLW_RA ALLW_DEC" values2="RAJ2000 DEJ2000" \
+values1="ALLWISE_RA ALLWISE_DEC" values2="RAJ2000 DEJ2000" \
 suffix1="" suffix2="_2QZ" \
 ocmd='addcol in_2QZ "Separation>=0"' \
 ocmd='delcols "Separation"' \
