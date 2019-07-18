@@ -1,9 +1,20 @@
 #!/bin/bash
 cd ~/software/linux/makeSample/bin_SPIDERS_AGN
 
+# specific eBOSS/SPIDERS AGN targets specZ catalog creation :
 sh compile_specz_catalog_RASS_9028.sh
 sh compile_specz_catalog_XMMSL_819.sh
 
+# figures of completeness and success rate vs. flux and sky position
+python dr16-completeness-rass9028-xmmsl819.py 4
+python dr16-completeness-VAC-XMMSL2.py 4
+python dr16-completeness-VAC-2RXS.py 4
+
+python plot_NZ-VAC.py 
+
+
+
+# global X AGN spectroscopic catalogue construction
 sh compile_specz_catalog_2RXS.sh
 sh compile_specz_catalog_XMMSL2.sh
 
