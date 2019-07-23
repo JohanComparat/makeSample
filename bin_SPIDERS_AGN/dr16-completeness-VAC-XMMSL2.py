@@ -33,6 +33,9 @@ if os.path.isdir(figure_dir)==False:
 
 path_2_xmmsl_cat = os.path.join(catalog_dir, 'VAC_SPIDERS_XMMSL2_DR16.fits')
 
+path_2_xmmsl_cat = os.path.join( catalog_dir, 'SPIDERS_XMMSL2_Xray_NWAY_ALLWISE_SDSSv5b_SpecDR16_with_VI.fits' )
+path_2_xmmsl_cat = os.path.join( catalog_dir, 'SPIDERS_XMMSL2_Xray_NWAY_ALLWISE_SDSSv5b_SpecDR16_with_VI_1rowperXray_inDR16wSEQUELS_COMPLETE.fits' )
+
 hd_xmmsl = fits.open(path_2_xmmsl_cat)[1].data
 
 prefix='XMMSL2_'
