@@ -22,11 +22,11 @@ matplotlib.use('Agg')
 matplotlib.rcParams.update({'font.size': 14})
 import matplotlib.pyplot as p
 
-#agn_clustering_dir = '/data36s/comparat/AGN_clustering'
-agn_clustering_dir = '/home/comparat/data/AGN_clustering'
+agn_clustering_dir = '/data36s/comparat/AGN_clustering'
+#agn_clustering_dir = '/home/comparat/data/AGN_clustering'
 
 catalog_dir  = os.path.join(agn_clustering_dir, 'catalogs'  )
-figure_dir = os.path.join(catalog_dir, 'figures_VAC' )
+figure_dir = os.path.join(os.environ['GIT_MAKESAMPLE'], 'figures', 'agn', 'figures_VAC' )
 #figure_dir = os.path.join(os.environ['HOME'], 'wwwDir', 'stuff' )
 
 if os.path.isdir(figure_dir)==False:
@@ -64,7 +64,7 @@ def get_z_arrs(path_2_mock):
 	Z_mock_1em14  = np.histogram( hd_mock['redshift_R'][fx>10**(-13.2)] , bins=zs)[0]
 	return Z_mock_1em12, Z_mock_1em125, Z_mock_1em127, Z_mock_1em13, Z_mock_1em14
 
-sim_list=np.array(glob.glob(os.path.join(os.environ['MD10'],'cat_AGN_all/0003??.fit')))
+sim_list=np.array(glob.glob(os.path.join(os.environ['MD10'],'cat_AGN_all/00035?.fit')))
 simulation_area = healpy.nside2pixarea(8, degrees=True) * len(sim_list)
 
 ZS_data = np.sum(np.array([get_z_arrs(p2s) for p2s in sim_list]), axis=0)/simulation_area
