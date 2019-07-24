@@ -1,3 +1,6 @@
+"""
+python 
+"""
 import astropy.io.fits as fits
 import os, sys, glob
 from os.path import join
@@ -24,7 +27,7 @@ import matplotlib.pyplot as p
 
 agn_clustering_dir = '/data36s/comparat/AGN_clustering'
 #agn_clustering_dir = '/home/comparat/data/AGN_clustering'
-
+env = sys.argv[1]
 catalog_dir  = os.path.join(agn_clustering_dir, 'catalogs'  )
 figure_dir = os.path.join(os.environ['GIT_MAKESAMPLE'], 'figures', 'agn', 'figures_VAC' )
 #figure_dir = os.path.join(os.environ['HOME'], 'wwwDir', 'stuff' )
@@ -86,8 +89,8 @@ def get_z_arrs(path_2_mock):
 	Z_mock_1em13_2  = np.histogram( hd_mock['redshift_R'][(fx>10**(-13.0)) & (mag>15) & (mag<21.) & (t2)] , bins=zs)[0]
 	return Z_mock_1em125_a, Z_mock_1em125_1, Z_mock_1em125_2, Z_mock_1em13_a, Z_mock_1em13_1, Z_mock_1em13_2
 
-sim_list5=np.array(glob.glob(os.path.join(os.environ['MD10'],'cat_AGN_all/0003??.fit')))
-sim_list6=np.array(glob.glob(os.path.join(os.environ['MD10'],'cat_AGN_all/0004??.fit')))
+sim_list5=np.array(glob.glob(os.path.join(os.environ[env],'cat_AGN_all/0003??.fit')))
+sim_list6=np.array(glob.glob(os.path.join(os.environ[env],'cat_AGN_all/0004??.fit')))
 sim_list = np.hstack((sim_list5,sim_list6))
 simulation_area = healpy.nside2pixarea(8, degrees=True) * len(sim_list)
 
@@ -120,11 +123,11 @@ Z_XMMSL2 = hd_xmmsl['Z_BEST'][goodZ2 & bl2]
 #
 NN_2rxs_t1 = np.histogram(Z_RASS, bins=zs)[0]
 density = NN_2rxs_t1/5128.#/np.max(NN)
-p.errorbar((zs[1:]+zs[:-1])/2., density, yerr=density*NN_2rxs**(-0.5), xerr=dz/2., label='2RXS t1', fmt='none')
+p.errorbar((zs[1:]+zs[:-1])/2., density, yerr=density*NN_2rxs_t1**(-0.5), xerr=dz/2., label='2RXS t1', fmt='none')
 #
 NN_xmmxxl_t1 = np.histogram(Z_XMMSL2, bins=zs)[0]
 density = NN_xmmxxl_t1/5128.#/np.max(NN)
-p.errorbar((zs[1:]+zs[:-1])/2., density, yerr=density*NN_xmmxxl**(-0.5), xerr=dz/2., label='XMMSL2 t1', fmt='none')
+p.errorbar((zs[1:]+zs[:-1])/2., density, yerr=density*NN_xmmxxl_t1**(-0.5), xerr=dz/2., label='XMMSL2 t1', fmt='none')
 
 # Type 2
 Z_RASS = hd_rass['Z_BEST'][goodZ & nl]
@@ -132,11 +135,11 @@ Z_XMMSL2 = hd_xmmsl['Z_BEST'][goodZ2 & nl2]
 #
 NN_2rxs_t2 = np.histogram(Z_RASS, bins=zs)[0]
 density = NN_2rxs_t2/5128.#/np.max(NN)
-p.errorbar((zs[1:]+zs[:-1])/2., density, yerr=density*NN_2rxs**(-0.5), xerr=dz/2., label='2RXS t2', fmt='none')
+p.errorbar((zs[1:]+zs[:-1])/2., density, yerr=density*NN_2rxs_t2**(-0.5), xerr=dz/2., label='2RXS t2', fmt='none')
 #
 NN_xmmxxl_t2 = np.histogram(Z_XMMSL2, bins=zs)[0]
 density = NN_xmmxxl_t2/5128.#/np.max(NN)
-p.errorbar((zs[1:]+zs[:-1])/2., density, yerr=density*NN_xmmxxl**(-0.5), xerr=dz/2., label='XMMSL2 t2', fmt='none')
+p.errorbar((zs[1:]+zs[:-1])/2., density, yerr=density*NN_xmmxxl_t2**(-0.5), xerr=dz/2., label='XMMSL2 t2', fmt='none')
 
 p.xlabel('redshift')
 p.ylabel('N/deg2  dz=0.2 ')
@@ -145,9 +148,11 @@ p.xlim((0,4))
 p.grid()
 p.legend(frameon=False, loc=0)
 #p.title('data dr14')
-p.savefig(os.path.join( figure_dir, "histogram_redshift.png"))
+p.savefig(os.path.join( figure_dir, env+"_histogram_redshift.png"))
 p.clf()
 
+
+np.savetxt(os.path.join( figure_dir, env+"_histogram_redshift.txt"), np.transpose([zs[:-1], zs[1:], NN_xmmxxl, NN_2rxs]), delimiter=" & ", newline=" \\\\ \n", fmt='%10.1f')
 
 p.figure(0, (10,5))
 p.axes([0.12, 0.12, 0.78, 0.78])
@@ -167,14 +172,14 @@ Z_RASS = hd_rass['Z_BEST'][goodZ & bl]
 #
 NN_2rxs_t1 = np.histogram(Z_RASS, bins=zs)[0]
 density = NN_2rxs_t1/5128.#/np.max(NN)
-p.errorbar((zs[1:]+zs[:-1])/2., density, yerr=density*NN_2rxs**(-0.5), xerr=dz/2., label='2RXS t1', fmt='none')
+p.errorbar((zs[1:]+zs[:-1])/2., density, yerr=density*NN_2rxs_t1**(-0.5), xerr=dz/2., label='2RXS t1', fmt='none')
 
 # Type 2
 Z_RASS = hd_rass['Z_BEST'][goodZ & nl]
 #
 NN_2rxs_t2 = np.histogram(Z_RASS, bins=zs)[0]
 density = NN_2rxs_t2/5128.#/np.max(NN)
-p.errorbar((zs[1:]+zs[:-1])/2., density, yerr=density*NN_2rxs**(-0.5), xerr=dz/2., label='2RXS t2', fmt='none')
+p.errorbar((zs[1:]+zs[:-1])/2., density, yerr=density*NN_2rxs_t2**(-0.5), xerr=dz/2., label='2RXS t2', fmt='none')
 
 p.xlabel('redshift')
 p.ylabel('N/deg2  dz=0.2 ')
@@ -183,7 +188,7 @@ p.xlim((0,4))
 p.grid()
 p.legend(frameon=False, loc=0)
 #p.title('data dr14')
-p.savefig(os.path.join( figure_dir, "histogram_redshift_2RXS.png"))
+p.savefig(os.path.join( figure_dir, env+"_histogram_redshift_2RXS.png"))
 p.clf()
 
 
@@ -205,14 +210,14 @@ Z_XMMSL2 = hd_xmmsl['Z_BEST'][goodZ2 & bl2]
 #
 NN_xmmxxl_t1 = np.histogram(Z_XMMSL2, bins=zs)[0]
 density = NN_xmmxxl_t1/5128.#/np.max(NN)
-p.errorbar((zs[1:]+zs[:-1])/2., density, yerr=density*NN_xmmxxl**(-0.5), xerr=dz/2., label='XMMSL2 t1', fmt='none')
+p.errorbar((zs[1:]+zs[:-1])/2., density, yerr=density*NN_xmmxxl_t1**(-0.5), xerr=dz/2., label='XMMSL2 t1', fmt='none')
 
 # Type 2
 Z_XMMSL2 = hd_xmmsl['Z_BEST'][goodZ2 & nl2]
 #
 NN_xmmxxl_t2 = np.histogram(Z_XMMSL2, bins=zs)[0]
 density = NN_xmmxxl_t2/5128.#/np.max(NN)
-p.errorbar((zs[1:]+zs[:-1])/2., density, yerr=density*NN_xmmxxl**(-0.5), xerr=dz/2., label='XMMSL2 t2', fmt='none')
+p.errorbar((zs[1:]+zs[:-1])/2., density, yerr=density*NN_xmmxxl_t2**(-0.5), xerr=dz/2., label='XMMSL2 t2', fmt='none')
 
 p.xlabel('redshift')
 p.ylabel('N/deg2  dz=0.2 ')
@@ -221,7 +226,6 @@ p.xlim((0,4))
 p.grid()
 p.legend(frameon=False, loc=0)
 #p.title('data dr14')
-p.savefig(os.path.join( figure_dir, "histogram_redshift_XMMSL2.png"))
+p.savefig(os.path.join( figure_dir, env+"_histogram_redshift_XMMSL2.png"))
 p.clf()
 
-np.savetxt(os.path.join( figure_dir, "histogram_redshift.txt"), np.transpose([zs[:-1], zs[1:], NN_xmmxxl, NN_2rxs]), delimiter=" & ", newline=" \\\\ \n", fmt='%10.1f')
