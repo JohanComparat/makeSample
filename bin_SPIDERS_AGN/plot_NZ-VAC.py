@@ -1,5 +1,7 @@
 """
-python 
+python plot_NZ-VAC.py MD04
+python plot_NZ-VAC.py MD10
+
 """
 import astropy.io.fits as fits
 import os, sys, glob

@@ -14,11 +14,11 @@ zmaxs = n.hstack((0.005, n.arange(0.,3.0,0.1)+0.5))
 # on laptop
 #path_2_cats = os.path.join(os.environ['HOME'], 'data', 'spiders', 'agn')
 # on servers
-path_2_cats = os.path.join(os.environ['HOME'], 'hegcl/SPIDERS')
+path_2_cats = os.path.join(os.environ['HOME'], 'hegcl/SPIDERS/')
 path_2_stack_lists = os.path.join(os.environ['HOME'], 'SDSS/stacks/SPIDERS_C_GAL')
 
 # 4 catalogs 
-path_2_CAT = os.path.join(path_2_cats, 'validatedclusters_catalogue_2018-04-27_version_round123-v1_Xmass123-v1-flat.fits')
+path_2_CAT = os.path.join(path_2_cats, 'mastercatalogue_FINAL_CODEXID-flat_DR16_firefly.fits')
 
 cat = fits.open(path_2_CAT)[1].data
 
@@ -33,10 +33,27 @@ center = coord.ICRS(ra=cat['RA_OPT']*u.degree, dec=cat['DEC_OPT']*u.degree)
 position = coord.ICRS(cat['RA_GAL']*u.degree, cat['DEC_GAL']*u.degree)
 sep_r200c =  (center.separation(position)/(cat['R200C_DEG']*u.degree)).value 
 
-z_clus = cat['CLUZSPEC']
-
 ok = (sep_r200c>=0) & (cat['ISMEMBER']==1) #& (0.1<z_clus) & (z_clus<0.3)
 
+# stacks as a function of redshift ?
+z_dr16 = cat['Z_NOQSO']
+z_clus = cat['CLUZSPEC']
+
+bins_x = n.arange(0.,1.2,0.1)
+
+for bin_low, bin_high in zip (bins_x[:-1], bins_x[1:]):
+	name = "spiders_C_GAL_"+str(int(bin_low*10)).zfill(2)+"_z_"+str(int(bin_high*10)).zfill(2)+'.ascii'
+	selection = (z_clus>=bin_low) & (z_clus<bin_high) & (ok)
+	DATA = n.transpose([cat['PLATE_spiders'], cat['MJD_spiders'], cat['FIBERID_spiders'], cat['CLUZSPEC']])[selection]
+	print(name, len(DATA))
+	if len(DATA)>10:
+		n.savetxt(os.path.join(path_2_stack_lists, name), DATA)
+
+# stacks as a function os mass ?
+
+sys.exit()
+
+# stacks vs distance to cluster center
 delta_z = abs((cat['IDLSPEC1D_Z_NOQSO'] - z_clus)*3e5/cat['CLUVDISPBEST'] )
 
 

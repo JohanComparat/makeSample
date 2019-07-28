@@ -80,7 +80,7 @@ def get_arrays(path_2_cat, EXI_ML_min = EXI_ML_min):
 	high_conf = (data['RXS_ExiML'] >= EXI_ML_min )
 	targeted  = (high_conf) & (data['SDSS_FIBER2MAG_i']>=MIN_SDSS_FIBER2MAG_i) & (data['SDSS_FIBER2MAG_i']<=MAX_SDSS_FIBER2MAG_i) & (data['SDSS_MODELMAG_i']>=MIN_SDSS_MODELMAG_i)    
 	observed  = (targeted) & (data['DR16_MEMBER']==1)
-	goodZ     = (observed) & (data['CONF_BEST']==3)
+	goodZ     = (observed) & ( (data['CONF_BEST']==3) | ( ( ( data['CLASS_BEST']=='BLAZAR') | ( data['CLASS_BEST']=='BLLAC') ) & (data['CONF_BEST']>=2)) )
 	print(len(ra), len(ra[(high_conf)]))
 	return data[(high_conf)], ra[(high_conf)], dec[(high_conf)], targeted[(high_conf)], observed[(high_conf)], goodZ[(high_conf)]
 
