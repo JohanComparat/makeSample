@@ -16,7 +16,7 @@ def stack_it(specList ):
  test_D = n.loadtxt(specList, unpack=True)
  print(len(test_D[0]))
  if len(test_D[0])>10:
-  stack=sse.SpectraStackingEBOSS(specList, outfile, l_start=3., l_end=4.1 )
+  stack=sse.SpectraStackingEBOSS(specList, outfile, l_start=3., l_end=4.1, csv_input=True )
   stack.createStackMatrix()
   stack.stackSpectra()
 
