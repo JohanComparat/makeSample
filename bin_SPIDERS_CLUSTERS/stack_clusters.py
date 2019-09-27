@@ -7,10 +7,11 @@ import SpectraStackingEBOSS as sse
 
 spec_dir = join(os.environ['HOME'],"SDSS/stacks/SPIDERS_C_GAL")
 
-file_list = n.array(glob.glob(os.path.join(spec_dir, 'spiders_C_GAL_??_z_??.ascii')))
+#file_list = n.array(glob.glob(os.path.join(spec_dir, 'spiders_C_GAL_??_z_??.ascii')))
+file_list = n.array(glob.glob(os.path.join(spec_dir, '*.csv')))
 
 def stack_it(specList ):
- outfile = join(spec_dir, os.path.basename(specList)[:-6]+".stack")
+ outfile = join(spec_dir, os.path.basename(specList)[:-4]+".stack")
  print(outfile)
  test_D = n.loadtxt(specList, unpack=True)
  print(len(test_D[0]))
