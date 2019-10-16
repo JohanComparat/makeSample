@@ -37,9 +37,12 @@ def plot_models(id_model=1):
 		#print(m[id_model].header)
 		path_2_figure = os.path.join( path_2_fly_dir, 'spFly-'+m[id_model].header['IMF']+'-'+m[id_model].header['MODEL'].strip()+'-'+baseNames[ii]+'.png')
 		print(path_2_figure)
-		title_2 = baseNames[ii][12:-6]
+		title_2 = baseNames[ii][:-6]
+		print(title_2)
 		title_2_sp = title_2.split('_')
-		title = str( n.round( float(title_2_sp[0]),3 ) ) + r'$<\log_{10}(\theta/\theta_{200c})<$' + str( n.round( float(title_2_sp[2] ),3 ) )
+		print(title_2_sp)
+		title = title_2_sp[-1][6:]
+		#title = str( n.round( float(title_2_sp[0]),3 ) ) + r'$<\log_{10}(\theta/\theta_{200c})<$' + str( n.round( float(title_2_sp[2] ),3 ) )
 
 		sel = (d[1].data['NspectraPerPixel']>0.5*n.max(d[1].data['NspectraPerPixel']))&(d[1].data['medianStack']>0)
 		x_data = d[1].data['wavelength'][sel]
@@ -177,4 +180,4 @@ def plot_models(id_model=1):
 		p.clf()
 
 plot_models(1)
-#plot_models(2)
+plot_models(2)
