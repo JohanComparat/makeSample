@@ -176,8 +176,8 @@ p.legend(frameon=False, loc=0)
 p.savefig(os.path.join( figure_dir, env+"_histogram_redshift.png"))
 p.clf()
 
-
-np.savetxt(os.path.join( figure_dir, env+"_histogram_redshift.txt"), np.transpose([zs[:-1], zs[1:], NN_xmmxxl, NN_2rxs]), delimiter=" & ", newline=" \\\\ \n", fmt='%10.1f')
+np.savetxt(os.path.join( figure_dir, env+"_histogram_redshift.txt"), np.transpose([zs[:-1], zs[1:], NN_2rxs]), delimiter=" & ", newline=" \\\\ \n", fmt='%10.1f')
+#np.savetxt(os.path.join( figure_dir, env+"_histogram_redshift.txt"), np.transpose([zs[:-1], zs[1:], NN_xmmxxl, NN_2rxs]), delimiter=" & ", newline=" \\\\ \n", fmt='%10.1f')
 
 p.figure(0, (10,5))
 p.axes([0.12, 0.12, 0.78, 0.78])
