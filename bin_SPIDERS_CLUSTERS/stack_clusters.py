@@ -13,12 +13,12 @@ file_list = n.array(glob.glob(os.path.join(spec_dir, '*.csv')))
 def stack_it(specList ):
  outfile = join(spec_dir, os.path.basename(specList)[:-4]+".stack")
  print(outfile)
- test_D = n.loadtxt(specList, unpack=True)
- print(len(test_D[0]))
- if len(test_D[0])>10:
-  stack=sse.SpectraStackingEBOSS(specList, outfile, l_start=3., l_end=4.1, csv_input=True )
-  stack.createStackMatrix()
-  stack.stackSpectra()
+ #test_D = n.loadtxt(specList, unpack=True)
+ #print(len(test_D[0]))
+ #if len(test_D[0])>10:
+ stack=sse.SpectraStackingEBOSS(specList, outfile, l_start=3., l_end=4.1, csv_input=True )
+ stack.createStackMatrix()
+ stack.stackSpectra()
 
 #file_name = os.path.join(spec_dir, 'clusterCGAL_allz.ascii')
 #stack_it(file_name)

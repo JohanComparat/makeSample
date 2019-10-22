@@ -37,7 +37,7 @@ figure_dir = os.path.join(os.environ['GIT_MAKESAMPLE'], 'figures', 'agn', 'figur
 if os.path.isdir(figure_dir)==False:
 	os.system('mkdir -p '+figure_dir)
 
-path_2_rass_cat = os.path.join(catalog_dir, 'SPIDERS_2RXS_Xray_NWAY_ALLWISE_SDSSv5b_SpecDR16_with_VI_1rowperXray_inDR16wSEQUELS_COMPLETE.fits')
+path_2_rass_cat = os.path.join(catalog_dir, '2RXS', 'SPIDERS_2RXS_Xray_NWAY_ALLWISE_SDSSv5b_SpecDR16_with_VI_1rowperXray_inDR16wSEQUELS_COMPLETE.fits')
 
 #path_2_rass_cat = os.path.join(catalog_dir, 'VAC_SPIDERS_2RXS_DR16.fits')
 hd_rass = fits.open(path_2_rass_cat)[1].data
@@ -87,14 +87,14 @@ def get_selection(data):
 
 goodZ, bl, nl, ar, bal, no, st = get_selection(hd_rass)
 
-goodZ2, bl2, nl2, ar2, bal2, no2, st2 = get_selection(hd_xmmsl)
+#goodZ2, bl2, nl2, ar2, bal2, no2, st2 = get_selection(hd_xmmsl)
 
 Z_RASS = hd_rass['Z_BEST'][goodZ]
-Z_XMMSL2 = hd_xmmsl['Z_BEST'][goodZ2]
+#Z_XMMSL2 = hd_xmmsl['Z_BEST'][goodZ2]
 
 dz=0.1
 z_min=0.0005 
-z_max=np.max([np.max(Z_RASS),np.max(Z_XMMSL2)])
+z_max = np.max(Z_RASS) # np.max([np.max(Z_RASS),np.max(Z_XMMSL2)])
 zs=np.arange(z_min, z_max + dz, dz)
 xzs=(zs[1:]+zs[:-1])/2.
 
@@ -132,39 +132,39 @@ p.plot(xzs, ZS_data[4], ls='dashed', lw=2, label='m, FX>-13 t1')
 p.plot(xzs, ZS_data[5], ls='dotted', lw=2, label='m, FX>-13 t2')
 #
 Z_RASS = hd_rass['Z_BEST'][goodZ]
-Z_XMMSL2 = hd_xmmsl['Z_BEST'][goodZ2]
+#Z_XMMSL2 = hd_xmmsl['Z_BEST'][goodZ2]
 #
 NN_2rxs = np.histogram(Z_RASS, bins=zs)[0]
 density = NN_2rxs/5128.#/np.max(NN)
 p.errorbar((zs[1:]+zs[:-1])/2., density, yerr=density*NN_2rxs**(-0.5), xerr=dz/2., label='2RXS', fmt='none')
 #
-NN_xmmxxl = np.histogram(Z_XMMSL2, bins=zs)[0]
-density = NN_xmmxxl/5128.#/np.max(NN)
-p.errorbar((zs[1:]+zs[:-1])/2., density, yerr=density*NN_xmmxxl**(-0.5), xerr=dz/2., label='XMMSL2', fmt='none')
+#NN_xmmxxl = np.histogram(Z_XMMSL2, bins=zs)[0]
+#density = NN_xmmxxl/5128.#/np.max(NN)
+#p.errorbar((zs[1:]+zs[:-1])/2., density, yerr=density*NN_xmmxxl**(-0.5), xerr=dz/2., label='XMMSL2', fmt='none')
 
 # Type 1
 Z_RASS = hd_rass['Z_BEST'][goodZ & bl]
-Z_XMMSL2 = hd_xmmsl['Z_BEST'][goodZ2 & bl2]
+#Z_XMMSL2 = hd_xmmsl['Z_BEST'][goodZ2 & bl2]
 #
 NN_2rxs_t1 = np.histogram(Z_RASS, bins=zs)[0]
 density = NN_2rxs_t1/5128.#/np.max(NN)
 p.errorbar((zs[1:]+zs[:-1])/2., density, yerr=density*NN_2rxs_t1**(-0.5), xerr=dz/2., label='2RXS t1', fmt='none')
 #
-NN_xmmxxl_t1 = np.histogram(Z_XMMSL2, bins=zs)[0]
-density = NN_xmmxxl_t1/5128.#/np.max(NN)
-p.errorbar((zs[1:]+zs[:-1])/2., density, yerr=density*NN_xmmxxl_t1**(-0.5), xerr=dz/2., label='XMMSL2 t1', fmt='none')
+#NN_xmmxxl_t1 = np.histogram(Z_XMMSL2, bins=zs)[0]
+#density = NN_xmmxxl_t1/5128.#/np.max(NN)
+#p.errorbar((zs[1:]+zs[:-1])/2., density, yerr=density*NN_xmmxxl_t1**(-0.5), xerr=dz/2., label='XMMSL2 t1', fmt='none')
 
 # Type 2
 Z_RASS = hd_rass['Z_BEST'][goodZ & nl]
-Z_XMMSL2 = hd_xmmsl['Z_BEST'][goodZ2 & nl2]
+#Z_XMMSL2 = hd_xmmsl['Z_BEST'][goodZ2 & nl2]
 #
 NN_2rxs_t2 = np.histogram(Z_RASS, bins=zs)[0]
 density = NN_2rxs_t2/5128.#/np.max(NN)
 p.errorbar((zs[1:]+zs[:-1])/2., density, yerr=density*NN_2rxs_t2**(-0.5), xerr=dz/2., label='2RXS t2', fmt='none')
 #
-NN_xmmxxl_t2 = np.histogram(Z_XMMSL2, bins=zs)[0]
-density = NN_xmmxxl_t2/5128.#/np.max(NN)
-p.errorbar((zs[1:]+zs[:-1])/2., density, yerr=density*NN_xmmxxl_t2**(-0.5), xerr=dz/2., label='XMMSL2 t2', fmt='none')
+#NN_xmmxxl_t2 = np.histogram(Z_XMMSL2, bins=zs)[0]
+#density = NN_xmmxxl_t2/5128.#/np.max(NN)
+#p.errorbar((zs[1:]+zs[:-1])/2., density, yerr=density*NN_xmmxxl_t2**(-0.5), xerr=dz/2., label='XMMSL2 t2', fmt='none')
 
 p.xlabel('redshift')
 p.ylabel('N/deg2  dz=0.2 ')
@@ -216,6 +216,7 @@ p.legend(frameon=False, loc=0)
 p.savefig(os.path.join( figure_dir, env+"_histogram_redshift_2RXS.png"))
 p.clf()
 
+sys.exit()
 
 p.figure(0, (10,5))
 p.axes([0.12, 0.12, 0.78, 0.78])
