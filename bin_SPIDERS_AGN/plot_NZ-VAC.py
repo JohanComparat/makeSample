@@ -29,7 +29,7 @@ import matplotlib.pyplot as p
 
 agn_clustering_dir = '/data36s/comparat/AGN_clustering'
 #agn_clustering_dir = '/home/comparat/data/AGN_clustering'
-env = sys.argv[1]
+env = "MD10" # sys.argv[1]
 catalog_dir  = os.path.join(agn_clustering_dir, 'catalogs'  )
 figure_dir = os.path.join(os.environ['GIT_MAKESAMPLE'], 'figures', 'agn', 'figures_VAC' )
 #figure_dir = os.path.join(os.environ['HOME'], 'wwwDir', 'stuff' )
@@ -37,15 +37,38 @@ figure_dir = os.path.join(os.environ['GIT_MAKESAMPLE'], 'figures', 'agn', 'figur
 if os.path.isdir(figure_dir)==False:
 	os.system('mkdir -p '+figure_dir)
 
-path_2_rass_cat = os.path.join(catalog_dir, 'VAC_SPIDERS_2RXS_DR16.fits')
+path_2_rass_cat = os.path.join(catalog_dir, 'SPIDERS_2RXS_Xray_NWAY_ALLWISE_SDSSv5b_SpecDR16_with_VI_1rowperXray_inDR16wSEQUELS_COMPLETE.fits')
+
+#path_2_rass_cat = os.path.join(catalog_dir, 'VAC_SPIDERS_2RXS_DR16.fits')
 hd_rass = fits.open(path_2_rass_cat)[1].data
 
 path_2_xmmsl_cat = os.path.join(catalog_dir, 'VAC_SPIDERS_XMMSL2_DR16.fits')
 hd_xmmsl = fits.open(path_2_xmmsl_cat)[1].data
 
 
+MIN_SDSS_FIBER2MAG_i = 17.0
+MAX_SDSS_FIBER2MAG_i = 22.5
+MIN_SDSS_MODELMAG_i  = 16.0
+
+#EXI_ML_min_str = sys.argv[2]
+#if EXI_ML_min_str=='6p5':
+EXI_ML_min=6.5
+#if EXI_ML_min_str=='10':
+#EXI_ML_min=10
+
+
 def get_selection(data):
-	goodZ = (data['Z_BEST']>-1)&(data['CONF_BEST']==3)
+	#goodZ = (data['Z_BEST']>-1)&(data['CONF_BEST']==3)
+	high_conf = (data['RXS_ExiML'] >= EXI_ML_min )
+	targeted  = (high_conf) & (data['SDSS_FIBER2MAG_i']>=MIN_SDSS_FIBER2MAG_i) & (data['SDSS_FIBER2MAG_i']<=MAX_SDSS_FIBER2MAG_i) & (data['SDSS_MODELMAG_i']>=MIN_SDSS_MODELMAG_i)    
+	observed  = (targeted) & (data['DR16_MEMBER']==1)
+	c1 = (observed) & ((data['Z_BEST']>0) | ((data['DR16_Z']>0) & (data['DR16_Z_ERR']>0)))
+	c2 = (c1) & (data['CONF_BEST']==3)
+	c3 = (c1) & (data['CONF_BEST']==2) & ((data['CLASS_BEST']=='BLAZAR')|(data['CLASS_BEST']=='BLLAC'))
+	c4 = (c1) & (data['DR16_SN_MEDIAN_ALL']>=2) & (data['DR16_ZWARNING']==0 )
+	c5 = (c1) & (data['VI_REINSPECT_FLAG'] == 0) & (data['VI_NINSPECTORS']>2)
+	c6 = (c1) & (data['VI_AM_RECONCILED']==1)
+	goodZ =  (c2) | (c3) | (c4) | (c5) | (c6) 
 	bl  = (goodZ) & ( ( ( data['CLASS_BEST']=='BLAGN') & (data['DR16_CLASS']=='QSO') ) | ( data['CLASS_BEST']=='QSO') )
 	nl  = (goodZ) & ( ( data['CLASS_BEST']=='NLAGN') | ( data['CLASS_BEST']=='GALAXY') | (( data['CLASS_BEST']=='BLAGN') & (data['DR16_CLASS']=='GALAXY')) ) 
 	ar  = (goodZ) & ( ( data['CLASS_BEST']=='BLAZAR') | ( data['CLASS_BEST']=='BLLAC') )

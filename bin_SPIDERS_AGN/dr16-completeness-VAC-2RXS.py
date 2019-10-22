@@ -28,7 +28,9 @@ matplotlib.use('Agg')
 matplotlib.rcParams.update({'font.size': 14})
 import matplotlib.pyplot as p
 
-agn_clustering_dir = '/data36s/comparat/AGN_clustering'
+# on ds machines :
+#agn_clustering_dir = '/data36s/comparat/AGN_clustering'
+# on laptop
 agn_clustering_dir = '/home/comparat/data/AGN_clustering'
 
 nside_int = int(sys.argv[1])
@@ -38,12 +40,25 @@ pixel_area = healpy.nside2pixarea(nside, degrees=True)
 pixel_area_str = str(np.round(pixel_area,2))
 
 catalog_dir  = os.path.join(agn_clustering_dir, 'catalogs'  )
-figure_dir = os.path.join(catalog_dir, 'figures_VAC' )
+
+git_dir = os.environ['GIT_MAKESAMPLE']
+target_dir  = os.path.join(agn_clustering_dir, 'targets'  )
+footprint_dir  = os.path.join(agn_clustering_dir, 'footprint'  )
+figure_dir = os.path.join(git_dir, 'figures', 'agn', 'figures_VAC' )
 
 if os.path.isdir(figure_dir)==False:
 	os.system('mkdir -p '+figure_dir)
 
 #path_2_cat = os.path.join(catalog_dir, 'VAC_SPIDERS_2RXS_DR16.fits')
+
+#path_2_2RXS_cat = os.path.join(catalog_dir, 'SPIDERS_2RXS_Xray_NWAY_ALLWISE_SDSSv5b_SpecDR16_with_VI_1rowperXray_inDR16wSEQUELS_COMPLETE.fits') # '2RXS_AllWISE_catalog_paper_2017May26_v5_11_0_sdss_26_VERON_MASKED_GAIA_star_mask.fits')
+#full_2RXS = fits.open(path_2_2RXS_cat)[1].data
+
+path_2_cat = os.path.join(catalog_dir, 'VAC_SPIDERS_2RXS_DR16.fits')
+VAC_2RXS = fits.open(path_2_cat)[1].data
+
+path_2_cat = os.path.join(catalog_dir, 'VAC_SPIDERS_XMMSL2_DR16.fits')
+VAC_XMMSL = fits.open(path_2_cat)[1].data
 
 path_2_cat = os.path.join(catalog_dir, 'SPIDERS_2RXS_Xray_NWAY_ALLWISE_SDSSv5b_SpecDR16_with_VI.fits')
 # contains 135,259
@@ -80,9 +95,20 @@ def get_arrays(path_2_cat, EXI_ML_min = EXI_ML_min):
 	high_conf = (data['RXS_ExiML'] >= EXI_ML_min )
 	targeted  = (high_conf) & (data['SDSS_FIBER2MAG_i']>=MIN_SDSS_FIBER2MAG_i) & (data['SDSS_FIBER2MAG_i']<=MAX_SDSS_FIBER2MAG_i) & (data['SDSS_MODELMAG_i']>=MIN_SDSS_MODELMAG_i)    
 	observed  = (targeted) & (data['DR16_MEMBER']==1)
-	goodZ     = (observed) & ( (data['CONF_BEST']==3) | ( ( ( data['CLASS_BEST']=='BLAZAR') | ( data['CLASS_BEST']=='BLLAC') ) & (data['CONF_BEST']>=2)) )
-	print(len(ra), len(ra[(high_conf)]))
-	return data[(high_conf)], ra[(high_conf)], dec[(high_conf)], targeted[(high_conf)], observed[(high_conf)], goodZ[(high_conf)]
+	c1 = (observed) & ((data['Z_BEST']>0) | ((data['DR16_Z']>0) & (data['DR16_Z_ERR']>0)))
+	c2 = (c1) & (data['CONF_BEST']==3)
+	c3 = (c1) & (data['CONF_BEST']==2) & ((data['CLASS_BEST']=='BLAZAR')|(data['CLASS_BEST']=='BLLAC'))
+	c4 = (c1) & (data['DR16_SN_MEDIAN_ALL']>=2) & (data['DR16_ZWARNING']==0 )
+	c5 = (c1) & (data['VI_REINSPECT_FLAG'] == 0) & (data['VI_NINSPECTORS']>2)
+	c6 = (c1) & (data['VI_AM_RECONCILED']==1)
+	goodZ =  (c2) | (c3) | (c4) | (c5) | (c6) 
+	#goodZ     = (observed) & ( 
+		#(data['CONF_BEST']==3) | 
+		#( (data['CONF_BEST']>=2) & 
+			#( (data['CLASS_BEST']=='BLAZAR') | (data['CLASS_BEST']=='BLLAC') )  
+		#) )
+	print(len(ra), len(ra[high_conf]) )
+	return data[(high_conf)], ra[(high_conf)], dec[(high_conf)], targeted[(high_conf)], observed[(high_conf)], goodZ[(high_conf)], hd_rass_i
 
 #data['RXS_ExtML'    ]
 #data['RXS_ExiML1RXS'] 
@@ -98,7 +124,7 @@ fig_out = os.path.join(figure_dir, prefix+qty+'_hist_dr16.png')
 
 XMIN = -13. 
 XMAX = -10
-DX=0.5
+DX=1.
 bins = np.arange(XMIN, XMAX+DX, DX)# (np.max(YY)-np.min(YY))/10.)
 x_bins = (bins[1:]+bins[:-1])/2.
 
@@ -112,12 +138,23 @@ print('======================================')
 print('DR16 footprint')
 print('======================================')
 print('======================================')
-data, ra, dec, targeted, observed, goodZ = get_arrays(path_2_cat_dr16)
+data, ra, dec, targeted, observed, goodZ, all_data = get_arrays(path_2_cat_dr16)
+print(len(all_data[(all_data['RXS_IN_BOSS']==1)])) 
 print( len(data) )
 print( len(data[targeted]), len(data[targeted])*1./len(data) )
 print( len(data[observed]), len(data[observed])*1./len(data[targeted]) )
 print( len(data[goodZ]), len(data[goodZ])*1./len(data[observed]) )
 # fraction of target observed and fractino of successful redshifts as a function of quantities. 
+
+print('===============')
+print( len(data[observed]), len(data[observed])*1./len(data[observed]) )
+
+cb = data['CONF_BEST']
+for cb_val in np.unique(cb):
+	cb_s = (cb==cb_val)
+	print(cb_val, ' & ', len(data[observed & cb_s]) )#, len(data[observed & cb_s])*1./len(data[observed]) )
+
+
 YY = np.log10(data[qty])
 
 out_all = np.histogram( YY, bins=bins )[0]
@@ -125,7 +162,6 @@ out_tar = np.histogram( YY[targeted], bins=bins )[0]
 out_obs = np.histogram( YY[observed], bins=bins )[0]
 out_zzz = np.histogram( YY[goodZ], bins=bins )[0]
 
-p.plot(x_bins, out_all/np.sum(out_all), label='pdf DR16')
 #
 mid_line = out_tar*1./out_all
 err_line = out_tar**(-0.5)
@@ -139,69 +175,73 @@ mid_line = out_zzz*1./out_obs
 err_line = out_zzz**(-0.5)
 p.errorbar(x_bins, y = mid_line, xerr=DX/2., yerr=err_line, label='Z/O', fmt='none')
 
+#p.plot(x_bins, out_all/np.sum(out_all), label='pdf')
+p.hist(YY, bins=bins, label='normed hist', weights = np.ones_like(YY)/np.sum(out_all), histtype='step', lw=3)
+
 p.xlabel(r'$\log_{10}(F_X [erg.\, cm^{-2}. s^{-1}])$')
 p.ylabel('fraction')
 p.grid()
 p.xlim((XMIN, XMAX))
-p.ylim((0,1))
-#p.yscale('log')
-#p.legend(frameon=True, loc=7)
-p.savefig(fig_out)
-p.clf()
-
-
-fig_out = os.path.join(figure_dir, prefix+qty+'_hist.png')
-
-p.figure(1, (5.5,5.5))
-p.axes([0.15, 0.15, 0.8, 0.77])
-p.tight_layout()
-
-# FULL footprint
-print('======================================')
-print('======================================')
-print('FULL footprint')
-print('======================================')
-print('======================================')
-data, ra, dec, targeted, observed, goodZ = get_arrays(path_2_cat)
-print( 'A', len(data) )
-print( 'T',len(data[targeted]), len(data[targeted])*1./len(data) )
-print( 'O',len(data[observed]), len(data[observed])*1./len(data[targeted]) )
-print( 'Z',len(data[goodZ]), len(data[goodZ])*1./len(data[observed]) )
-# fraction of target observed and fractino of successful redshifts as a function of quantities. 
-YY = np.log10(data[qty])
-
-out_all = np.histogram( YY, bins=bins )[0]
-out_tar = np.histogram( YY[targeted], bins=bins )[0]
-out_obs = np.histogram( YY[observed], bins=bins )[0]
-out_zzz = np.histogram( YY[goodZ], bins=bins )[0]
-
-
-p.plot(x_bins, out_all/np.sum(out_all), label='pdf')
-#
-mid_line = out_tar*1./out_all
-err_line = out_tar**(-0.5)
-p.errorbar(x_bins, y = mid_line, xerr=DX/2., yerr=err_line, label='T/A', fmt='none', lw=3)
-#
-mid_line = out_obs*1./out_tar
-err_line = out_obs**(-0.5)
-p.errorbar(x_bins, y = mid_line, xerr=DX/2., yerr=err_line, label='O/T', fmt='none', lw=2)
-#
-mid_line = out_zzz*1./out_obs
-err_line = out_zzz**(-0.5)
-p.errorbar(x_bins, y = mid_line, xerr=DX/2., yerr=err_line, label='Z/O', fmt='none')
-
-p.xlabel(qty)#'Observed fraction per '+pixel_area_str+r' deg$^2$ pixels')
-p.xlabel(r'$\log_{10}(F_X [erg.\, cm^{-2}. s^{-1}])$')
-p.ylabel('fraction')
-p.grid()
-p.xlim((XMIN, XMAX))
-p.ylim((0,1))
+p.ylim((-0.02,1.02))
 #p.yscale('log')
 p.legend(frameon=True, loc=3)
 p.savefig(fig_out)
 p.clf()
 
 
+#fig_out = os.path.join(figure_dir, prefix+qty+'_hist.png')
+
+#p.figure(1, (5.5,5.5))
+#p.axes([0.15, 0.15, 0.8, 0.77])
+#p.tight_layout()
+
+## FULL footprint
+#print('======================================')
+#print('======================================')
+#print('FULL footprint')
+#print('======================================')
+#print('======================================')
+#data, ra, dec, targeted, observed, goodZ, all_data = get_arrays(path_2_cat)
+#print(len(all_data[(all_data['RXS_IN_BOSS']==1)]))
+#print( 'A', len(data) )
+#print( 'T',len(data[targeted]), len(data[targeted])*1./len(data) )
+#print( 'O',len(data[observed]), len(data[observed])*1./len(data[targeted]) )
+#print( 'Z',len(data[goodZ]), len(data[goodZ])*1./len(data[observed]) )
+## fraction of target observed and fractino of successful redshifts as a function of quantities. 
+#YY = np.log10(data[qty])
+
+#out_all = np.histogram( YY, bins=bins )[0]
+#out_tar = np.histogram( YY[targeted], bins=bins )[0]
+#out_obs = np.histogram( YY[observed], bins=bins )[0]
+#out_zzz = np.histogram( YY[goodZ], bins=bins )[0]
+
+
+#p.plot(x_bins, out_all/np.sum(out_all), label='pdf')
+##
+#mid_line = out_tar*1./out_all
+#err_line = out_tar**(-0.5)
+#p.errorbar(x_bins, y = mid_line, xerr=DX/2., yerr=err_line, label='T/A', fmt='none', lw=3)
+##
+#mid_line = out_obs*1./out_tar
+#err_line = out_obs**(-0.5)
+#p.errorbar(x_bins, y = mid_line, xerr=DX/2., yerr=err_line, label='O/T', fmt='none', lw=2)
+##
+#mid_line = out_zzz*1./out_obs
+#err_line = out_zzz**(-0.5)
+#p.errorbar(x_bins, y = mid_line, xerr=DX/2., yerr=err_line, label='Z/O', fmt='none')
+
+#p.xlabel(qty)#'Observed fraction per '+pixel_area_str+r' deg$^2$ pixels')
+#p.xlabel(r'$\log_{10}(F_X [erg.\, cm^{-2}. s^{-1}])$')
+#p.ylabel('fraction')
+#p.grid()
+#p.xlim((XMIN, XMAX))
+#p.ylim((0,1))
+##p.yscale('log')
+#p.legend(frameon=True, loc=3)
+#p.savefig(fig_out)
+#p.clf()
+
+#sys.exit()
 # NSIDE=2^5=32
 # 
 

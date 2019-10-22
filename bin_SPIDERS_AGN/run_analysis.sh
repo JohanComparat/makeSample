@@ -1,15 +1,40 @@
 #!/bin/bash
 cd ~/software/linux/makeSample/bin_SPIDERS_AGN
 
-# specific eBOSS/SPIDERS AGN targets specZ catalog creation :
+# specific eBOSS/SPIDERS AGN targets specZ catalog creation for clustering tests:
 sh compile_specz_catalog_RASS_9028.sh
 sh compile_specz_catalog_XMMSL_819.sh
 
-# figures of completeness and success rate vs. flux and sky position
-python dr16-completeness-rass9028-xmmsl819.py 4
-python dr16-completeness-VAC-XMMSL2.py 4
-python dr16-completeness-VAC-2RXS.py 4
+# basic statistics and sky maps.
 
+# section 2.
+# section 2.1. 
+# figure 1 :
+python basic_stats_targets.py
+# section 2.2. mask. inside / outside : 21279 / 9
+# Table 1 and figure 2 :
+python basic_stats_2RXS.py
+# figures of completeness and success rate vs. flux and sky position
+# python dr16-completeness-rass9028-xmmsl819.py 4 6p5
+# python dr16-completeness-VAC-XMMSL2.py 4 6p5
+python dr16-completeness-VAC-2RXS.py 4 6p5
+#
+# python dr16-completeness-rass9028-xmmsl819.py 4 10
+# python dr16-completeness-VAC-XMMSL2.py 4 10
+python dr16-completeness-VAC-2RXS.py 4 10
+
+# section 3.
+# table 2:
+# split by CONF_BEST
+python dr16-completeness-VAC-2RXS.py 4 10
+python dr16-completeness-VAC-2RXS.py 4 6p5
+# Figure 3
+python visual-inspection-stats.py 6p5
+python visual-inspection-stats.py 10
+# Figure 4, classification per type
+python AGN-types.py 6p5
+
+# figure 5.
 python plot_NZ-VAC.py 
 
 
