@@ -114,8 +114,8 @@ def get_z_arrs(path_2_mock):
 	Z_mock_1em13_2  = np.histogram( hd_mock['redshift_R'][(fx>10**(-13.0)) & (mag>15) & (mag<21.) & (t2)] , bins=zs)[0]
 	return Z_mock_1em125_a, Z_mock_1em125_1, Z_mock_1em125_2, Z_mock_1em13_a, Z_mock_1em13_1, Z_mock_1em13_2
 
-sim_list5=np.array(glob.glob(os.path.join(os.environ[env],'cat_AGN_all/0003??.fit')))
-sim_list6=np.array(glob.glob(os.path.join(os.environ[env],'cat_AGN_all/0004??.fit')))
+sim_list5=np.array(glob.glob(os.path.join(os.environ[env],'cat_AGN_all/00035?.fit')))
+sim_list6=np.array(glob.glob(os.path.join(os.environ[env],'cat_AGN_all/00045?.fit')))
 sim_list = np.hstack((sim_list5,sim_list6))
 simulation_area = healpy.nside2pixarea(8, degrees=True) * len(sim_list)
 
