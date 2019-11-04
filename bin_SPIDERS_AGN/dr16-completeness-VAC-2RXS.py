@@ -65,6 +65,7 @@ path_2_cat = os.path.join(catalog_dir, 'SPIDERS_2RXS_Xray_NWAY_ALLWISE_SDSSv5b_S
 #hd0=fits.open(os.path.join(catalog_dir, 'SPIDERS_2RXS_Xray_NWAY_ALLWISE_SDSSv5b_SpecDR16_with_VI.fits'))
 # contains 21,288
 path_2_cat_dr16 = os.path.join(catalog_dir, 'SPIDERS_2RXS_Xray_NWAY_ALLWISE_SDSSv5b_SpecDR16_with_VI_1rowperXray_inDR16wSEQUELS_COMPLETE.fits')
+path_2_cat_dr16 = os.path.join(catalog_dir, '2RXS', 'SPIDERS_2RXS_Xray_NWAY_ALLWISE_SDSSv5b_SpecDR16_with_VI_1rowperXray_inDR16wSEQUELS_COMPLETE_MaxBCG_REDMAPPER.fits')
 
 MIN_SDSS_FIBER2MAG_i = 17.0
 MAX_SDSS_FIBER2MAG_i = 22.5
@@ -95,20 +96,20 @@ def get_arrays(path_2_cat, EXI_ML_min = EXI_ML_min):
 	high_conf = (data['RXS_ExiML'] >= EXI_ML_min )
 	targeted  = (high_conf) & (data['SDSS_FIBER2MAG_i']>=MIN_SDSS_FIBER2MAG_i) & (data['SDSS_FIBER2MAG_i']<=MAX_SDSS_FIBER2MAG_i) & (data['SDSS_MODELMAG_i']>=MIN_SDSS_MODELMAG_i)    
 	observed  = (targeted) & (data['DR16_MEMBER']==1)
-	c1 = (observed) & ((data['Z_BEST']>0) | ((data['DR16_Z']>0) & (data['DR16_Z_ERR']>0)))
+	c1 = (observed) & ((data['Z_BEST']>-0.5) | ((data['DR16_Z']>-0.5) & (data['DR16_Z_ERR']>0)))
 	c2 = (c1) & (data['CONF_BEST']==3)
 	c3 = (c1) & (data['CONF_BEST']==2) & ((data['CLASS_BEST']=='BLAZAR')|(data['CLASS_BEST']=='BLLAC'))
 	c4 = (c1) & (data['DR16_SN_MEDIAN_ALL']>=2) & (data['DR16_ZWARNING']==0 )
-	c5 = (c1) & (data['VI_REINSPECT_FLAG'] == 0) & (data['VI_NINSPECTORS']>2)
-	c6 = (c1) & (data['VI_AM_RECONCILED']==1)
-	goodZ =  (c2) | (c3) | (c4) | (c5) | (c6) 
-	#goodZ     = (observed) & ( 
-		#(data['CONF_BEST']==3) | 
-		#( (data['CONF_BEST']>=2) & 
-			#( (data['CLASS_BEST']=='BLAZAR') | (data['CLASS_BEST']=='BLLAC') )  
-		#) )
+	c5 = (c1) & (data['CONF_BEST']==2) & (data['DR16_ZWARNING']==0 ) & (data['VI_REINSPECT_FLAG'] == 0) & (data['VI_NINSPECTORS']>2)
+	c6 = (c1) & (data['CONF_BEST']==2) & (data['DR16_ZWARNING']==0 ) & (data['VI_AM_RECONCILED']==1)
+	idZ =  (c2) | (c3) | (c4) | (c5) | (c6) 
+	blazars_noZ = (idZ) & ((data['CLASS_BEST']=='BLAZAR')|(data['CLASS_BEST']=='BLLAC')) & (data['CONF_BEST']<3)
+	goodZ = (idZ) & (blazars_noZ == False)
+	clusters = (goodZ) & (data['REDMAPPER_Separation']<60) & (abs(data['DR16_Z'] - data['REDMAPPER_Z_LAMBDA'])<0.01)
+	stars = (goodZ) & (data['CLASS_BEST']=='STAR')
+	agnZ = (goodZ) & (clusters==False) &  (stars==False)
 	print(len(ra), len(ra[high_conf]) )
-	return data[(high_conf)], ra[(high_conf)], dec[(high_conf)], targeted[(high_conf)], observed[(high_conf)], goodZ[(high_conf)], hd_rass_i
+	return data[(high_conf)], ra[(high_conf)], dec[(high_conf)], targeted[(high_conf)], observed[(high_conf)], goodZ[(high_conf)], idZ[(high_conf)], agnZ[(high_conf)], clusters[(high_conf)], blazars_noZ[(high_conf)], stars[(high_conf)], hd_rass_i
 
 #data['RXS_ExtML'    ]
 #data['RXS_ExiML1RXS'] 
@@ -138,16 +139,26 @@ print('======================================')
 print('DR16 footprint')
 print('======================================')
 print('======================================')
-data, ra, dec, targeted, observed, goodZ, all_data = get_arrays(path_2_cat_dr16)
+data, ra, dec, targeted, observed, goodZ, idZ, agnZ, clusterZ, blazarNOZ, stars, all_data = get_arrays(path_2_cat_dr16)
 print(len(all_data[(all_data['RXS_IN_BOSS']==1)])) 
-print( len(data) )
-print( len(data[targeted]), len(data[targeted])*1./len(data) )
-print( len(data[observed]), len(data[observed])*1./len(data[targeted]) )
-print( len(data[goodZ]), len(data[goodZ])*1./len(data[observed]) )
+print('All         &', len(data) )
+print('Targets     &', len(data[targeted]) )#, len(data[targeted])*1./len(data) )
+print('Observed    &', len(data[observed]) )#, len(data[observed])*1./len(data[targeted]) )
+print('Identified  &', len(data[idZ])      )#, len(data[idZ])*1./len(data[observed]) )
+print('Blazar no Z &', len(data[blazarNOZ]))#, len(data[blazarNOZ])*1./len(data[observed]) )
+print('good Z      &', len(data[goodZ])    )#, len(data[goodZ])*1./len(data[observed]) )
+print('AGN         &', len(data[agnZ])     )#, len(data[agnZ])*1./len(data[observed]) )
+print('Cluster     &', len(data[clusterZ]) )#, len(data[clusterZ])*1./len(data[observed]) )
+print('Star        &', len(data[stars])    )#, len(data[stars])*1./len(data[observed]) )
+
 # fraction of target observed and fractino of successful redshifts as a function of quantities. 
 
 print('===============')
 print( len(data[observed]), len(data[observed])*1./len(data[observed]) )
+
+out = np.unique(data['CLASS_BEST'][clusterZ], return_counts=True)
+print(out)
+
 
 cb = data['CONF_BEST']
 for cb_val in np.unique(cb):

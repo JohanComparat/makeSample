@@ -11,33 +11,73 @@ sh compile_specz_catalog_XMMSL_819.sh
 # section 2.1. 
 # figure 1 :
 python basic_stats_targets.py
+
 # section 2.2. mask. inside / outside : 21279 / 9
 # Table 1 and figure 2 :
 python basic_stats_2RXS.py
 # figures of completeness and success rate vs. flux and sky position
 # python dr16-completeness-rass9028-xmmsl819.py 4 6p5
 # python dr16-completeness-VAC-XMMSL2.py 4 6p5
-python dr16-completeness-VAC-2RXS.py 4 6p5
+# python dr16-completeness-VAC-2RXS.py 4 6p5
 #
 # python dr16-completeness-rass9028-xmmsl819.py 4 10
 # python dr16-completeness-VAC-XMMSL2.py 4 10
-python dr16-completeness-VAC-2RXS.py 4 10
+# python dr16-completeness-VAC-2RXS.py 4 10
 
 # section 3.
-# table 2:
+# table 1, 2:
 # split by CONF_BEST
 python dr16-completeness-VAC-2RXS.py 4 10
 python dr16-completeness-VAC-2RXS.py 4 6p5
+
+python dr16-completeness-VAC-XMMSL2.py 4 
+
 # Figure 3
 python visual-inspection-stats.py 6p5
 python visual-inspection-stats.py 10
-# Figure 4, classification per type
-python AGN-types.py 6p5
+# # Figure 4, classification per type
+# # python AGN-types.py 6p5
 
 # figure 5.
-python plot_NZ-VAC.py 
+# python plot_NZ-VAC.py 0.1 22.5 6.5
+# python plot_NZ-VAC.py 0.2 22.5 6.5 
+# python plot_NZ-VAC.py 0.0 22.5 6.5
+# python plot_NZ-VAC.py 0.05 22.5 6.5
+python plot_NZ-VAC.py 0.1 22.5 6.5
+# python plot_NZ-VAC.py 0.15 22.5 6.5
+# python plot_NZ-VAC.py 0.2 22.5 6.5
 
-
+# 
+# python plot_NZ-VAC.py 0.3 22.5 6.5
+# python plot_NZ-VAC.py 0.4 22.5 6.5
+# 
+# python plot_NZ-VAC.py 0.45 22.5 6.5
+# python plot_NZ-VAC.py 0.45 22.0 6.5
+# python plot_NZ-VAC.py 0.45 21.5 6.5
+# 
+# python plot_NZ-VAC.py 0.5 22.5 6.5
+# python plot_NZ-VAC.py 0.5 22.0 6.5
+# python plot_NZ-VAC.py 0.5 21.5 6.5
+# python plot_NZ-VAC.py 0.5 21.0 6.5
+#                              6.5
+# python plot_NZ-VAC.py 0.1 21.5 6.5
+# python plot_NZ-VAC.py 0.2 21.5 6.5 
+# python plot_NZ-VAC.py 0.3 21.5 6.5
+# python plot_NZ-VAC.py 0.4 21.5 6.5
+# python plot_NZ-VAC.py 0.5 21.5 6.5
+#
+# python plot_NZ-VAC.py 0.1 22.5 10.
+# python plot_NZ-VAC.py 0.2 22.5 10.
+# python plot_NZ-VAC.py 0.3 22.5 10.
+# python plot_NZ-VAC.py 0.4 22.5 10.
+# python plot_NZ-VAC.py 0.5 22.5 10.
+# #                              10.
+# python plot_NZ-VAC.py 0.1 21.5 10.
+# python plot_NZ-VAC.py 0.2 21.5 10.
+# python plot_NZ-VAC.py 0.3 21.5 10.
+# python plot_NZ-VAC.py 0.4 21.5 10.
+# python plot_NZ-VAC.py 0.5 21.5 10.
+# 
 
 # global X AGN spectroscopic catalogue construction
 sh compile_specz_catalog_2RXS.sh
