@@ -210,7 +210,6 @@ def get_z_arrs(path_2_mock, output_data=False):
 		return Z_mock_1em125_a, Z_mock_1em125_1, Z_mock_1em127_a, Z_mock_1em127_1, Z_mock_1em129_a, Z_mock_1em129_1
 
 
-#def get_arrays(path_2_cat, EXI_ML_min = 10.):
 def get_arrays_xmmsl2(path_2_cat, EXI_ML_min = EXI_ML_min):
 	hd_rass_i = fits.open(path_2_cat)[1].data
 	targets = (hd_rass_i['NWAY_match_flag']!=2) & (hd_rass_i['XMMSL2_IN_BOSS']==1) & (hd_rass_i['FLAG_SDSSv5b_best']==1) & (hd_rass_i['NWAY_p_any']>=0.01) & (hd_rass_i['NUM_SDSS']>=1)

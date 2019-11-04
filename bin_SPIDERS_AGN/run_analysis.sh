@@ -79,6 +79,9 @@ python plot_NZ-VAC.py 0.1 22.5 6.5
 # python plot_NZ-VAC.py 0.5 21.5 10.
 # 
 
+# figure LX vs. Z
+python plot_LX_Z-VAC.py
+
 # global X AGN spectroscopic catalogue construction
 sh compile_specz_catalog_2RXS.sh
 sh compile_specz_catalog_XMMSL2.sh
