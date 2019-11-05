@@ -12,8 +12,8 @@ version = 'v1'
 
 zmins = n.hstack((-0.01, 0.005, n.arange(0.1,3.0,0.1) ))
 zmaxs = n.hstack((0.005, n.arange(0.,3.0,0.1)+0.5))
-zmins = n.array([-0.005])
-zmaxs = n.array([5.])
+#zmins = n.array([-0.005])
+#zmaxs = n.array([5.])
 
 # on laptop
 #path_2_cats = os.path.join(os.environ['HOME'], 'data', 'spiders', 'agn')
@@ -107,8 +107,11 @@ for zmin, zmax in zip(zmins, zmaxs):
 # XMMSL2 lists
 survey = 'XMMSL2'
 cat = cat_XMMSL2
+
 z_best = cat['Z_BEST']
 z_conf = cat['CONF_BEST']
+cat_categories = cat['CLASS_BEST']
+
 print(survey)
 for zmin, zmax in zip(zmins, zmaxs):
 	print('=================================================')
@@ -149,10 +152,10 @@ for zmin, zmax in zip(zmins, zmaxs):
 
 import glob
 
-for zmin, zmax in zip(zmins, zmaxs):
+for zmin, zmax in zip(zmins[:3], zmaxs[:3]):
 	print('=================================================')
 	name = "*_*_zmin_"+str(int(10*zmin)).zfill(2)+"_zmax_"+str(int(10*zmax)).zfill(2)+'.ascii'
-	all_ascii_lists = n.array(glob.glob(os.path.join(path_2_stack_lists, name)))
+	all_ascii_lists = n.array(glob.glob(os.path.join(path_2_stack_lists+'_v0', name)))
 	all_ascii_lists.sort()
 	if len(all_ascii_lists)>0:
 		all_ascii_lists_survey = n.array([os.path.basename(el).split('_')[0] for el in all_ascii_lists])
@@ -166,4 +169,20 @@ for zmin, zmax in zip(zmins, zmaxs):
 			command = "cat "+files_2_join+" > "+path_2_full_file
 			print(command)
 			os.system(command)
+
+
+for zmin, zmax in zip(zmins, zmaxs):
+	print('=================================================')
+	name = "*_BLAGN_zmin_"+str(int(10*zmin)).zfill(2)+"_zmax_"+str(int(10*zmax)).zfill(2)+'.ascii'
+	all_ascii_lists1 = n.array(glob.glob(os.path.join(path_2_stack_lists+'_v0', name)))
+	name = "*_QSO_zmin_"+str(int(10*zmin)).zfill(2)+"_zmax_"+str(int(10*zmax)).zfill(2)+'.ascii'
+	all_ascii_lists2 = n.array(glob.glob(os.path.join(path_2_stack_lists+'_v0', name)))
+	all_ascii_lists = n.hstack((all_ascii_lists1, all_ascii_lists2))
+	all_ascii_lists.sort()
+	if len(all_ascii_lists)>0:
+		files_2_join = " ".join(all_ascii_lists)
+		path_2_full_file = os.path.join( path_2_stack_lists, "full_quasar_zmin_" + str(int(10*zmin)).zfill(2) + "_zmax_" + str(int(10*zmax)).zfill(2) + '.asc' )
+		command = "cat " + files_2_join + " > " + path_2_full_file
+		print(command)
+		os.system(command)
 

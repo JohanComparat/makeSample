@@ -82,6 +82,13 @@ python plot_NZ-VAC.py 0.1 22.5 6.5
 # figure LX vs. Z
 python plot_LX_Z-VAC.py
 
+# stack spectrA
+% https://github.com/JohanComparat/makeSample/blob/master/bin_SPIDERS_AGN/create_stack_lists_X_AGN.py
+% https://github.com/JohanComparat/makeSample/blob/master/bin_SPIDERS_AGN/stack_X_AGN.py
+% https://github.com/JohanComparat/makeSample/blob/master/bin_SPIDERS_AGN/plot_stacks.py
+% https://github.com/JohanComparat/pySU/blob/master/galaxy/python/SpectraStackingEBOSS.py
+
+
 # global X AGN spectroscopic catalogue construction
 sh compile_specz_catalog_2RXS.sh
 sh compile_specz_catalog_XMMSL2.sh
