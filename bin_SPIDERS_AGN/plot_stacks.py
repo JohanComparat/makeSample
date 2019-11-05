@@ -6,14 +6,34 @@ matplotlib.use('Agg')
 matplotlib.rcParams.update({'font.size': 14})
 import matplotlib.pyplot as p
 import numpy as n
+import os
+import sys
+
+class Lines:
+    pass
+
+path_2_abs_line = os.path.join(os.environ['GIT_MAKESAMPLE'],'data/line-list-absorption-vandenberk2001.txt')  
+path_2_em_line = os.path.join(os.environ['GIT_MAKESAMPLE'],'data/line-list-emission-vandenberk2001.txt')
+
+abs_lines = Lines()
+wl, wl_er, W, W_er, Width, ID, rest_wl = n.loadtxt(path_2_abs_line, unpack=True, dtype={'names': ('wl', 'wl_er', 'W', 'W_er', 'Width', 'ID', 'rest_wl'), 'formats': ('f4', 'f4', 'f4', 'f4', 'f4', 'S4', 'f4')})
+abs_lines.ID = ID
+abs_lines.WL = rest_wl
+abs_lines.sel = (abs_lines.WL>0)
+
+em_lines = Lines()
+obswl,obswlerr,wllo,wlhi,relFl,relFlerr,  W,   W_err,  Width, Skew, ID, labwl = n.loadtxt(path_2_em_line, unpack=True, dtype={'names': ('obswl', 'obswlerr', 'wllo', 'wlhi', 'relFl', 'relFlerr', '  W', '   W_err', '  Width', ' Skew', ' ID', ' labwl'), 'formats': ('f4', 'f4','f4','f4',  'f4','f4','f4',  'f4','f4','f4', 'S4', 'S4')})
+em_lines.ID = ID
+em_lines.WL = obswl
+em_lines.sel = (em_lines.WL>0)
+
+
 
 from cycler import cycler
 # 1. Setting prop cycle on default rc parameter
 p.rc('lines', linewidth=1.3)
 p.rc('axes', prop_cycle=cycler('color', ["#638bd9", "#e586b6", "#dd7c25", "#598664", "#9631a9", "#cff159", "#534f55", "#ab1519", "#89dbde"]) )
 
-import os
-import sys
 
 from scipy.stats import scoreatpercentile
 from scipy.stats import norm
@@ -53,6 +73,12 @@ def plot_stacks(file_list_i, baseNames_i, path_2_figure='x.png'):
 		labels = baseName.split('_')
 		p.plot(x_data, y_data/2**jj, lw=1, label=str(float(labels[2])/10.)+'<z<'+str(float(labels[4])/10.) + ', N='+str(int(n.median(N_spec))) )
 
+	for xx, name in zip(em_lines.ID[em_lines.sel], em_lines.WL[em_lines.sel] ):
+		p.text(xx, 20, name, color='red')
+
+	for xx, name in zip(abs_lines.ID[abs_lines.sel], abs_lines.WL[abs_lines.sel] ):
+		p.text(xx, 1, name, color='blue')
+		
 	p.yscale('log')
 	p.legend(loc=0, fontsize=8, frameon=False)
 	p.tight_layout()
