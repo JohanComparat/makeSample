@@ -22,7 +22,7 @@ m_bins = n.arange(-4,4,0.1)
 
 import glob
 path_2_spec_dir = os.path.join(os.environ['HOME'], 'SDSS/stacks/X_AGN')
-
+fig_dir = os.path.join(os.environ['GIT_MAKESAMPLE'], 'figures/agn/figures_VAC')
 #path_2_fly_dir =  os.path.join(os.environ['HOME'], 'SDSS/stacks/SPIDERS_C_GAL', 'firefly/')
 file_list = n.array( glob.glob( os.path.join( path_2_spec_dir ,'*.stack')))
 file_list.sort()
@@ -61,6 +61,6 @@ def plot_stacks(file_list_i, baseNames_i, path_2_figure='x.png'):
 
 for UT in uniq_type:
 	sel = ( baseNamesSplit.T[0] == UT )
-	plot_stacks(file_list[sel], baseNames[sel], path_2_figure=os.path.join(path_2_spec_dir, UT+'.png') )
+	plot_stacks(file_list[sel], baseNames[sel], path_2_figure=os.path.join(fig_dir, UT+'.png') )
 	
 	
