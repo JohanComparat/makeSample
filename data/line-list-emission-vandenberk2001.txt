@@ -1,4 +1,4 @@
-# obswl err wllo wlhi relFl err W err Width ID labwl
+# obswl,obswlerr,wllo,wlhi,relFl,relFlerr,  W,   W_err,  Width, Skew, ID,       labwl
  940.93  3.17   930   955    2.110  0.379   2.95  0.54   4.73   0.59  Lyepsilon    937.80 
  -1      -1     -1    -1     -1      -1      -1     -1     -1     -1  Lydelta      949.74 
  985.46  4.78   960  1003    5.195  0.459   6.55  0.58   8.95  -0.51  CIII         977.02 
