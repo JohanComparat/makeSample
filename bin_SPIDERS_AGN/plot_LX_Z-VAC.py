@@ -121,19 +121,35 @@ data_2RXS = data_2RXS_i[targets]
 
 data_2RXS, targeted_2RXS, observed_2RXS, goodZ_2RXS, idZ_2RXS, agnZ_2RXS, clusterZ_2RXS, blazarNOZ_2RXS, stars_2RXS, bl_2RXS, nl_2RXS = get_arrays(data_2RXS)
 
-print('DR16 class')
-out = np.unique(data_2RXS['DR16_CLASS'][agnZ_2RXS], return_counts=True) 
-for e1, e2 in zip(out[0], out[1])
-	print(e1,e2)
+str_arr=[]
+for el1, el2 in zip(data_2RXS['DR16_CLASS'],data_2RXS['DR16_SUBCLASS']): 
+	str_arr.append( el1+"_"+el2) 
 
+str_arr = np.array(str_arr)
+print('==================================')
+print('DR16 class + subclass ExiML all')
+out = np.unique(str_arr[agnZ_2RXS], return_counts=True) 
+for e1, e2 in zip(out[0], out[1]):
+	print(e1, '&', e2, '\\\\')
+
+print('==================================')
+print('DR16 subclass EXIML<10')
+out = np.unique(str_arr[agnZ_2RXS & (data_2RXS['RXS_ExiML'] <10 )], return_counts=True) 
+for e1, e2 in zip(out[0], out[1]):
+	print(e1, '&', e2, '\\\\')
+
+
+
+print('==================================')
 print('DR16 subclass')
 out = np.unique(data_2RXS['DR16_SUBCLASS'][agnZ_2RXS], return_counts=True) 
-for e1, e2 in zip(out[0], out[1])
+for e1, e2 in zip(out[0], out[1]):
 	print(e1,e2)
 
+print('==================================')
 print('class best')
 out = np.unique(data_2RXS['CLASS_BEST'][agnZ_2RXS], return_counts=True) 
-for e1, e2 in zip(out[0], out[1])
+for e1, e2 in zip(out[0], out[1]):
 	print(e1,e2)
 
 path_2_cat_xmmsl = os.path.join(catalog_dir, 'XMMSL2',  'SPIDERS_XMMSL2_Xray_NWAY_ALLWISE_SDSSv5b_SpecDR16_with_VI_1rowperXray_inDR16wSEQUELS_COMPLETE_REDMAPPER.fits')

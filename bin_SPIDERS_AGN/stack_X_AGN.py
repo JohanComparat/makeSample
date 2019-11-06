@@ -6,8 +6,9 @@ import numpy as n
 import SpectraStackingEBOSS as sse
 
 spec_dir = join(os.environ['HOME'],"SDSS/stacks/X_AGN")
+stack_dir = join(os.environ['GIT_MAKESAMPLE'],"data/stackLists")
 
-file_list = n.array(glob.glob(os.path.join(spec_dir, 'full_*.asc')))
+file_list = n.array(glob.glob(os.path.join(stack_dir, 'bin*.txt')))
 
 def stack_it(specList ):
 	outfile = join(spec_dir, os.path.basename(specList)[:-4]+".stack")
