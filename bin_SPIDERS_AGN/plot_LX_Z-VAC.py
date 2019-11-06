@@ -121,6 +121,20 @@ data_2RXS = data_2RXS_i[targets]
 
 data_2RXS, targeted_2RXS, observed_2RXS, goodZ_2RXS, idZ_2RXS, agnZ_2RXS, clusterZ_2RXS, blazarNOZ_2RXS, stars_2RXS, bl_2RXS, nl_2RXS = get_arrays(data_2RXS)
 
+print('DR16 class')
+out = np.unique(data_2RXS['DR16_CLASS'][agnZ_2RXS], return_counts=True) 
+for e1, e2 in zip(out[0], out[1])
+	print(e1,e2)
+
+print('DR16 subclass')
+out = np.unique(data_2RXS['DR16_SUBCLASS'][agnZ_2RXS], return_counts=True) 
+for e1, e2 in zip(out[0], out[1])
+	print(e1,e2)
+
+print('class best')
+out = np.unique(data_2RXS['CLASS_BEST'][agnZ_2RXS], return_counts=True) 
+for e1, e2 in zip(out[0], out[1])
+	print(e1,e2)
 
 path_2_cat_xmmsl = os.path.join(catalog_dir, 'XMMSL2',  'SPIDERS_XMMSL2_Xray_NWAY_ALLWISE_SDSSv5b_SpecDR16_with_VI_1rowperXray_inDR16wSEQUELS_COMPLETE_REDMAPPER.fits')
 
@@ -144,33 +158,49 @@ FX_XMMSL2[ok] = data_XMM['XMMSL2_FLUX_B7'][agnZ_XMM][ok]*1e-12
 ok = (data_XMM['XMMSL2_FLUX_B8'][agnZ_XMM]>0)
 FX_XMMSL2[ok] = data_XMM['XMMSL2_FLUX_B8'][agnZ_XMM][ok]*1e-12
 
-LX_RASS = FX_RASS * 4*np.pi * DL_RASS**2.
-LX_XMMSL2 = FX_XMMSL2 * 4*np.pi * DL_XMMSL2**2.
+LX_RASS = data_2RXS['RXS_LOGLX'][agnZ_2RXS] # FX_RASS * 4*np.pi * DL_RASS**2.
+LX_XMMSL2 = data_XMM['XMMSL2_LOGLX_FULL'][agnZ_XMM] #FX_XMMSL2 * 4*np.pi * DL_XMMSL2**2.
 
 zs = np.arange(0,4,0.01)
-DL_zs = cosmo.luminosity_distance(zs).to(u.cm)
+DL_zs = cosmo.luminosity_distance(zs).to(u.cm).value
 #LX_1e130 = 10**(-13.0)*4*np.pi*DL_zs**2.
 #LX_1e125 = 10**(-12.5)*4*np.pi*DL_zs**2.
 #LX_1e120 = 10**(-12.0)*4*np.pi*DL_zs**2.
 
+# External data sets, faint pencil beams
+ext_data_dir = os.path.join(os.environ['GIT_MAKESAMPLE'], 'data', 'lxz')
+path_D1 = os.path.join(ext_data_dir, 'deep_fields_specz.dat')
+path_D2 = os.path.join(ext_data_dir, 'XMM_XXL_lz.dat')
+col1, D2_Z, survey, D2_logLX, mag = np.loadtxt(path_D1, unpack=True)
+D1_Z, D1_logLUM_SOFT = np.loadtxt(path_D2, unpack=True)
+# simulated data for erosita
+hdu_sim = fits.open('/home/comparat/data/eRoMok/mocks/eRosita_eRASS8_with_photometry.fits')
+mock_z = hdu_sim[1].data['redshift_R']
+mock_lx = hdu_sim[1].data['LX_soft']
+
 p.figure(0, (5.5,5.5))
 p.axes([0.15, 0.12, 0.78, 0.78])
 
-#p.plot(Z_RASS, LX_RASS, 'k+', label='2RXS')
-p.plot(Z_XMMSL2, LX_XMMSL2, 'kx', label='XMMSL2')
+p.plot(mock_z, mock_lx, color='m', marker=',', ls='', alpha=0.1, rasterized=True)
 
-p.plot(zs, 10**(-13.0)*4*np.pi*DL_zs**2., ls='solid', label='-13')
-p.plot(zs, 10**(-12.5)*4*np.pi*DL_zs**2., ls='solid', label='-12.5')
-p.plot(zs, 10**(-12.0)*4*np.pi*DL_zs**2., ls='solid', label='-12')
+p.plot(D1_Z, D1_logLUM_SOFT, color='grey', marker='+', ls='', alpha=0.5)
+p.plot(D2_Z, D2_logLX, color='grey', marker='+', ls='', alpha=0.5)
+
+#p.plot(Z_RASS, LX_RASS, 'k+', label='2RXS')
+p.plot(Z_XMMSL2, LX_XMMSL2, 'kx', alpha=0.5, label='XMMSL2')
+
+p.plot(zs, np.log10(10**(-14.0)*4*np.pi*DL_zs**2.), ls='solid', label='-14')
+p.plot(zs, np.log10(10**(-13.0)*4*np.pi*DL_zs**2.), ls='solid', label='-13')
+p.plot(zs, np.log10(10**(-12.0)*4*np.pi*DL_zs**2.), ls='solid', label='-12')
 
 p.xlabel('redshift')
 p.ylabel(r'$\log_{10}(L_X/[erg/s])$')
 p.xscale('log')
-p.yscale('log')
+#p.yscale('log')
 xtk = np.array([0.03, 0.06, 0.1, 0.3, 0.06, 1, 2, 4])
 p.xticks(xtk, xtk)
 p.xlim((0.02,4.2))
-p.ylim((1e41,1e47))
+p.ylim((41,47))
 p.grid()
 p.legend(frameon=False, loc=0)
 #p.title('data dr14')
@@ -181,21 +211,25 @@ p.clf()
 p.figure(0, (5.5,5.5))
 p.axes([0.15, 0.12, 0.78, 0.78])
 
-p.plot(Z_RASS, LX_RASS, 'k+', label='2RXS')
-#p.plot(Z_XMMSL2, LX_XMMSL2, 'rx', label='XMMSL2')
+p.plot(mock_z, mock_lx, color='m', marker=',', ls='', alpha=0.1, rasterized=True)
 
-p.plot(zs, 10**(-13.0)*4*np.pi*DL_zs**2., ls='solid', label='-13')
-p.plot(zs, 10**(-12.5)*4*np.pi*DL_zs**2., ls='solid', label='-12.5')
-p.plot(zs, 10**(-12.0)*4*np.pi*DL_zs**2., ls='solid', label='-12')
+p.plot(D1_Z, D1_logLUM_SOFT, color='grey', marker='+', ls='', alpha=0.5)
+p.plot(D2_Z, D2_logLX, color='grey', marker='+', ls='', alpha=0.5)
+
+p.plot(Z_RASS, LX_RASS, 'kx', alpha=0.5, label='2RXS')
+#p.plot(Z_XMMSL2, LX_XMMSL2, 'rx', label='XMMSL2')
+p.plot(zs, np.log10(10**(-14.0)*4*np.pi*DL_zs**2.), ls='solid', label='-14')
+p.plot(zs, np.log10(10**(-13.0)*4*np.pi*DL_zs**2.), ls='solid', label='-13')
+p.plot(zs, np.log10(10**(-12.0)*4*np.pi*DL_zs**2.), ls='solid', label='-12')
 
 p.xlabel('redshift')
 p.ylabel(r'$\log_{10}(L_X/[erg/s])$')
 p.xscale('log')
-p.yscale('log')
+#p.yscale('log')
 p.xlim((0.02,4.2))
 xtk = np.array([0.03, 0.06, 0.1, 0.3, 0.06, 1, 2, 4])
 p.xticks(xtk, xtk)
-p.ylim((1e41,1e47))
+p.ylim((41,47))
 p.grid()
 p.legend(frameon=False, loc=0)
 #p.title('data dr14')
