@@ -9,6 +9,10 @@ import numpy as n
 import os
 import sys
 
+# Balmer lines
+
+B_wave = lambda upper_level : 3645.0682 * upper_level**2 / (upper_level**2 - 2**2)
+
 class Lines:
     pass
 
@@ -64,13 +68,56 @@ path_2_spec_dir = os.path.join(os.environ['HOME'], 'SDSS/stacks/X_AGN')
 path_2_spec_dir = os.path.join(os.environ['GIT_MAKESAMPLE'], 'data/stacks')
 fig_dir = path_2_spec_dir # os.path.join(os.environ['GIT_MAKESAMPLE'], 'figures/agn/figures_VAC')
 #path_2_fly_dir =  os.path.join(os.environ['HOME'], 'SDSS/stacks/SPIDERS_C_GAL', 'firefly/')
+
+name_dict = { 
+	'bin1' : 'A1',
+	'bin4' : 'A2', 
+	'bin7' : 'A3', 
+	'bin9' : 'A4', 
+	'bin10': 'A5',
+	'bin2' : 'B1', 
+	'bin5' : 'B2',
+	'bin8' : 'B3',
+	'bin3' : 'B1+',
+	'bin6' : 'B2+'}
+
+
+path_2_stacklist_dir = os.path.join(os.environ['GIT_MAKESAMPLE'], 'data/stackLists')
+#bin10.txt  bin1.txt  bin2.txt  bin3.txt  bin4.txt  bin5.txt  bin6.txt  bin7.txt  bin8.txt  bin9.txt
+
+
+seq1 = [1, 2, 3]
+seq2 = [1,4,7,9,10]
+
+file_list_1 = n.array([ os.path.join( path_2_spec_dir ,'bin'+str(id_spec)+'.stack') for id_spec in seq1 ])
+file_list_2 = n.array([ os.path.join( path_2_spec_dir ,'bin'+str(id_spec)+'.stack') for id_spec in seq2 ])
+
+ascii_list_1 = n.array([ n.loadtxt(os.path.join( path_2_stacklist_dir ,'bin'+str(id_spec)+'.txt'), unpack=True)[3] for id_spec in seq1 ])
+ascii_list_2 = n.array([ n.loadtxt(os.path.join( path_2_stacklist_dir ,'bin'+str(id_spec)+'.txt'), unpack=True)[3] for id_spec in seq2 ])
+
+baseNames_1 = n.array([ name_dict[os.path.basename(bn)[:-6]] for bn in file_list_1 ])
+baseNames_2 = n.array([ name_dict[os.path.basename(bn)[:-6]] for bn in file_list_2 ])
+
+
 file_list = n.array( glob.glob( os.path.join( path_2_spec_dir ,'*.stack')))
 file_list.sort()
-baseNames = n.array([ os.path.basename(bn)[:-6] for bn in file_list ])
-baseNamesSplit = n.array([ bn.split('_') for bn in baseNames ])
-uniq_type = n.unique(baseNamesSplit.T[0])
+print('seq1', file_list_1)
+print('seq2', file_list_2)
 
-def plot_stacks(file_list_i, baseNames_i, path_2_figure='x.png', wmin=2000, wmax=9000):
+def plot_NZ(ascii_list, baseName, path_2_figure):
+	zbins = n.arange(0., 1.2, 0.1)
+	fig=p.figure(1, (5.5, 5.5))
+	for el, name in zip(ascii_list[::-1], baseName[::-1]):
+		p.hist(el, bins = zbins, histtype='step', lw=2, label=name+ ', '+str(n.round(n.mean(el),2)))
+	p.xlabel('redshift') 
+	#p.ylabel(r'N')
+	p.grid()
+	p.legend(loc=1, fontsize=14)
+	#p.tight_layout()
+	p.savefig(path_2_figure)
+	p.clf()
+
+def plot_stacks(file_list_i, baseNames_i, path_2_figure='x.png', wmin=2000, wmax=9000, title_str=' '):
 	print(path_2_figure, wmin, wmax)
 	fig=p.figure(0, (12.2, 8.2), frameon=False )
 	#p.axes([0.1, 0.1, 0.85, 0.78])
@@ -78,53 +125,134 @@ def plot_stacks(file_list_i, baseNames_i, path_2_figure='x.png', wmin=2000, wmax
 	p.xlabel('wavelength [Angstrom, rest frame]') 
 	p.ylabel(r'Flux [$f_\lambda$]')
 	p.grid()
-	
-	for jj, (path_2_spec, baseName) in enumerate(zip(file_list_i, baseNames_i)):
+	min_y_data = []
+	max_y_data = []
+	for jj, (path_2_spec, baseName) in enumerate(zip(file_list_i[::-1], baseNames_i[::-1])):
 		d = fits.open(path_2_spec)
 		sel = (d[1].data['NspectraPerPixel'] > 0.5*n.max(d[1].data['NspectraPerPixel'])) & (d[1].data['medianStack']>0)& (d[1].data['wavelength']>wmin)&(d[1].data['wavelength']<wmax)
 		x_data = d[1].data['wavelength'][sel]
 		y_data_i = d[1].data['medianStack'][sel]
-		y_data = y_data_i/n.median(y_data_i)/1.3**jj
+		y_data = y_data_i/n.median(y_data_i)#/1.3**jj
 		y_err = d[1].data['jackknifStackErrors'][sel]
 		N_spec = d[1].data['NspectraPerPixel'][sel]
 		p.plot(x_data, y_data, lw=1.5, label=baseName + ', N='+str(int(n.median(N_spec))) )
+		min_y_data.append(n.min(y_data) )
+		max_y_data.append(n.max(y_data) )
+
+	min_y_data = n.array( min_y_data )
+	max_y_data = n.array( max_y_data )
 
 	em_lines.sel2 = (em_lines.sel) & (em_lines.WL>wmin) & (em_lines.WL<wmax)
 	abs_lines.sel2 = (abs_lines.sel) & (abs_lines.WL>wmin) & (abs_lines.WL<wmax)
 
 	for name, xx  in zip(em_lines.ID[em_lines.sel2], em_lines.WL[em_lines.sel2] ):
 		y_id = n.searchsorted( x_data, xx)
-		y_position = n.max(y_data[n.max([y_id-10,0]):n.min([y_id+10,len(x_data)])])
+		y_position = n.max(y_data[n.max([y_id-5,0]):n.min([y_id+5,len(x_data)])])
 		print(xx, name, y_id, y_position)
-		p.text(x=xx, y=1.5, s=name, withdash=True, rotation=90, fontsize=9)#, color='red')
-		p.plot(xx, 1.1, marker='|', color='k')# s=name, withdash=True, rotation=90, fontsize=9)#, color='red')
+		p.text(x=xx, y=y_position*1.03, s=name, withdash=True, rotation=90, fontsize=9)#, color='red')
+		p.plot(xx, y_position*1.01, marker='|', color='k')# s=name, withdash=True, rotation=90, fontsize=9)#, color='red')
 
 	for name, xx in zip(abs_lines.ID[abs_lines.sel2], abs_lines.WL[abs_lines.sel2] ):
 		y_id = n.searchsorted( x_data, xx)
-		y_position = n.min(y_data[n.max([y_id-10,0]):n.min([y_id+10,len(x_data)])])
+		y_position = n.min(y_data[n.max([y_id-5,0]):n.min([y_id+5,len(x_data)])])
 		print(xx, name, y_id, y_position)
-		p.text(x=xx, y=0.08, s=name, withdash=True, rotation=90, fontsize=9)#, color='blue')
-		p.plot(xx, 0.1, marker='|', color='k')# s=name, withdash=True, rotation=90, fontsize=9)#, color='red')
+		p.text(x=xx, y = y_position-0.1, s=name, withdash=True, rotation=90, fontsize=9)#, color='blue')
+		p.plot(xx, y_position-0.08, marker='|', color='k')# s=name, withdash=True, rotation=90, fontsize=9)#, color='red')
 	
+	p.axvline(6564.5377, lw=2, ls='dashed', color='k') # B_wave(3)
+	p.axvline(4861.3615, lw=2, ls='dashed', color='k') # B_wave(4)
+	p.axvline(4340.462 , lw=2, ls='dashed', color='k') # B_wave(5)
+	p.axvline(4101.74  , lw=2, ls='dashed', color='k') # B_wave(6)
+	p.axvline(3970.072 , lw=2, ls='dashed', color='k') # B_wave(7)
 	p.xlim((wmin, wmax))
-	p.yscale('log')
-	p.legend(loc=3, fontsize=12, frameon=True)
+	p.ylim((n.min(min_y_data)-0.1, n.max(max_y_data) + 0.1))
+	#p.yscale('log')
+	p.title(title_str)
+	p.legend(loc=2, fontsize=14)
 	p.tight_layout()
 	p.savefig(path_2_figure)
 	p.clf()
 
+file_list = file_list_1
+prefix = 'seq1_'
+baseNames = baseNames_1
+ascii_list = ascii_list_1
+
+plot_NZ(ascii_list, baseNames, os.path.join(fig_dir, prefix+'NZ.png'))
+
 wmin = 3000
 wmax = 7000
-plot_stacks(file_list, baseNames, os.path.join(fig_dir, 'EVstacks_wrange_'+str(wmin)+'_'+str(wmax)+'.png'), wmin, wmax )
+plot_stacks(file_list, baseNames, os.path.join(fig_dir, prefix+'EVstacks_wrange_'+str(wmin)+'_'+str(wmax)+'.png'), wmin, wmax )
+
+#wmin = 3900
+#wmax = 4050
+#plot_stacks(file_list, baseNames, os.path.join(fig_dir, prefix+'Hepsilon_EVstacks_wrange_'+str(wmin)+'_'+str(wmax)+'.png'), wmin, wmax, title_str=r'H$\epsilon$ @ 3970$\AA$' )
+
+wmin = 4000
+wmax = 4200
+plot_stacks(file_list, baseNames, os.path.join(fig_dir, prefix+'Hdelta_EVstacks_wrange_'+str(wmin)+'_'+str(wmax)+'.png'), wmin, wmax, title_str=r'H$\delta$ @ 4101$\AA$' )
+
+wmin = 4300
+wmax = 4400
+plot_stacks(file_list, baseNames, os.path.join(fig_dir, prefix+'Hgamma_EVstacks_wrange_'+str(wmin)+'_'+str(wmax)+'.png'), wmin, wmax, title_str=r'H$\gamma$ @ 4340$\AA$' )
+
+wmin = 4800
+wmax = 5050
+plot_stacks(file_list, baseNames, os.path.join(fig_dir, prefix+'Hbeta_EVstacks_wrange_'+str(wmin)+'_'+str(wmax)+'.png'), wmin, wmax, title_str=r'H$\beta$ @ 4861$\AA$' )
+
+wmin = 6450
+wmax = 6650
+plot_stacks(file_list, baseNames, os.path.join(fig_dir, prefix+'Halpha_EVstacks_wrange_'+str(wmin)+'_'+str(wmax)+'.png'), wmin, wmax, title_str=r'H$\alpha$ @ 6564$\AA$' )
 
 wrange = n.arange(3100, 8000, 1000)
 for wmin, wmax in zip(wrange[:-1], wrange[1:]):
-	plot_stacks(file_list, baseNames, os.path.join(fig_dir, 'EVstacks_wrange_'+str(wmin)+'_'+str(wmax)+'.png'), wmin, wmax )
+	plot_stacks(file_list, baseNames, os.path.join(fig_dir, prefix+'EVstacks_wrange_'+str(wmin)+'_'+str(wmax)+'.png'), wmin, wmax )
 	
 wrange = n.arange(3100, 7500, 500)
 for wmin, wmax in zip(wrange[:-1], wrange[1:]):
-	plot_stacks(file_list, baseNames, os.path.join(fig_dir, 'EVstacks_wrange_'+str(wmin)+'_'+str(wmax)+'.png'), wmin, wmax )
+	plot_stacks(file_list, baseNames, os.path.join(fig_dir, prefix+'EVstacks_wrange_'+str(wmin)+'_'+str(wmax)+'.png'), wmin, wmax )
+
+
+file_list = file_list_2
+prefix = 'seq2_'
+baseNames = baseNames_2
+ascii_list = ascii_list_2
+
+plot_NZ(ascii_list, baseNames, os.path.join(fig_dir, prefix+'NZ.png'))
+
+wmin = 3000
+wmax = 7000
+plot_stacks(file_list, baseNames, os.path.join(fig_dir, prefix+'EVstacks_wrange_'+str(wmin)+'_'+str(wmax)+'.png'), wmin, wmax )
+
+wmin = 4000
+wmax = 4200
+plot_stacks(file_list, baseNames, os.path.join(fig_dir, prefix+'Hdelta_EVstacks_wrange_'+str(wmin)+'_'+str(wmax)+'.png'), wmin, wmax, title_str=r'H$\epsilon$ @ 3970$\AA$' )
+
+wmin = 4000
+wmax = 4200
+plot_stacks(file_list, baseNames, os.path.join(fig_dir, prefix+'Hdelta_EVstacks_wrange_'+str(wmin)+'_'+str(wmax)+'.png'), wmin, wmax, title_str=r'H$\delta$ @ 4101$\AA$' )
+
+wmin = 4300
+wmax = 4400
+plot_stacks(file_list, baseNames, os.path.join(fig_dir, prefix+'Hgamma_EVstacks_wrange_'+str(wmin)+'_'+str(wmax)+'.png'), wmin, wmax, title_str=r'H$\gamma$ @ 4340$\AA$' )
+
+wmin = 4800
+wmax = 5050
+plot_stacks(file_list, baseNames, os.path.join(fig_dir, prefix+'Hbeta_EVstacks_wrange_'+str(wmin)+'_'+str(wmax)+'.png'), wmin, wmax, title_str=r'H$\beta$ @ 4861$\AA$' )
+
+wmin = 6450
+wmax = 6650
+plot_stacks(file_list, baseNames, os.path.join(fig_dir, prefix+'Halpha_EVstacks_wrange_'+str(wmin)+'_'+str(wmax)+'.png'), wmin, wmax, title_str=r'H$\alpha$ @ 6564$\AA$' )
+
+wrange = n.arange(3100, 8000, 1000)
+for wmin, wmax in zip(wrange[:-1], wrange[1:]):
+	plot_stacks(file_list, baseNames, os.path.join(fig_dir, prefix+'EVstacks_wrange_'+str(wmin)+'_'+str(wmax)+'.png'), wmin, wmax )
 	
+wrange = n.arange(3100, 7500, 500)
+for wmin, wmax in zip(wrange[:-1], wrange[1:]):
+	plot_stacks(file_list, baseNames, os.path.join(fig_dir, prefix+'EVstacks_wrange_'+str(wmin)+'_'+str(wmax)+'.png'), wmin, wmax )
+
+
 sys.exit()
 
 def plot_single_stack_with_lines(path_2_spec, wmin, wmax, path_2_figure, em_lines, abs_lines):
