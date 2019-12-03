@@ -53,7 +53,7 @@ figure_dir = os.path.join(git_dir, 'figures', 'agn', 'figures_VAC' )
 if os.path.isdir(figure_dir)==False:
 	os.system('mkdir -p '+figure_dir)
 
-agn_clustering_dir = '/home/comparat/data/AGN_clustering'
+agn_clustering_dir = os.path.join(os.environ['HOME'], 'data/AGN_clustering')
 
 target_dir  = os.path.join(agn_clustering_dir, 'targets'  )
 footprint_dir  = os.path.join(agn_clustering_dir, 'footprint'  )

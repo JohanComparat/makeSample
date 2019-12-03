@@ -8,10 +8,10 @@ import SpectraStackingEBOSS as sse
 spec_dir = join(os.environ['HOME'],"SDSS/stacks/X_AGN")
 stack_dir = join(os.environ['GIT_MAKESAMPLE'],"data/stackLists")
 
-file_list = n.array(glob.glob(os.path.join(stack_dir, 'bin*.txt')))
+file_list = n.array(glob.glob(os.path.join(spec_dir, '*.ascii')))
 
 def stack_it(specList ):
-	outfile = join(spec_dir, os.path.basename(specList)[:-4]+".stack")
+	outfile = join(spec_dir, os.path.basename(specList)[:-5]+".stack")
 	print(outfile)
 	test_D = n.loadtxt(specList, unpack=True)
 	print(len(test_D[0]))
