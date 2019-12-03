@@ -1,6 +1,43 @@
 """
 python3.4 create_stack_lists_X_AGN.py
 """
+from catalog_lib import *
+
+
+data, high_conf, targeted, observed, goodZ, idZ, agnZ, clusters, blazars_noZ, stars, bl, nl, class_best = get_arrays_2rxs(path_2_cat_2RXS = path_2_cat_2RXS, EXI_ML_min = EXI_ML_min)
+
+data_RXS = Catalog()
+data_RXS.data = data
+data_RXS.high_conf = high_conf
+data_RXS.targeted = targeted
+data_RXS.observed = observed
+data_RXS.goodZ = goodZ
+data_RXS.idZ = idZ
+data_RXS.agnZ = agnZ
+data_RXS.clusters = clusters
+data_RXS.blazars_noZ = blazars_noZ
+data_RXS.stars = stars
+data_RXS.bl = bl
+data_RXS.nl = nl
+data_RXS.class_best = class_best
+
+data, high_conf, targeted, observed, goodZ, idZ, agnZ, clusters, blazars_noZ, stars, bl, nl, class_best = get_arrays_xmmsl2(path_2_cat_xmmsl = path_2_cat_xmmsl, EXI_ML_min = EXI_ML_min)
+
+data_XMM = Catalog()
+data_XMM.data = data
+data_XMM.high_conf = high_conf
+data_XMM.targeted = targeted
+data_XMM.observed = observed
+data_XMM.goodZ = goodZ
+data_XMM.idZ = idZ
+data_XMM.agnZ = agnZ
+data_XMM.clusters = clusters
+data_XMM.blazars_noZ = blazars_noZ
+data_XMM.stars = stars
+data_XMM.bl = bl
+data_XMM.nl = nl
+data_XMM.class_best = class_best
+
 import sys
 import numpy as n
 from scipy.interpolate import interp1d

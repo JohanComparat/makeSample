@@ -1,0 +1,335 @@
+"""
+python plot_LX_Z-VAC.py 
+
+"""
+import astropy.io.fits as fits
+import os, sys, glob
+from os.path import join
+#import pymangle as mangle
+import numpy as np
+import matplotlib.pyplot as p
+from scipy.interpolate import interp1d
+
+from astropy_healpix import healpy 
+
+import astropy.units as u
+import astropy.cosmology as cc
+cosmo = cc.Planck15
+from astropy.coordinates import SkyCoord
+
+#from sklearnp.neighbors import BallTree, DistanceMetric
+from astropy.table import Table,unique,Column
+from math import radians, cos, sin, asin, sqrt, pi
+
+import matplotlib
+matplotlib.use('Agg')
+matplotlib.rcParams.update({'font.size': 14})
+import matplotlib.pyplot as p
+
+
+area_eboss_dr16 = 5128.
+
+MIN_SDSS_FIBER2MAG_i = 17.0
+MAX_SDSS_FIBER2MAG_i = 22.5
+MIN_SDSS_MODELMAG_i  = 16.0
+
+sig_fx = 0.3 #1e-13
+sig_fx = 0.2 #1e-13
+sig_fx = 0.1 #sig_fx = 2e-13
+
+MAG_MIN_LIM = 15
+MAG_LIM = 22.5
+
+#agn_clustering_dir = '/data36s/comparat/AGN_clustering'
+agn_clustering_dir = '/home/comparat/data/AGN_clustering'
+#env = sys.argv[1]
+catalog_dir  = os.path.join(agn_clustering_dir, 'catalogs'  )
+figure_dir = os.path.join(os.environ['GIT_MAKESAMPLE'], 'figures', 'agn', 'figures_VAC' )
+#figure_dir = os.path.join(os.environ['HOME'], 'wwwDir', 'stuff' )
+
+if os.path.isdir(figure_dir)==False:
+	os.system('mkdir -p '+figure_dir)
+
+path_2_rass_cat = os.path.join(catalog_dir, 'VAC_SPIDERS_2RXS_DR16.fits')
+data_2RXS = fits.open(path_2_rass_cat)[1].data
+
+path_2_xmmsl_cat = os.path.join(catalog_dir, 'VAC_SPIDERS_XMMSL2_DR16.fits')
+data_XMM = fits.open(path_2_xmmsl_cat)[1].data
+
+
+def get_arrays_xmmsl2(path_2_cat, EXI_ML_min = 10):
+	data_2RXS_i = fits.open(path_2_cat)[1].data
+	targets = (data_2RXS_i['NWAY_match_flag']!=2) & (data_2RXS_i['XMMSL2_IN_BOSS']==1) & (data_2RXS_i['FLAG_SDSSv5b_best']==1) & (data_2RXS_i['NWAY_p_any']>=0.01) & (data_2RXS_i['NUM_SDSS']>=1)
+	#  NWAY_match_flag!=2 &&RXS_IN_BOSS==1 &&FLAG_SDSSv5b_best==1 &&
+	data_2RXS = fits.open(path_2_cat)[1].data[targets]
+	#print(np.unique(data_2RXS['CLASS_BEST']))
+	data = data_2RXS
+	ra = data['XMMSL2_RA']
+	dec = data['XMMSL2_DEC']
+	ExiML = np.transpose([
+		data['XMMSL2_DET_ML_B6'] , 
+		data['XMMSL2_DET_ML_B7'] , 
+		data['XMMSL2_DET_ML_B8'] ])
+	ExiML[np.isnan(ExiML)]=0
+	ExiML_arr = np.max(ExiML,axis=1) 
+	high_conf = (ExiML_arr >= EXI_ML_min )
+	targeted  = (high_conf) & (data['SDSS_FIBER2MAG_i']>=MIN_SDSS_FIBER2MAG_i) & (data['SDSS_FIBER2MAG_i']<=MAX_SDSS_FIBER2MAG_i) & (data['SDSS_MODELMAG_i']>=MIN_SDSS_MODELMAG_i)    
+	observed  = (targeted) & (data['DR16_MEMBER']==1)
+	c1 = (observed) & ((data['Z_BEST']>-0.5) | ((data['DR16_Z']>-0.5) & (data['DR16_Z_ERR']>0)))
+	c2 = (c1) & (data['CONF_BEST']==3)
+	c3 = (c1) & (data['CONF_BEST']==2) & ((data['CLASS_BEST']=='BLAZAR')|(data['CLASS_BEST']=='BLLAC'))
+	c4 = (c1) & (data['DR16_SN_MEDIAN_ALL']>=2) & (data['DR16_ZWARNING']==0 )
+	c5 = (c1) & (data['CONF_BEST']==2) & (data['DR16_ZWARNING']==0 ) & (data['VI_REINSPECT_FLAG'] == 0) & (data['VI_NINSPECTORS']>2)
+	c6 = (c1) & (data['CONF_BEST']==2) & (data['DR16_ZWARNING']==0 ) & (data['VI_AM_RECONCILED']==1)
+	idZ =  (c2) | (c3) | (c4) | (c5) | (c6) 
+	blazars_noZ = (idZ) & ((data['CLASS_BEST']=='BLAZAR')|(data['CLASS_BEST']=='BLLAC')) & (data['CONF_BEST']<3)
+	goodZ = (idZ) & (blazars_noZ == False)
+	redmapper_cluster = (goodZ) & (data['REDMAPPER_Separation']<60) & (abs(data['DR16_Z'] - data['REDMAPPER_Z_LAMBDA'])<0.01)
+	spiders_cluster = (goodZ) & (abs(data['SPIDERSCODEX_SCREEN_CLUZSPEC']-data['Z_BEST'])<0.01)
+	clusters = (redmapper_cluster) | (spiders_cluster)
+	stars = (goodZ) & (data['CLASS_BEST']=='STAR')
+	agnZ = (goodZ) & (clusters==False) &  (stars==False)
+	return data, ra, dec, targeted, observed, goodZ, idZ, agnZ, clusters, blazars_noZ, stars, data_2RXS_i
+
+
+def get_arrays(data = data_2RXS, EXI_ML_min = 6.5):
+	#ra = data['RXS_RAJ2000']
+	#dec = data['RXS_DEJ2000']
+	high_conf = (data['RXS_ExiML'] >= EXI_ML_min )
+	targeted  = (high_conf) & (data['SDSS_FIBER2MAG_i']>=MIN_SDSS_FIBER2MAG_i) & (data['SDSS_FIBER2MAG_i']<=MAX_SDSS_FIBER2MAG_i) & (data['SDSS_MODELMAG_i']>=MIN_SDSS_MODELMAG_i)    
+	observed  = (targeted) & (data['DR16_MEMBER']==1)
+	c1 = (observed) & ((data['Z_BEST']>-0.5) | ((data['DR16_Z']>-0.5) & (data['DR16_Z_ERR']>0)))
+	c2 = (c1) & (data['CONF_BEST']==3)
+	c3 = (c1) & (data['CONF_BEST']==2) & ((data['CLASS_BEST']=='BLAZAR')|(data['CLASS_BEST']=='BLLAC'))
+	c4 = (c1) & (data['DR16_SN_MEDIAN_ALL']>=2) & (data['DR16_ZWARNING']==0 )
+	c5 = (c1) & (data['CONF_BEST']==2) & (data['DR16_ZWARNING']==0 ) & (data['VI_REINSPECT_FLAG'] == 0) & (data['VI_NINSPECTORS']>2)
+	c6 = (c1) & (data['CONF_BEST']==2) & (data['DR16_ZWARNING']==0 ) & (data['VI_AM_RECONCILED']==1)
+	idZ =  (c2) | (c3) | (c4) | (c5) | (c6) 
+	blazars_noZ = (idZ) & ((data['CLASS_BEST']=='BLAZAR')|(data['CLASS_BEST']=='BLLAC')) & (data['CONF_BEST']<3)
+	goodZ = (idZ) & (blazars_noZ == False)
+	redmapper_cluster = (goodZ) & (data['REDMAPPER_Separation']<60) & (abs(data['DR16_Z'] - data['REDMAPPER_Z_LAMBDA'])<0.01)
+	spiders_cluster = (goodZ) & (abs(data['SPIDERSCODEX_SCREEN_CLUZSPEC']-data['Z_BEST'])<0.01)
+	clusters = (redmapper_cluster) | (spiders_cluster)
+	stars = (data['CLASS_BEST']=='STAR')
+	agnZ = (goodZ) & (clusters==False) &  (stars==False)
+	bl  = (agnZ) & ( ( ( data['CLASS_BEST']=='BLAGN') & (data['DR16_CLASS']=='QSO') ) | ( data['CLASS_BEST']=='QSO') )
+	nl  = (agnZ) & ( bl==False)
+	#print(len(ra), len(ra[high_conf]) )
+	return data, targeted, observed, goodZ, idZ, agnZ, clusters, blazars_noZ, stars, bl, nl
+
+
+path_2_cat = os.path.join(catalog_dir, '2RXS', 'SPIDERS_2RXS_Xray_NWAY_ALLWISE_SDSSv5b_SpecDR16_with_VI_1rowperXray_inDR16wSEQUELS_COMPLETE_MaxBCG_REDMAPPER_SPIDERSCODEX.fits')
+data_2RXS_i = fits.open(path_2_cat)[1].data
+targets = (data_2RXS_i['NWAY_match_flag']!=2) & (data_2RXS_i['RXS_IN_BOSS']==1) & (data_2RXS_i['FLAG_SDSSv5b_best']==1) & (data_2RXS_i['NWAY_p_any']>=0.01) & (data_2RXS_i['NUM_SDSS']>=1)
+data_2RXS = data_2RXS_i[targets]
+
+data_2RXS, targeted_2RXS, observed_2RXS, goodZ_2RXS, idZ_2RXS, agnZ_2RXS, clusterZ_2RXS, blazarNOZ_2RXS, stars_2RXS, bl_2RXS, nl_2RXS = get_arrays(data_2RXS)
+
+str_arr=[]
+for el1, el2 in zip(data_2RXS['DR16_CLASS'],data_2RXS['DR16_SUBCLASS']): 
+	str_arr.append( el1+"_"+el2) 
+
+str_arr = np.array(str_arr)
+print('==================================')
+print('DR16 class + subclass ExiML all')
+out = np.unique(str_arr[agnZ_2RXS], return_counts=True) 
+for e1, e2 in zip(out[0], out[1]):
+	print(e1, '&', e2, '\\\\')
+
+print('==================================')
+print('DR16 subclass EXIML<10')
+out = np.unique(str_arr[agnZ_2RXS & (data_2RXS['RXS_ExiML'] <10 )], return_counts=True) 
+for e1, e2 in zip(out[0], out[1]):
+	print(e1, '&', e2, '\\\\')
+
+
+
+print('==================================')
+print('DR16 subclass')
+out = np.unique(data_2RXS['DR16_SUBCLASS'][agnZ_2RXS], return_counts=True) 
+for e1, e2 in zip(out[0], out[1]):
+	print(e1,e2)
+
+print('==================================')
+print('class best')
+out = np.unique(data_2RXS['CLASS_BEST'][agnZ_2RXS], return_counts=True) 
+for e1, e2 in zip(out[0], out[1]):
+	print(e1,e2)
+
+path_2_cat_xmmsl = os.path.join(catalog_dir, 'XMMSL2',  'SPIDERS_XMMSL2_Xray_NWAY_ALLWISE_SDSSv5b_SpecDR16_with_VI_1rowperXray_inDR16wSEQUELS_COMPLETE_REDMAPPER_SPIDERSCODEX.fits')
+
+data_XMM, ra_XMM, dec_XMM, targeted_XMM, observed_XMM, goodZ_XMM, idZ_XMM, agnZ_XMM, clusterZ_XMM, blazarNOZ_XMM, stars_XMM, all_data_XMM = get_arrays_xmmsl2(path_2_cat_xmmsl)
+
+Z_RASS = data_2RXS['Z_BEST'][agnZ_2RXS]
+Z_XMMSL2 = data_XMM['Z_BEST'][agnZ_XMM]
+
+w1_mag = data_2RXS['ALLW_W1mag']
+w2_mag = data_2RXS['ALLW_W2mag']
+w3_mag = data_2RXS['ALLW_W3mag']
+g = data_2RXS['SDSS_MODELMAG_g']
+r = data_2RXS['SDSS_MODELMAG_r']
+i = data_2RXS['SDSS_MODELMAG_i']
+
+w1w2 = w1_mag-w2_mag
+w2w3 = w2_mag-w3_mag
+gr = g-r
+ri = r-i 
+
+zs = np.arange(0,4,0.01)
+DL_zs = cosmo.luminosity_distance(zs).to(u.cm).value
+#LX_1e130 = 10**(-13.0)*4*np.pi*DL_zs**2.
+#LX_1e125 = 10**(-12.5)*4*np.pi*DL_zs**2.
+#LX_1e120 = 10**(-12.0)*4*np.pi*DL_zs**2.
+
+# External data sets, faint pencil beams
+ext_data_dir = os.path.join(os.environ['GIT_MAKESAMPLE'], 'data', 'lxz')
+path_D1 = os.path.join(ext_data_dir, 'deep_fields_specz.dat')
+path_D2 = os.path.join(ext_data_dir, 'XMM_XXL_lz.dat')
+col1, D2_Z, survey, D2_logLX, mag = np.loadtxt(path_D1, unpack=True)
+D1_Z, D1_logLUM_SOFT = np.loadtxt(path_D2, unpack=True)
+# simulated data for erosita
+hdu_sim = fits.open('/home/comparat/data/eRoMok/mocks/eRosita_eRASS8_with_photometry.fits')
+mock_z = hdu_sim[1].data['redshift_R']
+mock_lx = hdu_sim[1].data['LX_soft']
+
+#sys.exit()
+
+p.figure(0, (5.5,5.5))
+p.axes([0.15, 0.12, 0.78, 0.78])
+#
+sel = bl_2RXS
+p.plot(w1w2[sel], w2w3[sel], 'bx' , label='AGN BL')
+#
+sel = nl_2RXS
+p.plot(w1w2[sel], w2w3[sel], 'r+' , label='AGN NL')
+#
+p.xlabel('W1-W2')
+p.ylabel('W2-W3')
+p.xlim((-0.5,2.))
+p.ylim((0,5))
+p.grid()
+p.legend(loc=0)
+p.savefig(os.path.join( figure_dir, "W1-W2-2rxs.png"))
+p.clf()
+
+
+p.figure(0, (5.5,5.5))
+p.axes([0.15, 0.12, 0.78, 0.78])
+#
+sel = agnZ_2RXS
+p.plot(w1w2[sel], w2w3[sel], 'k+' , label='AGN')
+#
+sel = clusterZ_2RXS
+p.plot(w1w2[sel], w2w3[sel], 'rx' , label='clusters')
+#
+sel = blazarNOZ_2RXS
+p.plot(w1w2[sel], w2w3[sel], 'b|' , label='blazar')
+#
+sel = stars_2RXS
+p.plot(w1w2[sel], w2w3[sel], 'g+' , label='stars')
+p.xlabel('W1-W2')
+p.ylabel('W2-W3')
+p.xlim((-0.5,2.))
+p.ylim((0,5))
+p.grid()
+p.legend(loc=0)
+p.savefig(os.path.join( figure_dir, "W1-W2-all-2rxs.png"))
+p.clf()
+
+
+p.figure(0, (5.5,5.5))
+p.axes([0.15, 0.12, 0.78, 0.78])
+#
+sel = agnZ_2RXS
+p.plot(w1w2[sel], gr[sel], 'k+' , label='AGN')
+#
+sel = clusterZ_2RXS
+p.plot(w1w2[sel], gr[sel], 'rx' , label='clusters')
+#
+sel = blazarNOZ_2RXS
+p.plot(w1w2[sel], gr[sel], 'b|' , label='blazar')
+#
+sel = stars_2RXS
+p.plot(w1w2[sel], gr[sel], 'g+' , label='stars')
+p.xlabel('W1-W2')
+p.ylabel('g-r')
+p.xlim((-0.5,2.))
+p.ylim((-0.5,2))
+p.grid()
+p.legend(loc=0)
+p.savefig(os.path.join( figure_dir, "W1W2-gr-all-2rxs.png"))
+p.clf()
+
+
+p.figure(0, (5.5,5.5))
+p.axes([0.15, 0.12, 0.78, 0.78])
+#
+sel = agnZ_2RXS
+p.plot(gr[sel], ri[sel], 'k+' , label='AGN')
+#
+sel = clusterZ_2RXS
+p.plot(gr[sel], ri[sel], 'rx' , label='clusters')
+#
+sel = blazarNOZ_2RXS
+p.plot(gr[sel], ri[sel], 'b|' , label='blazar')
+#
+sel = stars_2RXS
+p.plot(gr[sel], ri[sel], 'g+' , label='stars')
+p.ylabel('r-i')
+p.xlabel('g-r')
+p.xlim((-0.5,2.))
+p.ylim((-0.5,2))
+p.grid()
+p.legend(loc=0)
+p.savefig(os.path.join( figure_dir, "gr-ri-all-2rxs.png"))
+p.clf()
+
+# get cut outs 
+
+
+id_qso = np.argmax(data_2RXS[bl_2RXS]['RXS_ExiML']) 
+
+data_2RXS[bl_2RXS][id_qso]
+
+print( data_2RXS[bl_2RXS][id_qso]['RXS_RAJ2000'], data_2RXS[bl_2RXS][id_qso]['RXS_DEJ2000'])
+print( data_2RXS[bl_2RXS][id_qso]['ALLW_RAJ2000'], data_2RXS[bl_2RXS][id_qso]['ALLW_DEJ2000'])
+
+cutout_command = lambda ra, dec : """wget http://legacysurvey.org/viewer/jpeg-cutout?ra="""+str(ra)+"""&dec="""+str(dec)+"""&layer=dr8&pixscale=0.27&bands=grz ."""
+
+print( cutout_command(data_2RXS[bl_2RXS][id_qso]['ALLW_RAJ2000'], data_2RXS[bl_2RXS][id_qso]['ALLW_DEJ2000']) )
+
+os.system( cutout_command(data_2RXS[bl_2RXS][id_qso]['ALLW_RAJ2000'], data_2RXS[bl_2RXS][id_qso]['ALLW_DEJ2000']) )
+
+sys.exit()
+
+
+p.figure(0, (5.5,5.5))
+p.axes([0.15, 0.12, 0.78, 0.78])
+
+p.plot(mock_z, mock_lx, color='m', marker=',', ls='', alpha=0.1, rasterized=True)
+
+p.plot(D1_Z, D1_logLUM_SOFT, color='grey', marker='+', ls='', alpha=0.5)
+p.plot(D2_Z, D2_logLX, color='grey', marker='+', ls='', alpha=0.5)
+
+p.plot(Z_RASS, LX_RASS, 'kx', alpha=0.5, label='2RXS')
+#p.plot(Z_XMMSL2, LX_XMMSL2, 'rx', label='XMMSL2')
+p.plot(zs, np.log10(10**(-14.0)*4*np.pi*DL_zs**2.), ls='solid', label='-14')
+p.plot(zs, np.log10(10**(-13.0)*4*np.pi*DL_zs**2.), ls='solid', label='-13')
+p.plot(zs, np.log10(10**(-12.0)*4*np.pi*DL_zs**2.), ls='solid', label='-12')
+
+p.xlabel('redshift')
+p.ylabel(r'$\log_{10}(L_X/[erg/s])$')
+p.xscale('log')
+#p.yscale('log')
+p.xlim((0.02,4.2))
+xtk = np.array([0.03, 0.06, 0.1, 0.3, 0.06, 1, 2, 4])
+p.xticks(xtk, xtk)
+p.ylim((41,47))
+p.grid()
+p.legend(frameon=False, loc=0)
+#p.title('data dr14')
+p.savefig(os.path.join( figure_dir, "LX_redshift_2RXS.png"))
+p.clf()
+
+
+
