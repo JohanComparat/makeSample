@@ -9,12 +9,12 @@ sh compile_specz_catalog_XMMSL_819.sh
 
 # section 2.
 # section 2.1. 
-# figure 1 :
-python basic_stats_targets.py
+# pseudo, figure 1 :
+# python 000_basic_stats_targets.py
 
 # section 2.2. mask. inside / outside : 21279 / 9
 # Table 1 and figure 2 :
-python basic_stats_2RXS.py
+python 001_basic_stats_2RXS.py
 # figures of completeness and success rate vs. flux and sky position
 # python dr16-completeness-rass9028-xmmsl819.py 4 6p5
 # python dr16-completeness-VAC-XMMSL2.py 4 6p5
@@ -27,60 +27,160 @@ python basic_stats_2RXS.py
 # section 3.
 # table 1, 2:
 # split by CONF_BEST
-python dr16-completeness-VAC-2RXS.py 4 10
-python dr16-completeness-VAC-2RXS.py 4 6p5
+python 002_dr16-completeness-VAC-2RXS.py 4 10
+python 002_dr16-completeness-VAC-2RXS.py 4 6p5
+python 002_dr16-completeness-VAC-XMMSL2.py 4 
 
-python dr16-completeness-VAC-XMMSL2.py 4 
+python 002_dr16-completeness-FULLBOSS.py 4 10
+
 
 # Figure 3
-python visual-inspection-stats.py 6p5
-python visual-inspection-stats.py 10
+python 003_visual-inspection-stats.py 6p5
+python 003_visual-inspection-stats.py 10
 # # Figure 4, classification per type
 # # python AGN-types.py 6p5
 
+python 004_NZ-VAC.py 0.1 22.5 6.5
+
 # figure 5.
-# python plot_NZ-VAC.py 0.1 22.5 6.5
-# python plot_NZ-VAC.py 0.2 22.5 6.5 
-# python plot_NZ-VAC.py 0.0 22.5 6.5
-# python plot_NZ-VAC.py 0.05 22.5 6.5
-python plot_NZ-VAC.py 0.1 22.5 6.5
-# python plot_NZ-VAC.py 0.15 22.5 6.5
-# python plot_NZ-VAC.py 0.2 22.5 6.5
+# python 004_NZ-VAC.py 0.1 22.5 6.5
+# python 004_NZ-VAC.py 0.2 22.5 6.5 
+# python 004_NZ-VAC.py 0.0 22.5 6.5
+# python 004_NZ-VAC.py 0.05 22.5 6.5
+# python 004_NZ-VAC.py 0.15 22.5 6.5
+# python 004_NZ-VAC.py 0.2 22.5 6.5
 
 # 
-# python plot_NZ-VAC.py 0.3 22.5 6.5
-# python plot_NZ-VAC.py 0.4 22.5 6.5
+# python 004_NZ-VAC.py 0.3 22.5 6.5
+# python 004_NZ-VAC.py 0.4 22.5 6.5
 # 
-# python plot_NZ-VAC.py 0.45 22.5 6.5
-# python plot_NZ-VAC.py 0.45 22.0 6.5
-# python plot_NZ-VAC.py 0.45 21.5 6.5
+# python 004_NZ-VAC.py 0.45 22.5 6.5
+# python 004_NZ-VAC.py 0.45 22.0 6.5
+# python 004_NZ-VAC.py 0.45 21.5 6.5
 # 
-# python plot_NZ-VAC.py 0.5 22.5 6.5
-# python plot_NZ-VAC.py 0.5 22.0 6.5
-# python plot_NZ-VAC.py 0.5 21.5 6.5
-# python plot_NZ-VAC.py 0.5 21.0 6.5
+# python 004_NZ-VAC.py 0.5 22.5 6.5
+# python 004_NZ-VAC.py 0.5 22.0 6.5
+# python 004_NZ-VAC.py 0.5 21.5 6.5
+# python 004_NZ-VAC.py 0.5 21.0 6.5
 #                              6.5
-# python plot_NZ-VAC.py 0.1 21.5 6.5
-# python plot_NZ-VAC.py 0.2 21.5 6.5 
-# python plot_NZ-VAC.py 0.3 21.5 6.5
-# python plot_NZ-VAC.py 0.4 21.5 6.5
-# python plot_NZ-VAC.py 0.5 21.5 6.5
+# python 004_NZ-VAC.py 0.1 21.5 6.5
+# python 004_NZ-VAC.py 0.2 21.5 6.5 
+# python 004_NZ-VAC.py 0.3 21.5 6.5
+# python 004_NZ-VAC.py 0.4 21.5 6.5
+# python 004_NZ-VAC.py 0.5 21.5 6.5
 #
-# python plot_NZ-VAC.py 0.1 22.5 10.
-# python plot_NZ-VAC.py 0.2 22.5 10.
-# python plot_NZ-VAC.py 0.3 22.5 10.
-# python plot_NZ-VAC.py 0.4 22.5 10.
-# python plot_NZ-VAC.py 0.5 22.5 10.
+# python 004_NZ-VAC.py 0.1 22.5 10.
+# python 004_NZ-VAC.py 0.2 22.5 10.
+# python 004_NZ-VAC.py 0.3 22.5 10.
+# python 004_NZ-VAC.py 0.4 22.5 10.
+# python 004_NZ-VAC.py 0.5 22.5 10.
 # #                              10.
-# python plot_NZ-VAC.py 0.1 21.5 10.
-# python plot_NZ-VAC.py 0.2 21.5 10.
-# python plot_NZ-VAC.py 0.3 21.5 10.
-# python plot_NZ-VAC.py 0.4 21.5 10.
-# python plot_NZ-VAC.py 0.5 21.5 10.
+# python 004_NZ-VAC.py 0.1 21.5 10.
+# python 004_NZ-VAC.py 0.2 21.5 10.
+# python 004_NZ-VAC.py 0.3 21.5 10.
+# python 004_NZ-VAC.py 0.4 21.5 10.
+# python 004_NZ-VAC.py 0.5 21.5 10.
 # 
 
 # figure LX vs. Z
 python plot_LX_Z-VAC.py
+
+topcat -stilts plot2plane \
+   xpix=500 ypix=500 \
+   xlog=true xlabel=redshift \
+    ylabel='LX (soft), log10(Luminosity/[erg/s]) ' grid=true \
+    texttype=latex fontsize=15 fontweight=bold \
+   xmin=0.01 xmax=5.5 ymin=39 ymax=47.5 \
+   legend=true legpos=0.0,1.0 \
+   shading=auto \
+   layer_1=Mark \
+      in_1=/home/comparat/data/eRoMok/mocks/eRosita_eRASS8_with_photometry.fits \
+      x_1=redshift_R y_1=LX_soft \
+      color_1=grey \
+      leglabel_1=eROSITA \
+   layer_2=Mark \
+      in_2=/home/comparat/software/makeSample/data/lxz/deep_fields_specz.dat \
+       ifmt_2=ASCII \
+      x_2=z y_2=logLX \
+      shape_2=cross \
+   layer_3=Mark \
+      in_3=/home/comparat/software/makeSample/data/lxz/XMM_XXL_lz.dat \
+       ifmt_3=ASCII \
+      x_3=Z y_3=logLUM_SOFT \
+      shape_3=cross \
+      leglabel_3='deep\; surveys' \
+   layer_4=Mark \
+      in_4=/home/comparat/data/AGN_clustering/catalogs/2RXS/SPIDERS_2RXS_Xray_NWAY_ALLWISE_SDSSv5b_SpecDR16_with_VI_1rowperXray_inDR16wSEQUELS_COMPLETE_MaxBCG_REDMAPPER_SPIDERSCODEX_XID_classifications_LXtype1.fits \
+      x_4=Z_BEST y_4='log10(DC_2RXS_LX)' \
+      size_4=2 color_4=blue \
+      leglabel_4=2RXS \
+   layer_5=Mark \
+      in_5=/home/comparat/data/AGN_clustering/catalogs/XMMSL2/SPIDERS_XMMSL2_Xray_NWAY_ALLWISE_SDSSv5b_SpecDR16_with_VI_1rowperXray_inDR16wSEQUELS_COMPLETE_REDMAPPER_SPIDERSCODEX_XID_classifications_LXtype1_not2RXS.fits \
+      x_5=Z_BEST y_5='log10(DC_XMMSL2_LX)' \
+      size_5=2 color_5=yellow \
+      leglabel_5=XMMSL2 \
+   legseq=_1,_3,_4,_5 \
+   omode=out out=$GIT_MAKESAMPLE/figures/agn/figures_VAC/LX_redshift.png
+
+topcat -stilts plot2plane \
+   xpix=500 ypix=300 \
+   xlog=true ylog=true xlabel=redshift ylabel=Counts grid=true texttype=latex \
+    fontsize=15 fontweight=bold \
+   xmin=0.01 xmax=5.5 ymin=10 ymax=1000000 \
+   legend=false \
+   binsize=-12 barform=steps thick=4 \
+   layer_1=Histogram \
+      in_1=/home/comparat/data/eRoMok/mocks/eRosita_eRASS8_with_photometry.fits \
+      x_1=redshift_R \
+      color_1=grey \
+      leglabel_1=eROSITA \
+   layer_2=Histogram \
+      in_2=/home/comparat/software/makeSample/data/lxz/XMM_XXL_lz_and_deep_fields.fits \
+      x_2=z \
+      leglabel_2='deep\; surveys' \
+   layer_3=Histogram \
+      in_3=/home/comparat/data/AGN_clustering/catalogs/2RXS/SPIDERS_2RXS_Xray_NWAY_ALLWISE_SDSSv5b_SpecDR16_with_VI_1rowperXray_inDR16wSEQUELS_COMPLETE_MaxBCG_REDMAPPER_SPIDERSCODEX_XID_classifications_LXtype1.fits \
+       icmd_3='select DC_2RXS_LX>0' \
+      x_3=Z_BEST \
+      color_3=blue \
+      leglabel_3=2RXS \
+   layer_4=Histogram \
+      in_4=/home/comparat/data/AGN_clustering/catalogs/XMMSL2/SPIDERS_XMMSL2_Xray_NWAY_ALLWISE_SDSSv5b_SpecDR16_with_VI_1rowperXray_inDR16wSEQUELS_COMPLETE_REDMAPPER_SPIDERSCODEX_XID_classifications_LXtype1_not2RXS.fits \
+       icmd_4='select DC_XMMSL2_LX>0' \
+      x_4=Z_BEST \
+      color_4=yellow \
+      leglabel_4=XMMSL2 \
+      omode=out out=$GIT_MAKESAMPLE/figures/agn/figures_VAC/LX_redshift_histZ.png
+
+topcat -stilts plot2plane \
+   xpix=500 ypix=300 \
+   xlog=true ylog=true xlabel= ylabel=Counts \
+    grid=true texttype=latex fontsize=15 fontweight=bold \
+   xmin=39 xmax=47.5 ymin=10 ymax=1000000 \
+   legend=false \
+   binsize=-14 barform=steps thick=4 \
+   layer_1=Histogram \
+      in_1=/home/comparat/data/eRoMok/mocks/eRosita_eRASS8_with_photometry.fits \
+      x_1=LX_soft \
+      color_1=grey \
+   layer_2=Histogram \
+      in_2=/home/comparat/software/makeSample/data/lxz/XMM_XXL_lz_and_deep_fields.fits \
+      x_2=logLX \
+   layer_3=Histogram \
+      in_3=/home/comparat/data/AGN_clustering/catalogs/2RXS/SPIDERS_2RXS_Xray_NWAY_ALLWISE_SDSSv5b_SpecDR16_with_VI_1rowperXray_inDR16wSEQUELS_COMPLETE_MaxBCG_REDMAPPER_SPIDERSCODEX_XID_classifications_LXtype1.fits \
+       icmd_3='select DC_2RXS_LX>0' \
+      x_3='log10(DC_2RXS_LX)' \
+      color_3=blue \
+   layer_4=Histogram \
+      in_4=/home/comparat/data/AGN_clustering/catalogs/XMMSL2/SPIDERS_XMMSL2_Xray_NWAY_ALLWISE_SDSSv5b_SpecDR16_with_VI_1rowperXray_inDR16wSEQUELS_COMPLETE_REDMAPPER_SPIDERSCODEX_XID_classifications_LXtype1_not2RXS.fits \
+       icmd_4='select DC_XMMSL2_LX>0' \
+      x_4='log10(DC_XMMSL2_LX)' \
+      color_4=yellow \
+      omode=out out=$GIT_MAKESAMPLE/figures/agn/figures_VAC/LX_redshift_histLX.png
+      
+python plot_color-color-mag-categories.py
+
+EXIT
 
 # stack spectrA according to J Wolf's classification
 python stack_X_AGN.py

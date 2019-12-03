@@ -56,8 +56,8 @@ from scipy.interpolate import interp1d
 m_bins = n.arange(-4,4,0.1)
 
 import glob
-path_2_spec_dir = os.path.join(os.environ['HOME'], 'SDSS/stacks/X_AGN')
-path_2_spec_dir = os.path.join(os.environ['GIT_MAKESAMPLE'], 'data/stacks')
+path_2_spec_dir = os.path.join(os.environ['HOME'], 'SDSS/stacks/X_AGN_v0')
+#path_2_spec_dir = os.path.join(os.environ['GIT_MAKESAMPLE'], 'data/stacks')
 fig_dir = path_2_spec_dir # os.path.join(os.environ['GIT_MAKESAMPLE'], 'figures/agn/figures_VAC')
 #path_2_fly_dir =  os.path.join(os.environ['HOME'], 'SDSS/stacks/SPIDERS_C_GAL', 'firefly/')
 file_list = n.array( glob.glob( os.path.join( path_2_spec_dir ,'*.stack')))
@@ -76,7 +76,7 @@ def plot_stacks(file_list_i, baseNames_i, path_2_figure='x.png'):
 	p.xlim=((800, 7500)) 
 	p.grid()
 	
-	for jj, (path_2_spec, baseName) in enumerate(zip(file_list_i[1::3], baseNames_i[1::3])):
+	for jj, (path_2_spec, baseName) in enumerate(zip(file_list_i[1::3], baseNames_i)):
 		d = fits.open(path_2_spec)
 		sel = (d[1].data['NspectraPerPixel'] > 0.5*n.max(d[1].data['NspectraPerPixel'])) & (d[1].data['medianStack']>0)
 		x_data = d[1].data['wavelength'][sel]
@@ -103,7 +103,7 @@ def plot_stacks(file_list_i, baseNames_i, path_2_figure='x.png'):
 	p.clf()
 
 
-for UT in uniq_type:
+for UT in uniq_type[:3]:
 	sel = ( baseNamesSplit.T[0] == UT )
 	plot_stacks(file_list[sel], baseNames[sel], path_2_figure=os.path.join(fig_dir, UT+'.png') )
 	

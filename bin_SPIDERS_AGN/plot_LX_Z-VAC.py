@@ -84,7 +84,9 @@ def get_arrays_xmmsl2(path_2_cat, EXI_ML_min = 10):
 	idZ =  (c2) | (c3) | (c4) | (c5) | (c6) 
 	blazars_noZ = (idZ) & ((data['CLASS_BEST']=='BLAZAR')|(data['CLASS_BEST']=='BLLAC')) & (data['CONF_BEST']<3)
 	goodZ = (idZ) & (blazars_noZ == False)
-	clusters = (goodZ) & (data['REDMAPPER_Separation']<60) & (abs(data['DR16_Z'] - data['REDMAPPER_Z_LAMBDA'])<0.01)
+	redmapper_cluster = (goodZ) & (data['REDMAPPER_Separation']<60) & (abs(data['DR16_Z'] - data['REDMAPPER_Z_LAMBDA'])<0.01)
+	spiders_cluster = (goodZ) & (abs(data['SPIDERSCODEX_SCREEN_CLUZSPEC']-data['Z_BEST'])<0.01)
+	clusters = (redmapper_cluster) | (spiders_cluster)
 	stars = (goodZ) & (data['CLASS_BEST']=='STAR')
 	agnZ = (goodZ) & (clusters==False) &  (stars==False)
 	return data, ra, dec, targeted, observed, goodZ, idZ, agnZ, clusters, blazars_noZ, stars, data_2RXS_i
@@ -105,7 +107,9 @@ def get_arrays(data = data_2RXS, EXI_ML_min = 6.5):
 	idZ =  (c2) | (c3) | (c4) | (c5) | (c6) 
 	blazars_noZ = (idZ) & ((data['CLASS_BEST']=='BLAZAR')|(data['CLASS_BEST']=='BLLAC')) & (data['CONF_BEST']<3)
 	goodZ = (idZ) & (blazars_noZ == False)
-	clusters = (goodZ) & (data['REDMAPPER_Separation']<60) & (abs(data['DR16_Z'] - data['REDMAPPER_Z_LAMBDA'])<0.01)
+	redmapper_cluster = (goodZ) & (data['REDMAPPER_Separation']<60) & (abs(data['DR16_Z'] - data['REDMAPPER_Z_LAMBDA'])<0.01)
+	spiders_cluster = (goodZ) & (abs(data['SPIDERSCODEX_SCREEN_CLUZSPEC']-data['Z_BEST'])<0.01)
+	clusters = (redmapper_cluster) | (spiders_cluster)
 	stars = (data['CLASS_BEST']=='STAR')
 	agnZ = (goodZ) & (clusters==False) &  (stars==False)
 	bl  = (agnZ) & ( ( ( data['CLASS_BEST']=='BLAGN') & (data['DR16_CLASS']=='QSO') ) | ( data['CLASS_BEST']=='QSO') )
@@ -114,7 +118,7 @@ def get_arrays(data = data_2RXS, EXI_ML_min = 6.5):
 	return data, targeted, observed, goodZ, idZ, agnZ, clusters, blazars_noZ, stars, bl, nl
 
 
-path_2_cat = os.path.join(catalog_dir, '2RXS', 'SPIDERS_2RXS_Xray_NWAY_ALLWISE_SDSSv5b_SpecDR16_with_VI_1rowperXray_inDR16wSEQUELS_COMPLETE_MaxBCG_REDMAPPER.fits')
+path_2_cat = os.path.join(catalog_dir, '2RXS', 'SPIDERS_2RXS_Xray_NWAY_ALLWISE_SDSSv5b_SpecDR16_with_VI_1rowperXray_inDR16wSEQUELS_COMPLETE_MaxBCG_REDMAPPER_SPIDERSCODEX.fits')
 data_2RXS_i = fits.open(path_2_cat)[1].data
 targets = (data_2RXS_i['NWAY_match_flag']!=2) & (data_2RXS_i['RXS_IN_BOSS']==1) & (data_2RXS_i['FLAG_SDSSv5b_best']==1) & (data_2RXS_i['NWAY_p_any']>=0.01) & (data_2RXS_i['NUM_SDSS']>=1)
 data_2RXS = data_2RXS_i[targets]
@@ -152,7 +156,7 @@ out = np.unique(data_2RXS['CLASS_BEST'][agnZ_2RXS], return_counts=True)
 for e1, e2 in zip(out[0], out[1]):
 	print(e1,e2)
 
-path_2_cat_xmmsl = os.path.join(catalog_dir, 'XMMSL2',  'SPIDERS_XMMSL2_Xray_NWAY_ALLWISE_SDSSv5b_SpecDR16_with_VI_1rowperXray_inDR16wSEQUELS_COMPLETE_REDMAPPER.fits')
+path_2_cat_xmmsl = os.path.join(catalog_dir, 'XMMSL2',  'SPIDERS_XMMSL2_Xray_NWAY_ALLWISE_SDSSv5b_SpecDR16_with_VI_1rowperXray_inDR16wSEQUELS_COMPLETE_REDMAPPER_SPIDERSCODEX.fits')
 
 data_XMM, ra_XMM, dec_XMM, targeted_XMM, observed_XMM, goodZ_XMM, idZ_XMM, agnZ_XMM, clusterZ_XMM, blazarNOZ_XMM, stars_XMM, all_data_XMM = get_arrays_xmmsl2(path_2_cat_xmmsl)
 
