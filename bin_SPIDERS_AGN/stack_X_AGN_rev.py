@@ -20,7 +20,7 @@ def stack_it(specList ):
 		stack.createStackMatrix()
 		stack.stackSpectra()
 
-for file_input in file_list[::-1][:5]:
+for file_input in file_list[::-1][5:10]:
 	stack_it(file_input)
 
 
