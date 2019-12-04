@@ -42,12 +42,30 @@ def write_stack_list(survey, selection, zmins, zmaxs, category = 'clusterGAL' ):
 		selection = (z_best > zmin) & (z_best < zmax) 
 		N_obj = len(selection.nonzero()[0])
 		print(zmin, '<z<', zmax, 'N', N_obj)
-		if N_obj>100:
+		if N_obj>10:
 			name = survey+"_"+category+"_zmin_"+str(int(10*zmin)).zfill(2)+"_zmax_"+str(int(10*zmax)).zfill(2)+'.ascii'
 			print(name)
 			DATA = np.transpose([ plate[selection], mjd[selection], fiberid[selection], z_best[selection] ])
 			np.savetxt(os.path.join(path_2_stack_lists, name), DATA)
 
+selection = data_RXS.clusters
+UT = np.unique(data_RXS.data['merged_class'][selection])
+
+category = 'CLUAGN'
+selection = (data_RXS.clusters)&( (data_RXS.data['merged_class']=='BLAGN') | (data_RXS.data['merged_class']=='QSO') | (data_RXS.data['merged_class']=='NLAGN'))
+max_z = np.max(data_RXS.data['Z_BEST']             [selection])
+zmins = np.array([0.005])
+zmaxs = np.array([0.5])
+write_stack_list(survey, selection, zmins, zmaxs, category )
+
+category = 'CLUGAL'
+selection = (data_RXS.clusters)&(data_RXS.data['merged_class']=='GALAXY')
+max_z = np.max(data_RXS.data['Z_BEST']             [selection])
+zmins = np.array([0.005])
+zmaxs = np.array([0.5])
+write_stack_list(survey, selection, zmins, zmaxs, category )
+
+sys.exit()
 
 selection = data_RXS.clusters
 category = 'clusterGAL' 
@@ -78,6 +96,7 @@ write_stack_list(survey, selection, zmins, zmaxs, category )
 zmaxs = np.hstack((0.005, np.arange(0.,max_z,0.1)+0.2))
 write_stack_list(survey, selection, zmins, zmaxs, category )
 
+sys.exit()
 
 selection = data_RXS.stars
 category = 'STARS' 
