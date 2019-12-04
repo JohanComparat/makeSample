@@ -13,7 +13,7 @@ sh compile_specz_catalog_XMMSL_819.sh
 # python 000_basic_stats_targets.py
 
 # section 2.2. mask. inside / outside : 21279 / 9
-# Table 1 and figure 2 :
+# Table 1 :
 python 001_basic_stats_2RXS.py
 # figures of completeness and success rate vs. flux and sky position
 # python dr16-completeness-rass9028-xmmsl819.py 4 6p5
@@ -34,7 +34,7 @@ python 002_dr16-completeness-VAC-XMMSL2.py 4
 python 002_dr16-completeness-FULLBOSS.py 4 10
 
 
-# Figure 3
+# Figure 2, 3
 python 003_visual-inspection-stats.py 6p5
 python 003_visual-inspection-stats.py 10
 # # Figure 4, classification per type

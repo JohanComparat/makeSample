@@ -30,6 +30,7 @@ em_lines_VdB.sel = (em_lines_VdB.WL>0)
 
 path_2_abs_line = os.path.join(os.environ['GIT_MAKESAMPLE'],'data/line-list-absorption-salvato.dat')  
 path_2_em_line = os.path.join(os.environ['GIT_MAKESAMPLE'],'data/line-list-emission-salvato.dat')
+path_2_em_line_short = os.path.join(os.environ['GIT_MAKESAMPLE'],'data/line-list-emission-short-salvato.dat')
 
 abs_lines_MS = Lines()
 wl, ID = n.loadtxt(path_2_abs_line, unpack=True, dtype={'names': ('wl', 'ID'), 'formats': ('f4', 'S100')})
@@ -43,6 +44,13 @@ em_lines_MS.ID = ID.astype('str')
 em_lines_MS.WL = wl
 em_lines_MS.sel = (em_lines_MS.WL>0)
 
+em_lines_MS_short = Lines()
+wl, ID = n.loadtxt(path_2_em_line_short, unpack=True, dtype={'names': ('wl', 'ID'), 'formats': ('f4', 'S100')})
+em_lines_MS_short.ID = ID.astype('str')
+em_lines_MS_short.WL = wl
+em_lines_MS_short.sel = (em_lines_MS_short.WL>0)
+
+em_lines = em_lines_MS_short
 
 from cycler import cycler
 # 1. Setting prop cycle on default rc parameter
@@ -57,57 +65,174 @@ m_bins = n.arange(-4,4,0.1)
 
 import glob
 path_2_spec_dir = os.path.join(os.environ['HOME'], 'SDSS/stacks/X_AGN_v0')
-#path_2_spec_dir = os.path.join(os.environ['GIT_MAKESAMPLE'], 'data/stacks')
+path_2_spec_dir = os.path.join(os.environ['GIT_MAKESAMPLE'], 'data/stacks')
+path_2_spec_dir = os.path.join(os.environ['GIT_MAKESAMPLE'], 'data/X_AGN_stacks')
+
 fig_dir = path_2_spec_dir # os.path.join(os.environ['GIT_MAKESAMPLE'], 'figures/agn/figures_VAC')
 #path_2_fly_dir =  os.path.join(os.environ['HOME'], 'SDSS/stacks/SPIDERS_C_GAL', 'firefly/')
 file_list = n.array( glob.glob( os.path.join( path_2_spec_dir ,'*.stack')))
 file_list.sort()
-baseNames = n.array([ os.path.basename(bn)[5:-6] for bn in file_list ])
-baseNamesSplit = n.array([ bn.split('_') for bn in baseNames ])
-uniq_type = n.unique(baseNamesSplit.T[0])
+baseNames = n.array([ os.path.basename(bn)[:-7] for bn in file_list ])
+baseNamesSplit = n.array([ bn.split('_')[1] for bn in baseNames ])
+baseNamesSplit2 = n.array([ bn.split('_') for bn in baseNames ])
+#all_type = n.unique(baseNamesSplit.T[0])
+uniq_type = n.unique(baseNamesSplit)
 
-def plot_stacks(file_list_i, baseNames_i, path_2_figure='x.png'):
+def plot_stacks_agnt1(file_list_i, baseNames_i, path_2_figure='x.png', title='', xtk=n.hstack((n.arange(1000, 5500, 1000), 7000)).astype('int') ):
 	print(path_2_figure)
-	p.figure(0, (12.2, 8.2), frameon=False )
-	#p.axes([0.1, 0.1, 0.85, 0.78])
+	p.figure(1, (7.5, 7.5), frameon=False )
+	p.axes([0.15, 0.1, 0.82, 0.85])
 	#p.title(baseNames_i[0].split('_')[0]) 
 	p.xlabel('wavelength [Angstrom, rest frame]') 
 	p.ylabel(r'Flux [$f_\lambda$]')
-	p.xlim=((800, 7500)) 
-	p.grid()
+	p.xlim((1000, 8000)) 
 	
-	for jj, (path_2_spec, baseName) in enumerate(zip(file_list_i[1::3], baseNames_i)):
+	for jj, (path_2_spec, labels) in enumerate(zip(file_list_i, baseNames_i)):
 		d = fits.open(path_2_spec)
 		sel = (d[1].data['NspectraPerPixel'] > 0.5*n.max(d[1].data['NspectraPerPixel'])) & (d[1].data['medianStack']>0)
 		x_data = d[1].data['wavelength'][sel]
 		y_data = d[1].data['medianStack'][sel]
 		y_err = d[1].data['jackknifStackErrors'][sel]
 		N_spec = d[1].data['NspectraPerPixel'][sel]
-		labels = baseName.split('_')
-		p.plot(x_data, y_data/2**jj, lw=1, label=str(float(labels[2])/10.)+'<z<'+str(float(labels[4])/10.) + ', N='+str(int(n.median(N_spec))) )
+		#lab = " ".join(labels[3:])
+		lab = str(int(labels[3])/10.)+'<z<'+str(int(labels[5])/10.)  
+		p.plot(x_data, y_data/2**jj, lw=1, label='N='+str(int(n.median(N_spec)))+', '+lab ) # str(float(labels[3])/10.)+'<z<'+str(float(labels[5])/10.) + 
 
-	#for name, xx  in zip(em_lines.ID[em_lines.sel], em_lines.WL[em_lines.sel] ):
-		#print(xx, 20, name)
-		#p.text(x=xx, y=20, s=name, withdash=True, rotation=90, fontsize=9)#, color='red')
-		#p.plot(xx, 20, marker='|', color='k')# s=name, withdash=True, rotation=90, fontsize=9)#, color='red')
+	for name, xx  in zip(em_lines.ID[em_lines.sel], em_lines.WL[em_lines.sel] ):
+		#print(xx, 60, name)
+		p.text(x=xx, y=60, s=name, withdash=True, rotation=90, fontsize=9)#, color='red')
+		#p.plot(xx, 60, marker='|', color='k')# s=name, withdash=True, rotation=90, fontsize=9)#, color='red')
 
 	#for name, xx in zip(abs_lines.ID[abs_lines.sel], abs_lines.WL[abs_lines.sel] ):
 		#print(xx, 1, name)
 		#p.text(x=xx, y=1, s=name, withdash=True, rotation=90, fontsize=9)#, color='blue')
 		#p.plot(xx, 1, marker='|', color='k')# s=name, withdash=True, rotation=90, fontsize=9)#, color='red')
-		
+	p.xticks([], [])
 	p.yscale('log')
-	p.legend(loc=0, fontsize=8, frameon=False)
+	p.xscale('log')
+	p.grid()
+	p.axvline(2000, color='grey', lw=0.5)
+	p.axvline(3000, color='grey', lw=0.5)
+	p.axvline(4000, color='grey', lw=0.5)
+	p.axvline(6000, color='grey', lw=0.5)
+	p.xticks([], [])
+	#p.xticks(xtk, xtk)
+	p.legend(loc=4, fontsize=12)#, frameon=False)
 	p.tight_layout()
+	p.title(title)
+	p.savefig(path_2_figure)
+	p.clf()
+
+def plot_stacks_agnt2(file_list_i, baseNames_i, path_2_figure='x.png', title='', xtk=n.hstack((n.arange(1000, 5500, 1000), 7000)).astype('int') ):
+	print(path_2_figure)
+	p.figure(3, (7.5, 4.5), frameon=False )
+	p.axes([0.15, 0.15, 0.82, 0.75])
+	#p.title(baseNames_i[0].split('_')[0]) 
+	p.xlabel('wavelength [Angstrom, rest frame]') 
+	p.ylabel(r'Flux [$f_\lambda$]')
+	
+	for jj, (path_2_spec, labels) in enumerate(zip(file_list_i, baseNames_i)):
+		d = fits.open(path_2_spec)
+		sel = (d[1].data['NspectraPerPixel'] > 0.5*n.max(d[1].data['NspectraPerPixel'])) & (d[1].data['medianStack']>0)
+		x_data = d[1].data['wavelength'][sel]
+		y_data = d[1].data['medianStack'][sel]
+		y_err = d[1].data['jackknifStackErrors'][sel]
+		N_spec = d[1].data['NspectraPerPixel'][sel]
+		#lab = " ".join(labels[3:])
+		lab = str(int(labels[3])/10.)+'<z<'+str(int(labels[5])/10.)  
+		p.plot(x_data, y_data/1.3**jj, lw=1, label='N='+str(int(n.median(N_spec)))+', '+lab ) # str(float(labels[3])/10.)+'<z<'+str(float(labels[5])/10.) + 
+
+	for name, xx  in zip(em_lines.ID[em_lines.sel], em_lines.WL[em_lines.sel] ):
+		#print(xx, 60, name)
+		if xx>2750:
+			p.text(x=xx, y=18, s=name, withdash=True, rotation=90, fontsize=9)#, color='red')
+		#p.plot(xx, 60, marker='|', color='k')# s=name, withdash=True, rotation=90, fontsize=9)#, color='red')
+
+	#for name, xx in zip(abs_lines.ID[abs_lines.sel], abs_lines.WL[abs_lines.sel] ):
+		#print(xx, 1, name)
+		#p.text(x=xx, y=1, s=name, withdash=True, rotation=90, fontsize=9)#, color='blue')
+		#p.plot(xx, 1, marker='|', color='k')# s=name, withdash=True, rotation=90, fontsize=9)#, color='red')
+	#p.xticks([], [])
+	#p.xticks(xtk, xtk)
+	p.yscale('log')
+	#p.xscale('log')
+	p.grid()
+	#p.axvline(2000, color='grey', lw=0.5)
+	#p.axvline(3000, color='grey', lw=0.5)
+	#p.axvline(4000, color='grey', lw=0.5)
+	#p.axvline(6000, color='grey', lw=0.5)
+	#p.xticks([], [])
+	#p.xlim((1000, 7500)) 
+	p.ylim((0.2,20))
+	p.legend(loc=4, fontsize=12)#, frameon=False)
+	p.tight_layout()
+	p.title(title)
+	p.savefig(path_2_figure)
+	p.clf()
+
+def plot_stacks_ClusterGal(file_list_i, baseNames_i, path_2_figure='x.png', title='', xtk=n.hstack((n.arange(1000, 5500, 1000), 7000)).astype('int') ):
+	print(path_2_figure)
+	p.figure(3, (7.5, 4.5), frameon=False )
+	p.axes([0.15, 0.15, 0.82, 0.75])
+	#p.title(baseNames_i[0].split('_')[0]) 
+	p.xlabel('wavelength [Angstrom, rest frame]') 
+	p.ylabel(r'Flux [$f_\lambda$]')
+	
+	for jj, (path_2_spec, labels) in enumerate(zip(file_list_i, baseNames_i)):
+		d = fits.open(path_2_spec)
+		sel = (d[1].data['NspectraPerPixel'] > 0.5*n.max(d[1].data['NspectraPerPixel'])) & (d[1].data['medianStack']>0)
+		x_data = d[1].data['wavelength'][sel]
+		y_data = d[1].data['medianStack'][sel]
+		y_err = d[1].data['jackknifStackErrors'][sel]
+		N_spec = d[1].data['NspectraPerPixel'][sel]
+		#lab = " ".join(labels[3:])
+		lab = str(int(labels[3])/10.)+'<z<'+str(int(labels[5])/10.)  
+		p.plot(x_data, y_data/1.3**jj, lw=1, label='N='+str(int(n.median(N_spec)))+', '+lab ) # str(float(labels[3])/10.)+'<z<'+str(float(labels[5])/10.) + 
+
+	for name, xx  in zip(em_lines.ID[em_lines.sel], em_lines.WL[em_lines.sel] ):
+		#print(xx, 60, name)
+		if xx>2750:
+			p.text(x=xx, y=22, s=name, withdash=True, rotation=90, fontsize=9)#, color='red')
+		#p.plot(xx, 60, marker='|', color='k')# s=name, withdash=True, rotation=90, fontsize=9)#, color='red')
+
+	#for name, xx in zip(abs_lines.ID[abs_lines.sel], abs_lines.WL[abs_lines.sel] ):
+		#print(xx, 1, name)
+		#p.text(x=xx, y=1, s=name, withdash=True, rotation=90, fontsize=9)#, color='blue')
+		#p.plot(xx, 1, marker='|', color='k')# s=name, withdash=True, rotation=90, fontsize=9)#, color='red')
+	#p.xticks([], [])
+	#p.xticks(xtk, xtk)
+	p.yscale('log')
+	#p.xscale('log')
+	p.grid()
+	#p.axvline(2000, color='grey', lw=0.5)
+	#p.axvline(3000, color='grey', lw=0.5)
+	#p.axvline(4000, color='grey', lw=0.5)
+	#p.axvline(6000, color='grey', lw=0.5)
+	#p.xticks([], [])
+	#p.xlim((1000, 7500)) 
+	p.ylim((0.4,30))
+	p.legend(loc=4, fontsize=12)#, frameon=False)
+	p.tight_layout()
+	p.title(title)
 	p.savefig(path_2_figure)
 	p.clf()
 
 
-for UT in uniq_type[:3]:
-	sel = ( baseNamesSplit.T[0] == UT )
-	plot_stacks(file_list[sel], baseNames[sel], path_2_figure=os.path.join(fig_dir, UT+'.png') )
+for UT in uniq_type:
+	sel = ( baseNamesSplit == UT )
+	if UT=='clusterGAL':
+		s2 = [0,2,4,6]
+		plot_stacks_ClusterGal(file_list[sel][s2], baseNamesSplit2[sel][s2], path_2_figure=os.path.join(fig_dir, UT+'.png'), title='galaxies in clusters' )
+	if UT=='AGNT1':
+		s2 = [2,6,10,14,18,22,26,30,34,39]
+		plot_stacks_agnt1(file_list[sel][s2], baseNamesSplit2[sel][s2], path_2_figure=os.path.join(fig_dir, UT+'.png'), title='type 1 AGN' )
+	if UT=='AGNT2':
+		s2 = [2,6,10]
+		plot_stacks_agnt2(file_list[sel][s2], baseNamesSplit2[sel][s2], path_2_figure=os.path.join(fig_dir, UT+'.png'), title='type 2 AGN' )
+	if UT=='STARS':
+		s2 = [0,1]
 	
-#sys.exit()
+sys.exit()
 
 def plot_single_stack_with_lines(path_2_spec, wmin, wmax, path_2_figure, em_lines, abs_lines):
 	print(path_2_spec, path_2_figure)

@@ -92,6 +92,23 @@ if EXI_ML_min_str=='6p5':
 if EXI_ML_min_str=='10':
 	EXI_ML_min=10
 
+data, high_conf, targeted, observed, goodZ, idZ, agnZ, clusters, blazars_noZ, stars, bl, nl, class_best = get_arrays_2rxs(path_2_cat_2RXS = path_2_cat_2RXS, EXI_ML_min = EXI_ML_min)
+
+data_RXS = Catalog()
+data_RXS.data = data
+data_RXS.high_conf = high_conf
+data_RXS.targeted = targeted
+data_RXS.observed = observed
+data_RXS.goodZ = goodZ
+data_RXS.idZ = idZ
+data_RXS.agnZ = agnZ
+data_RXS.clusters = clusters
+data_RXS.blazars_noZ = blazars_noZ
+data_RXS.stars = stars
+data_RXS.bl = bl
+data_RXS.nl = nl
+data_RXS.class_best = class_best
+
 prefix='2RXS_ExiML'+EXI_ML_min_str+'_'
 #def get_arrays(path_2_cat, EXI_ML_min = EXI_ML_min):
 	#hd_rass_i = fits.open(path_2_cat)[1].data
@@ -141,14 +158,14 @@ bins = np.arange(XMIN, XMAX+DX, DX)
 x_bins = (bins[1:]+bins[:-1])/2.
 
 fig_out = os.path.join(figure_dir, prefix+'_xray_hist_dr16.png')
-p.figure(1, (5.5,4.5))
+p.figure(0, (5.5,4.5))
 p.axes([0.15, 0.15, 0.8, 0.77])
 p.tight_layout()
-p.hist(YY[good ]           , bins=bins, histtype='step',lw=5, label='A')
-p.hist(YY[good & targeted] , bins=bins, histtype='step',lw=4, label='T')
-p.hist(YY[good & observed] , bins=bins, histtype='step',lw=3, label='O')
-p.hist(YY[good & idZ]      , bins=bins, histtype='step',lw=2, label='I')
-p.hist(YY[good & goodZ]    , bins=bins, histtype='step',lw=1, label='Z')  
+nn_A, bb, pp = p.hist(YY[good & high_conf], bins=bins, histtype='step',lw=5, label='A')
+nn_T, bb, pp = p.hist(YY[good & targeted] , bins=bins, histtype='step',lw=4, label='T')
+nn_O, bb, pp = p.hist(YY[good & observed] , bins=bins, histtype='step',lw=3, label='O')
+nn_I, bb, pp = p.hist(YY[good & idZ]      , bins=bins, histtype='step',lw=2, label='I')
+nn_Z, bb, pp = p.hist(YY[good & goodZ]    , bins=bins, histtype='step',lw=1, label='Z')  
 p.xlabel(xlabel)
 p.ylabel('N')
 p.grid()
@@ -156,10 +173,39 @@ p.xlim((xlim_min, xlim_max ))
 #p.ylim((0.9,5000))
 p.yscale('log')
 p.legend(frameon=True, loc=0)
+if EXI_ML_min_str=='10': p.title('exiML>'+str(EXI_ML_min))
 print(fig_out)
 p.savefig(fig_out)
 p.clf()
 
+fig_out = os.path.join(figure_dir, prefix+'_ratio_xray_hist_dr16.png')
+p.figure(1, (5.5,2.5))
+p.axes([0.15, 0.25, 0.8, 0.62])
+p.tight_layout()
+# blazar noZ
+mid_line = nn_O*1./nn_T
+err_line = nn_O**(-0.5)
+p.errorbar(x_bins, y = mid_line, xerr=DX/2., label='O/T', fmt='none', lw=3)
+# identified
+mid_line = nn_I*1./nn_T
+err_line = nn_I**(-0.5)
+p.errorbar(x_bins, y = mid_line, xerr=DX/2., label='I/T', fmt='none', lw=3)
+# redshift
+mid_line = nn_Z*1./nn_T
+err_line = nn_Z**(-0.5)
+p.errorbar(x_bins, y = mid_line, xerr=DX/2., label='Z/T', fmt='none', lw=3)
+#
+p.xlabel(xlabel)
+p.ylabel('fraction')
+p.grid()
+p.xlim((xlim_min, xlim_max ))
+p.ylim((0.3,1.01))
+if EXI_ML_min_str=='10': p.title('exiML>'+str(EXI_ML_min))
+#p.yscale('log')
+p.legend(frameon=True, loc=6)
+print(fig_out)
+p.savefig(fig_out)
+p.clf()
 
 
 qty = 'SDSS_FIBER2MAG_i'
@@ -176,14 +222,14 @@ bins = np.arange(XMIN, XMAX+DX, DX)
 x_bins = (bins[1:]+bins[:-1])/2.
 
 fig_out = os.path.join(figure_dir, prefix+'_fiber2magi_hist_dr16.png')
-p.figure(1, (5.5,4.5))
+p.figure(2, (5.5,4.5))
 p.axes([0.15, 0.15, 0.8, 0.77])
 p.tight_layout()
-p.hist(YY[good ]           , bins=bins, histtype='step',lw=5, label='A')
-p.hist(YY[good & targeted] , bins=bins, histtype='step',lw=4, label='T')
-p.hist(YY[good & observed] , bins=bins, histtype='step',lw=3, label='O')
-p.hist(YY[good & idZ]      , bins=bins, histtype='step',lw=2, label='I')
-p.hist(YY[good & goodZ]    , bins=bins, histtype='step',lw=1, label='Z')  
+nn_A, bb, pp = p.hist(YY[good & high_conf], bins=bins, histtype='step',lw=5, label='A')
+nn_T, bb, pp = p.hist(YY[good & targeted] , bins=bins, histtype='step',lw=4, label='T')
+nn_O, bb, pp = p.hist(YY[good & observed] , bins=bins, histtype='step',lw=3, label='O')
+nn_I, bb, pp = p.hist(YY[good & idZ]      , bins=bins, histtype='step',lw=2, label='I')
+nn_Z, bb, pp = p.hist(YY[good & goodZ]    , bins=bins, histtype='step',lw=1, label='Z')  
 p.xlabel(xlabel)
 p.ylabel('N')
 p.grid()
@@ -191,9 +237,41 @@ p.xlim((xlim_min, xlim_max ))
 #p.ylim((0.9,5000))
 p.yscale('log')
 p.legend(frameon=True, loc=2)
+if EXI_ML_min_str=='10': p.title('exiML>'+str(EXI_ML_min))
 print(fig_out)
 p.savefig(fig_out)
 p.clf()
+
+
+fig_out = os.path.join(figure_dir, prefix+'_ratio_fiber2magi_hist_dr16.png')
+p.figure(3, (5.5,2.5))
+p.axes([0.15, 0.25, 0.8, 0.62])
+p.tight_layout()
+# blazar noZ
+mid_line = nn_O*1./nn_T
+err_line = nn_O**(-0.5)
+p.errorbar(x_bins, y = mid_line, xerr=DX/2., label='O/T', fmt='none', lw=3)
+# identified
+mid_line = nn_I*1./nn_T
+err_line = nn_I**(-0.5)
+p.errorbar(x_bins, y = mid_line, xerr=DX/2., label='I/T', fmt='none', lw=3)
+# redshift
+mid_line = nn_Z*1./nn_T
+err_line = nn_Z**(-0.5)
+p.errorbar(x_bins, y = mid_line, xerr=DX/2., label='Z/T', fmt='none', lw=3)
+#
+p.xlabel(xlabel)
+p.ylabel('fraction')
+p.grid()
+p.xlim((xlim_min, xlim_max ))
+p.ylim((0.3,1.01))
+#p.yscale('log')
+p.legend(frameon=True, loc=6)
+if EXI_ML_min_str=='10': p.title('exiML>'+str(EXI_ML_min))
+print(fig_out)
+p.savefig(fig_out)
+p.clf()
+
 
 
 qty = 'SDSS_MODELMAG_i'
@@ -210,14 +288,14 @@ bins = np.arange(XMIN, XMAX+DX, DX)
 x_bins = (bins[1:]+bins[:-1])/2.
 
 fig_out = os.path.join(figure_dir, prefix+'_modelmagi_hist_dr16.png')
-p.figure(1, (5.5,4.5))
+p.figure(4, (5.5,4.5))
 p.axes([0.15, 0.15, 0.8, 0.77])
 p.tight_layout()
-p.hist(YY[good ]           , bins=bins, histtype='step',lw=5, label='A')
-p.hist(YY[good & targeted] , bins=bins, histtype='step',lw=4, label='T')
-p.hist(YY[good & observed] , bins=bins, histtype='step',lw=3, label='O')
-p.hist(YY[good & idZ]      , bins=bins, histtype='step',lw=2, label='I')
-p.hist(YY[good & goodZ]    , bins=bins, histtype='step',lw=1, label='Z')  
+nn_A, bb, pp = p.hist(YY[good & high_conf], bins=bins, histtype='step',lw=5, label='A')
+nn_T, bb, pp = p.hist(YY[good & targeted] , bins=bins, histtype='step',lw=4, label='T')
+nn_O, bb, pp = p.hist(YY[good & observed] , bins=bins, histtype='step',lw=3, label='O')
+nn_I, bb, pp = p.hist(YY[good & idZ]      , bins=bins, histtype='step',lw=2, label='I')
+nn_Z, bb, pp = p.hist(YY[good & goodZ]    , bins=bins, histtype='step',lw=1, label='Z')  
 p.xlabel(xlabel)
 p.ylabel('N')
 p.grid()
@@ -225,9 +303,40 @@ p.xlim((xlim_min, xlim_max ))
 #p.ylim((0.9,5000))
 p.yscale('log')
 p.legend(frameon=True, loc=0)
+if EXI_ML_min_str=='10': p.title('exiML>'+str(EXI_ML_min))
 print(fig_out)
 p.savefig(fig_out)
 p.clf()
+
+fig_out = os.path.join(figure_dir, prefix+'_ratio_modelmagi_hist_dr16.png')
+p.figure(5, (5.5,2.5))
+p.axes([0.15, 0.25, 0.8, 0.62])
+p.tight_layout()
+# blazar noZ
+mid_line = nn_O*1./nn_T
+err_line = nn_O**(-0.5)
+p.errorbar(x_bins, y = mid_line, xerr=DX/2., label='O/T', fmt='none', lw=3)
+# identified
+mid_line = nn_I*1./nn_T
+err_line = nn_I**(-0.5)
+p.errorbar(x_bins, y = mid_line, xerr=DX/2., label='I/T', fmt='none', lw=3)
+# redshift
+mid_line = nn_Z*1./nn_T
+err_line = nn_Z**(-0.5)
+p.errorbar(x_bins, y = mid_line, xerr=DX/2., label='Z/T', fmt='none', lw=3)
+#
+p.xlabel(xlabel)
+p.ylabel('fraction')
+p.grid()
+p.xlim((xlim_min, xlim_max ))
+p.ylim((0.45,1.01))
+#p.yscale('log')
+p.legend(frameon=True, loc=6)
+if EXI_ML_min_str=='10': p.title('exiML>'+str(EXI_ML_min))
+print(fig_out)
+p.savefig(fig_out)
+p.clf()
+
 
 def plot_hist(data=data,  qty='SDSS_FIBER2MAG_i', xlabel='SDSS_FIBER2MAG_i',XMIN = 16,XMAX = 30, xlim_min = 16.8, xlim_max = 22.7, DX= 0.5, logX = False, logDATA = False ):
 	good = (data[qty]>0)

@@ -51,17 +51,6 @@ data_RXS.bl = bl
 data_RXS.nl = nl
 data_RXS.class_best = class_best
 
-fig_out = os.path.join(figure_dir, prefix+qty+'_hist_dr16.png')
-
-XMIN = -13. 
-XMAX = -10
-DX = 1.
-bins = np.arange(XMIN, XMAX+DX, DX)# (np.max(YY)-np.min(YY))/10.)
-x_bins = (bins[1:]+bins[:-1])/2.
-
-p.figure(1, (5.5,5.5))
-p.axes([0.15, 0.15, 0.8, 0.77])
-p.tight_layout()
 # DR16 footprint
 print('======================================')
 print('======================================')
@@ -84,6 +73,18 @@ print('===============')
 print( len(data_RXS.data[data_RXS.observed]), len(data_RXS.data[data_RXS.observed])*1./len(data_RXS.data[data_RXS.observed]) )
 out = np.unique(data_RXS.class_best[data_RXS.clusters], return_counts=True)
 print(out)
+
+fig_out = os.path.join(figure_dir, prefix+qty+'_hist_dr16.png')
+
+XMIN = -13. 
+XMAX = -10
+DX = 1.
+bins = np.arange(XMIN, XMAX+DX, DX)# (np.max(YY)-np.min(YY))/10.)
+x_bins = (bins[1:]+bins[:-1])/2.
+
+p.figure(1, (5.5,5.5))
+p.axes([0.15, 0.15, 0.8, 0.77])
+p.tight_layout()
 
 #cb = data_RXS.data['CONF_BEST']
 #for cb_val in np.unique(cb):

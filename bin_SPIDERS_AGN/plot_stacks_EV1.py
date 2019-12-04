@@ -119,8 +119,8 @@ def plot_NZ(ascii_list, baseName, path_2_figure):
 
 def plot_stacks(file_list_i, baseNames_i, path_2_figure='x.png', wmin=2000, wmax=9000, title_str=' '):
 	print(path_2_figure, wmin, wmax)
-	fig=p.figure(0, (12.2, 8.2), frameon=False )
-	#p.axes([0.1, 0.1, 0.85, 0.78])
+	fig=p.figure(0, (7.5, 4.5), frameon=False )
+	p.axes([0.15, 0.15, 0.82, 0.75])
 	#p.title(baseNames_i[0].split('_')[0]) 
 	p.xlabel('wavelength [Angstrom, rest frame]') 
 	p.ylabel(r'Flux [$f_\lambda$]')
@@ -150,14 +150,14 @@ def plot_stacks(file_list_i, baseNames_i, path_2_figure='x.png', wmin=2000, wmax
 		y_position = n.max(y_data[n.max([y_id-5,0]):n.min([y_id+5,len(x_data)])])
 		print(xx, name, y_id, y_position)
 		p.text(x=xx, y=y_position*1.03, s=name, withdash=True, rotation=90, fontsize=9)#, color='red')
-		p.plot(xx, y_position*1.01, marker='|', color='k')# s=name, withdash=True, rotation=90, fontsize=9)#, color='red')
+		#p.plot(xx, y_position*1.01, marker='|', color='k')# s=name, withdash=True, rotation=90, fontsize=9)#, color='red')
 
 	for name, xx in zip(abs_lines.ID[abs_lines.sel2], abs_lines.WL[abs_lines.sel2] ):
 		y_id = n.searchsorted( x_data, xx)
 		y_position = n.min(y_data[n.max([y_id-5,0]):n.min([y_id+5,len(x_data)])])
 		print(xx, name, y_id, y_position)
 		p.text(x=xx, y = y_position-0.1, s=name, withdash=True, rotation=90, fontsize=9)#, color='blue')
-		p.plot(xx, y_position-0.08, marker='|', color='k')# s=name, withdash=True, rotation=90, fontsize=9)#, color='red')
+		#p.plot(xx, y_position-0.08, marker='|', color='k')# s=name, withdash=True, rotation=90, fontsize=9)#, color='red')
 	
 	p.axvline(6564.5377, lw=2, ls='dashed', color='k') # B_wave(3)
 	p.axvline(4861.3615, lw=2, ls='dashed', color='k') # B_wave(4)
