@@ -1,5 +1,5 @@
 import astropy.io.fits as fits
-import os
+import os, sys
 import time
 import numpy as n
 t0 = time.time()
@@ -10,7 +10,7 @@ t0 = time.time()
 
 
 dir2 = os.path.join(os.environ['HOME'], 'hegcl', 'SPIDERS')
-#dir1 = os.path.join(os.environ['HOME'], 'data', 'spiders', 'cluster')
+dir2 = os.path.join(os.environ['HOME'], 'data', 'spiders', 'cluster')
 
 #hd = fits.open(os.path.join(dir, 'validatedclusters_catalogue_2018-04-27_version_round123-v1_Xmass123-v1.fits'))[1].data
 #hd = fits.open(os.path.join(dir, 'validatedclusters_catalogue_2018-12-04_version_round1-v1_Xmass1-v1.fits.gz'))[1].data
@@ -122,6 +122,8 @@ header = ", ".join(header1.split())
 out_file = os.path.join(dir2, 'mastercatalogue_FINAL_CODEXID-flat.csv')
 n.savetxt(out_file, DATA, header = header, fmt='%s', delimiter=',')
 
+sys.exit()
+
 out_file_fits = os.path.join(dir2, 'mastercatalogue_FINAL_CODEXID-flat.fits')
 cmd = """stilts tpipe in="""+out_file+""" ifmt=csv omode=out ofmt=fits out="""+out_file_fits
 print(cmd)
@@ -130,7 +132,7 @@ os.system(cmd)
 # then does the matching on the DS machines, spALL is 14G !!
 
 spAll_file = '/home/comparat/data2/firefly/v1_1_0/v5_13_0/catalogs/sdss_eboss_firefly-dr16.fits'
-out_file_fits_all = os.path.join(dir2, 'mastercatalogue_FINAL_CODEXID-flat_DR16_firefly.fits')
+out_file_fits_all = os.path.join(dir2, 'mastercatalogue_FINAL_CODEXID-flat_DR16_firefly2.fits')
 
 
 c0 = """stilts tmatch2 ifmt1=fits ifmt2=fits in1="""+out_file_fits
