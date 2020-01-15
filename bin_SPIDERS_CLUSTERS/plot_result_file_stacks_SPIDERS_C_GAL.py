@@ -21,8 +21,9 @@ m_bins = n.arange(-4,4,0.1)
 
 import glob
 path_2_spec_dir = os.path.join(os.environ['HOME'], 'SDSS/stacks/SPIDERS_C_GAL')
+path_2_spec_dir = os.path.join(os.environ['HOME'], 'software/makeSample/data/allobjects_mem075_alllx_package')
 
-path_2_fly_dir =  os.path.join(os.environ['HOME'], 'SDSS/stacks/SPIDERS_C_GAL', 'firefly/')
+path_2_fly_dir =  os.path.join(path_2_spec_dir, 'firefly/')
 file_list = n.array( glob.glob( os.path.join( path_2_fly_dir ,'spFly*.stack')))
 file_list.sort()
 baseNames = n.array([ os.path.basename(bn)[6:] for bn in file_list ])
