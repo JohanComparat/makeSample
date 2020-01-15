@@ -42,7 +42,8 @@ def plot_models(id_model=1):
 		print(title_2)
 		title_2_sp = title_2.split('_')
 		print(title_2_sp)
-		title = title_2_sp[-1][6:]
+		title = title_2[25:]#[-1][6:]
+		print('title==', title)
 		#title = str( n.round( float(title_2_sp[0]),3 ) ) + r'$<\log_{10}(\theta/\theta_{200c})<$' + str( n.round( float(title_2_sp[2] ),3 ) )
 
 		sel = (d[1].data['NspectraPerPixel']>0.5*n.max(d[1].data['NspectraPerPixel']))&(d[1].data['medianStack']>0)
