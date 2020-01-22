@@ -194,11 +194,11 @@ p.fill_between(xzs, y1=Z_mock_low_a, y2=Z_mock_up_a, color='b', alpha=0.1, label
 # All AGN
 NN_2rxs = np.histogram(redshift[agnZ], bins=zs)[0]
 density = NN_2rxs/area_eboss_dr16#/np.max(NN)
-p.errorbar((zs[1:]+zs[:-1])/2., density, yerr=density*NN_2rxs**(-0.5), xerr=dz/2., label='AGN', fmt='none')
+p.errorbar((zs[1:]+zs[:-1])/2., density, yerr=density*NN_2rxs**(-0.5), xerr=dz/2., label='AGN 2RXS', fmt='s', mfc='none')
 
 NN_clusters = np.histogram(redshift[clusters], bins=zs)[0]
 density = NN_clusters/area_eboss_dr16#/np.max(NN)
-p.errorbar((zs[1:]+zs[:-1])/2., density, yerr=density*NN_clusters**(-0.5), xerr=dz/2., label='Clusters', fmt='none')
+p.errorbar((zs[1:]+zs[:-1])/2., density, yerr=density*NN_clusters**(-0.5), xerr=dz/2., label='Clusters 2RXS', fmt='s', mfc='none')
 
 # REDSHIFT HISTOGRAM saved as ascii
 #np.savetxt(os.path.join( figure_dir, env+"_histogram_redshift_"+str(sig_fx)+'_'+str(MAG_LIM)+'_'+str(EXI_ML_min)+".txt"), np.transpose([zs[:-1], zs[1:], NN_2rxs]), delimiter=" & ", newline=" \\\\ \n", fmt='%10.1f')
@@ -223,17 +223,18 @@ z_max = np.max(redshift[agnZ]) # np.max([np.max(redshift),np.max(Z_XMMSL2)])
 zs=np.arange(z_min, z_max + dz, dz)
 xzs=(zs[1:]+zs[:-1])/2.
 
-data, targeted, observed, goodZ, idZ, agnZ, clusters, blazars_noZ, stars, bl, nl = get_arrays_xmmsl2(path_2_cat_xmmsl = path_2_cat_xmmsl, EXI_ML_min = EXI_ML_min)
+data, high_conf, targeted, observed, goodZ, idZ, agnZ, clusters, blazars_noZ, stars, bl, nl, class_best = get_arrays_xmmsl2(path_2_cat_xmmsl = path_2_cat_xmmsl, EXI_ML_min = EXI_ML_min)
+
 
 redshift = data['Z_BEST']
 
 NN_2rxs = np.histogram(redshift[agnZ], bins=zs)[0]
 density = NN_2rxs/area_eboss_dr16#/np.max(NN)
-p.errorbar((zs[1:]+zs[:-1])/2., density, yerr=density*NN_2rxs**(-0.5), xerr=dz/2., label='AGN XMMSL2', fmt='none')
+p.errorbar((zs[1:]+zs[:-1])/2., density, yerr=density*NN_2rxs**(-0.5), xerr=dz/2., label='AGN XMMSL2', fmt='o', mfc='none')
 
 NN_clusters = np.histogram(redshift[clusters], bins=zs)[0]
 density = NN_clusters/area_eboss_dr16#/np.max(NN)
-p.errorbar((zs[1:]+zs[:-1])/2., density, yerr=density*NN_clusters**(-0.5), xerr=dz/2., label='Clusters XMMSL2', fmt='none')
+p.errorbar((zs[1:]+zs[:-1])/2., density, yerr=density*NN_clusters**(-0.5), xerr=dz/2., label='Clusters XMMSL2', fmt='o', mfc='none')
 
 print('NN_2rxs SUM', np.sum(NN_2rxs))
 

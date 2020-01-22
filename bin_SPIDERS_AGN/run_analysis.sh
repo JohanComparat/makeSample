@@ -88,15 +88,15 @@ python plot_LX_Z-VAC.py
 topcat -stilts plot2plane \
    xpix=500 ypix=500 \
    xlog=true xlabel=redshift \
-    ylabel='LX (soft), log10(Luminosity/[erg/s]) ' grid=true \
+    ylabel='LX, log10(Luminosity/[erg/s]) ' grid=true \
     texttype=latex fontsize=15 fontweight=bold \
    xmin=0.01 xmax=5.5 ymin=39 ymax=47.5 \
    legend=true legpos=0.0,1.0 \
    shading=auto \
-   layer_1=Mark \
+   layer_1=Contour \
       in_1=/home/comparat/data/eRoMok/mocks/eRosita_eRASS8_with_photometry.fits \
       x_1=redshift_R y_1=LX_soft \
-      color_1=grey \
+      color_1=black nlevel_1=8 smooth_1=45 scaling_1=log zero_1=1.5 \
       leglabel_1=eROSITA \
    layer_2=Mark \
       in_2=/home/comparat/software/makeSample/data/lxz/deep_fields_specz.dat \
@@ -107,7 +107,7 @@ topcat -stilts plot2plane \
       in_3=/home/comparat/software/makeSample/data/lxz/XMM_XXL_lz.dat \
        ifmt_3=ASCII \
       x_3=Z y_3=logLUM_SOFT \
-      shape_3=cross \
+      shape_3=cross color_3=red \
       leglabel_3='deep\; surveys' \
    layer_4=Mark \
       in_4=/home/comparat/data/AGN_clustering/catalogs/2RXS/SPIDERS_2RXS_Xray_NWAY_ALLWISE_SDSSv5b_SpecDR16_with_VI_1rowperXray_inDR16wSEQUELS_COMPLETE_MaxBCG_REDMAPPER_SPIDERSCODEX_XID_classifications_LXtype1.fits \
@@ -117,10 +117,17 @@ topcat -stilts plot2plane \
    layer_5=Mark \
       in_5=/home/comparat/data/AGN_clustering/catalogs/XMMSL2/SPIDERS_XMMSL2_Xray_NWAY_ALLWISE_SDSSv5b_SpecDR16_with_VI_1rowperXray_inDR16wSEQUELS_COMPLETE_REDMAPPER_SPIDERSCODEX_XID_classifications_LXtype1_not2RXS.fits \
       x_5=Z_BEST y_5='log10(DC_XMMSL2_LX)' \
-      size_5=2 color_5=yellow \
+      size_5=2 color_5=orange \
       leglabel_5=XMMSL2 \
    legseq=_1,_3,_4,_5 \
    omode=out out=$GIT_MAKESAMPLE/figures/agn/figures_VAC/LX_redshift.png
+
+   # 	layer_1=Mark \
+#       in_1=/home/comparat/data/eRoMok/mocks/eRosita_eRASS8_with_photometry.fits \
+#       x_1=redshift_R y_1=LX_soft \
+#       color_1=grey \
+#       leglabel_1=eROSITA size=0 \
+
 
 topcat -stilts plot2plane \
    xpix=500 ypix=300 \
@@ -148,7 +155,7 @@ topcat -stilts plot2plane \
       in_4=/home/comparat/data/AGN_clustering/catalogs/XMMSL2/SPIDERS_XMMSL2_Xray_NWAY_ALLWISE_SDSSv5b_SpecDR16_with_VI_1rowperXray_inDR16wSEQUELS_COMPLETE_REDMAPPER_SPIDERSCODEX_XID_classifications_LXtype1_not2RXS.fits \
        icmd_4='select DC_XMMSL2_LX>0' \
       x_4=Z_BEST \
-      color_4=yellow \
+      color_4=orange \
       leglabel_4=XMMSL2 \
       omode=out out=$GIT_MAKESAMPLE/figures/agn/figures_VAC/LX_redshift_histZ.png
 
@@ -175,7 +182,7 @@ topcat -stilts plot2plane \
       in_4=/home/comparat/data/AGN_clustering/catalogs/XMMSL2/SPIDERS_XMMSL2_Xray_NWAY_ALLWISE_SDSSv5b_SpecDR16_with_VI_1rowperXray_inDR16wSEQUELS_COMPLETE_REDMAPPER_SPIDERSCODEX_XID_classifications_LXtype1_not2RXS.fits \
        icmd_4='select DC_XMMSL2_LX>0' \
       x_4='log10(DC_XMMSL2_LX)' \
-      color_4=yellow \
+      color_4=orange \
       omode=out out=$GIT_MAKESAMPLE/figures/agn/figures_VAC/LX_redshift_histLX.png
       
 python plot_color-color-mag-categories.py

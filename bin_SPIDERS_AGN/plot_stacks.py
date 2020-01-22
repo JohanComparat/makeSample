@@ -131,15 +131,15 @@ def plot_stacks_agnt1(file_list_i, baseNames_i, path_2_figure='x.png', title='',
 		#print(xx, 1, name)
 		#p.text(x=xx, y=1, s=name, withdash=True, rotation=90, fontsize=9)#, color='blue')
 		#p.plot(xx, 1, marker='|', color='k')# s=name, withdash=True, rotation=90, fontsize=9)#, color='red')
-	p.xticks([], [])
+	#p.xticks([], [])
 	p.yscale('log')
-	p.xscale('log')
+	#p.xscale('log')
 	p.grid()
-	p.axvline(2000, color='grey', lw=0.5)
-	p.axvline(3000, color='grey', lw=0.5)
-	p.axvline(4000, color='grey', lw=0.5)
-	p.axvline(6000, color='grey', lw=0.5)
-	p.xticks([], [])
+	#p.axvline(2000, color='grey', lw=0.5)
+	#p.axvline(3000, color='grey', lw=0.5)
+	#p.axvline(4000, color='grey', lw=0.5)
+	#p.axvline(6000, color='grey', lw=0.5)
+	#p.xticks([], [])
 	#p.xticks(xtk, xtk)
 	p.legend(loc=4, fontsize=12)#, frameon=False)
 	p.tight_layout()
@@ -322,7 +322,7 @@ for UT in uniq_type:
 	if UT=='STARS':
 		s2 = [0,1]
 	
-
+sys.exit()
 def plot_single_stack_with_lines(path_2_spec, wmin, wmax, path_2_figure, em_lines, abs_lines):
 	print(path_2_spec, path_2_figure)
 	d = fits.open(path_2_spec)
